@@ -1,0 +1,137 @@
+// Home Page Post Abstracts
+.blog-posts {
+
+  .post {
+    padding-bottom: 2rem;
+    width: 80%;
+    .post-meta {
+      //width: 30%;
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 3rem;
+    }
+
+    .post-snippet {
+      padding-top: 1rem;
+      display: block;
+      //vertical-align: top;
+    }
+
+    a.title {
+      //font-size: 1.5rem;
+      font-weight: $heavy;
+      color: black
+    }
+
+    //.date:before {  content: "Posted on ";  }
+    .date {
+      //color: darkgrey;
+      a {
+        //color: darkgrey;
+      }
+    }
+    .byline {
+      a{
+        font-weight: $heavy;
+        font-style: italic;
+        color: darkgrey;
+      }
+    }
+
+    .tags:before {  content: "Tags:";  }
+    .tags {
+      //color: darkgrey;
+      //a { color: darkgrey; font-weight: bold;}
+      a:after {  content: " / ";  }
+      a:last-of-type:after {  content: "";  }
+    }
+    .abstract { p {  margin-bottom: .25rem;  } }
+    .link { a {  text-decoration: underline;  } }
+
+    @media (max-width: 45rem) {
+      .post-meta, .post-snippet {
+        width: 100%;
+        display: block;
+      }
+      .post-meta {
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+      }
+    }
+  }
+}
+
+
+.row.blog-page {
+  font-family: $font1;
+  .post-meta, .post-content{
+    padding-top: 3rem;
+  }
+  .post-meta {
+    font-size: 1.25rem;
+    text-align: center;
+    .logo-dots {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    .dot {
+      border-radius: 50%;
+      height: 1rem;
+      width: 1rem;
+      display: inline-block;
+    }
+    .tags:before {  content: "Tags:";  }
+    .tags {
+      //color: darkgrey;
+      //a { color: darkgrey; font-weight: bold;}
+      a:after {  content: " / ";  }
+      a:last-of-type:after {  content: "";  }
+    }
+    .post-author, .post-category {
+      color: $ctdata-dark-blue;
+    }
+  }
+
+  .post-content {
+    .rich-text:first-of-type {
+      p:first-of-type::first-letter {
+        float: left;
+        color: #18272b;
+        font-size: 75px;
+        line-height: 60px;
+        padding-top: 0;
+        padding-right: 10px;
+        padding-left: 3px;
+        font-weight: 100;
+        font-family: $font2;
+      }
+    }
+
+    .notes, .source {
+      font-size: .8rem;
+    }
+  }
+}
+
+
+
+@media (max-width: 65rem) {
+  row.blog-page {
+    .post-meta, .post-content {
+      padding-top: 1rem;
+    }
+  }
+}
+
+@media (max-width: 45rem) {
+
+}
+
+// Archive Settings
+.catbloc:not(:target) {
+  display: none;
+}
+
+.tipped {
+  color: $ctdata-extra-dark-blue;
+}

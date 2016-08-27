@@ -1,0 +1,18 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<div class="post">
+    {# Individual blog item in a list - used on blog index and home page #}
+    <a class="title" href="{% pageurl blog %}"><h1>{{ blog.title }}</h1></a>
+
+    <div class="post-meta">
+        <div class="date">{{ blog.date }} by <a href="#">{{ blog.author }}</a></div>
+    </div>
+    <div class="post-snippet">
+        <div class="abstract">
+            {% include "ctdata/includes/streamfield_truncated.html" with content=blog.body %}
+        </div>
+        <div class="link">
+            <a href="{% pageurl blog %}">Continue reading</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+#footer {
+	clear:both;
+	background:#333;
+	//width:100%;
+	min-height:300px;
+	color:#999;
+}
+
+#footer .footer-spacing {
+	margin:0 10%;
+	width:80%;
+	padding:30px 0;
+	text-align:center;
+}
+
+#footer .footerbox {
+	width:220px;
+	display:inline-block;
+	text-align:left;
+	margin:0 20px;
+	color:#999;
+	font-size:13px;
+	vertical-align:top;
+	line-height: 1.43em;
+
+    ul {
+      padding-left: 0;
+      li {
+        list-style: none;
+        margin-left: 0;
+        padding-left: 0;
+      }
+    }
+}
+
+#footer .footercopy {
+	width:100%;
+	display:inline-block;
+	text-align:center;
+	padding:45px 0;
+	color:#999;
+	font-size:13px;
+	line-height: 1.43em;
+}
+
+#footer .cobrandleft {
+	float:left;
+	width:50%;
+	border-right:1px dotted #555;
+	padding:10px; font-size:12px;
+	color: #777;
+}
+
+#footer .cobrandright {
+	float:left;
+	width:50%;
+	padding:10px;
+	font-size:12px;
+	color: #777;
+}
+
+#footer .brand {
+	margin-left: auto;
+	margin-right: auto;
+	width:50%;
+	padding:10px; font-size:12px;
+	color: #777;
+}
+#footer h2 { color:$ctdata-extra-dark-blue; margin:5px 0; font-size:1.8em; }
+#footer a, #footer a:link, #footer a:active, #footer a:visited {
+	text-decoration:none;
+	color:#999;
+}
+#footer a:hover, #footer a:hover:visited {
+	text-decoration:none;
+	color:#fff;
+}
+

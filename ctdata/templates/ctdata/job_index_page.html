@@ -1,0 +1,24 @@
+{% extends 'ctdata/__base_2.html' %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+    <div class="jobs">
+        <h2 class="banner">Current Openings</h2>
+         {% for job in self.jobs %}
+             <div class="job">
+                <a href="{% pageurl job %}"><h3>{{ job.title }}</h3></a>
+                <div class="job-overview">
+                    {% if job.overview %}
+                        {{ job.overview }}
+                    {% endif %}
+                    <a href="{% pageurl job %}"> Learn more.</a>
+                </div>
+            </div>
+             <!-- /.job -->
+        {% empty %}
+            <p>There are no openings at this time.</p>
+            <p>Thanks for your interest.</p>
+        {% endfor %}
+    </div>
+    {{ block.super }}
+{% endblock %}

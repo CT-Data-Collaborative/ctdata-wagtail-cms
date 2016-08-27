@@ -1,0 +1,25 @@
+.jobs {
+  padding-top: 3rem;
+  padding-left: 2rem;
+  min-height: 20rem;
+
+  .banner {
+    font-family: "Roboto Condensed", san-serif;
+    background: $ctdata-extra-dark-blue;
+    color: white;
+    padding: 1rem;
+    display: inline-block;
+    font-size: 1.5rem;
+  }
+  p {
+    color: $extra-dark-grey;
+    margin-bottom: 0;
+    font-size: 1.25rem;
+  }
+  .job-overview {
+    font-family: "Roboto Condensed";
+    color: $extra-dark-grey;
+    width: 80%;
+    padding-left: 1rem;
+  }
+}

@@ -1,0 +1,16 @@
+{% if category == 'portal' %}
+    <div class="fa-stack fa-2x" data-toggle="tooltip" data-placement="right" title="Data Portal">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-list-alt fa-inverse fa-stack-1x"></i>
+    </div>
+{% elif category == 'story' %}
+    <div class="fa-stack fa-2x" data-toggle="tooltip" title="Data Story">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-book fa-inverse fa-stack-1x"></i>
+    </div>
+{% elif category == 'report' %}
+    <div class="fa-stack fa-2x" title="Report" data-toggle="tooltip">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-news fa-inverse fa-stack-1x"></i>
+    </div>
+{% endif %}

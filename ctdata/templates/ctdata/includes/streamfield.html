@@ -1,0 +1,67 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<div class="stream-field">
+    {% for child in content %}
+        {% if child.block_type == 'h2' %}
+            <h2>{{ child }}</h2>
+        {% elif child.block_type == 'h3' %}
+            <h3>{{ child }}</h3>
+        {% elif child.block_type == 'h4' %}
+            <h4>{{ child }}</h4>
+        {% elif child.block_type == 'intro' %}
+            <div class="intro">{{ child }}</div>
+        {% elif child.block_type == 'aligned_html' %}
+            {% if child.value.alignment == 'normal' %}
+                {{ child.value.bound_blocks.html.render }}
+            {% else %}
+                {{ child.value.bound_blocks.html.render }}
+            {% endif %}
+        {% elif child.block_type == 'pullquote' %}
+            <blockquote>
+                {{ child.value.quote }}
+                {% if child.value.attribution %}<span>- {{ child.value.attribution }}</span>{% endif %}
+            </blockquote>
+        {% elif child.block_type == 'paragraph' %}
+            {{ child.value|richtext }}
+        {% elif child.block_type == 'aligned_image' %}
+            <div class="img-wrapper {{ child.value.alignment }}">
+                {% if child.value.alignment == "left" or child.value.alignment == "right" %}
+                    {% image child.value.image width-300 as theimage %}
+                {% else %}
+                    {% image child.value.image width-1280 as theimage %}
+                {% endif %}
+
+                <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}" />
+
+                {% if child.value.caption %}
+                    <div class="caption">
+                        {{ child.value.caption|richtext }}
+                    </div>
+                {% endif %}
+            </div>
+        {% elif child.block_type  == 'pym_iframe' %}
+            <div class="iframe-viz" id="{{ child.value.title }}">
+                <hr>
+                <h5>{{ child.value.title }}</h5>
+                <script>
+                    var pymParent = new pym.Parent('{{ child.value.title }}',
+                            'http://ctdata-graphics.s3-website-us-west-2.amazonaws.com/{{ child.value.bucket_name }}/index.html' );
+                </script>
+                <hr>
+            </div>
+        {% elif child.block_type  == 'iframe' %}
+            <div class="iframe-viz" id="{{ child.value.title }}">
+                <hr>
+                <h5>{{ child.value.title }}</h5>
+                <iframe width="100%" style="width: 100%; height: 550px; overflow: hidden;" src="http://ctdata-graphics.s3-website-us-west-2.amazonaws.com/{{ child.value.bucket_name }}/index.html" frameborder="0"></iframe>
+                <hr>
+            </div>
+        {% elif child.block_type  == 'sidebar_pullquote' %}
+            <p data-pullquote="{{ child.value.quote }}"></p>
+        {% elif child.block_type  == 'sidebar_note' %}
+            <p data-sidebar="{{ child.value.note }}"></p>
+        {% else %}
+            {{ child }}
+        {% endif %}
+    {% endfor %}
+</div>

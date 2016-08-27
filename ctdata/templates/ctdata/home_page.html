@@ -1,0 +1,81 @@
+{% extends 'ctdata/__base_1.html' %}
+{% load ctdata_tags static %}
+{% block content %}
+    {% include 'ctdata/includes/navbar.html' %}
+    {% include 'ctdata/includes/hero.html' %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="offset-sm-1 col-sm-11 col-md-9 col-lg-7">
+                    <div class="welcome">
+                        {% if self.body %}
+                            {% include "ctdata/includes/streamfield.html" with content=self.body %}
+                        {% endif %}
+                    </div>
+                    <!-- /.welcome -->
+                </div>
+                <!-- /.col-sm-12 col-md-6 -->
+            </div>
+            <!-- /.row odd -->
+            <!--<div class="row heading-row dark-blue">-->
+            <div class="row heading-row dark-grey">
+                <div class="heading extra-dark-blue">explore</div>
+                <!-- /.heading -->
+            </div>
+            <!-- /.row .dark-blue-row -->
+            <div class="row">
+                <div class="col-lg-7 offset-lg-1 col-sm-10 offset-sm-1">
+                    <h3>Data</h3>
+                    <p>Our data portal contains over 135 datasets that we have curated and processed into a
+                        machine-readable structure. Use our custom data-exploration tools to narrow
+                        your selection, or download raw data in bulk and explore data on your own. You can
+                        browse by topic, search by organization, or search by dataset.</p>
+                    <a href="http://data.ctdata.org" class="btn ctdata-btn">Explore data</a>
+                    {% event_listing_homepage %}
+                    {% include 'ctdata/includes/signup_form_slim.html' %}
+                </div>
+                <div class="col-lg-3 offset-lg-0 col-sm-10 offset-sm-1" id="updates">
+                    {% include 'ctdata/includes/recent_datasets.html' %}
+                </div>
+            </div>
+            <div class="row heading-row dark-grey" id="news">
+                <div class="heading dark-blue">news</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-7 offset-lg-1 col-sm-10 offset-sm-1">
+                    {% include 'ctdata/includes/post_list.html' with blogs=self.blogs|slice:":3" %}
+                </div>
+                <div class="col-lg-3 offset-lg-0 col-sm-10 offset-sm-1">
+                    {% include 'ctdata/includes/twitter.html' %}
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row heading-row dark-grey" id="projects">
+                <div class="heading medium-blue">projects</div>
+            </div>
+            <!-- /.row blue-row -->
+            <div class="row">
+                <div class="col-sm-12 col-md-10 col-lg-10 offset-md-1 offset-lg-1">
+                    {% include 'ctdata/includes/project_cards.html' with projects=self.project_items.all only %}
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+        {{ block.super }}
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'ctdata/js/lib/mustache.min.js' %}"></script>
+    <script src="{% static 'ctdata/js/datasets.js' %}"></script>
+    <script>
+        !function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+            if (!d.getElementById(id)) {
+                js = d.createElement(s);
+                js.id = id;
+                js.src = p + "://platform.twitter.com/widgets.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }
+        }(document, "script", "twitter-wjs");
+    </script>
+{% endblock %}

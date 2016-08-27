@@ -1,0 +1,14 @@
+<div class="flexbox">
+    {% for service in services %}
+    <div class="box">
+        <div class="service-block">
+            <div class="fa-stack fa-2x">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-{{ service.icon }} fa-inverse fa-stack-1x"></i>
+            </div>
+            <h3>{{ service.title }}</h3>
+            {{ service.description }}
+        </div>
+    </div>
+    {% endfor %}
+</div>

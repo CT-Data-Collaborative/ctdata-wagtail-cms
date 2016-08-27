@@ -1,0 +1,14 @@
+{% extends 'ctdata/__base_2.html' %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <div class="about">
+                {{ page.body|richtext }}
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    {{ block.super }}
+{% endblock %}

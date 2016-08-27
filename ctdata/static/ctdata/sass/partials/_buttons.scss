@@ -1,0 +1,86 @@
+.ctdata-btn {
+  border-radius: 0;
+  border: solid .1rem black;
+  background: transparent;
+  color: black;
+  font-family: $font1;
+  font-size: 1.25rem;
+  font-weght: $heavy;
+  margin-bottom: 1rem;
+}
+
+.ctdata-btn:hover {
+  color: white;
+  background: $ctdata-extra-dark-blue;
+  border: solid .1rem white;
+}
+
+.search-form {
+  display: inline-block;
+  vertical-align: middle;
+  color: black;
+
+  input {
+    color: black;
+    border-radius: 0;
+    border: solid .1rem black;
+    font-family: $font1;
+    font-size: 1.5rem;
+    font-weght: $heavy;
+    padding-left: 4rem;
+    }
+
+    button {
+      left: 0px;
+      right: 0px;
+      top: 0;
+      bottom: 0;
+      width: 2.5rem;
+      position: absolute;
+      display: block;
+      z-index: 400;
+      border: solid .1rem black;
+      background: $ctdata-extra-dark-blue;
+      color: white;
+    }
+}
+
+
+// some special offset classes to make button position a bit easier
+.offset-md-left-2 {
+  margin-left: 2rem;
+}
+
+.offset-md-right-2 {
+  margin-right: 2rem;
+}
+
+.offset-md-right-4 {
+  margin-right: 4rem;
+}
+
+.offset-md-right-6 {
+  margin-right: 6rem;
+}
+
+.offset-md-right-8 {
+  margin-right: 8rem;
+}
+
+
+@media (max-width: 65rem) {
+  .offset-md-left-2, .offset-md-right-2 {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 1rem;
+    display: block;
+  }
+}
+
+@media (max-width: 45rem) {
+  .offset-md-left-2, .offset-md-right-2 {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+}

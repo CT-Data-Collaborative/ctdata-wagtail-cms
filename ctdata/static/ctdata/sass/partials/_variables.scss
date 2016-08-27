@@ -1,0 +1,41 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700);
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,500,700);
+@import url(https://fonts.googleapis.com/css?family=Alegreya:400,700);
+
+// font weights
+$light: 300;
+$regular: 400;
+$medium: 500;
+$heavy: 700;
+
+$font1: 'Roboto Condensed', sans-serif;
+$font2: 'Alegreya', serif;
+
+$white: #fff;
+$mint-green: #d6e9c6;
+$black: #000;
+$pink: #f2dede;
+$dark-pink: #eed3d7;
+$red: #b94a48;
+
+$ctdata-extra-dark-blue:#4670A7;
+$ctdata-dark-blue:#1EACF1;
+$ctdata-medium-blue:#63D1F4;
+$ctdata-light-blue:#9EDDFC;
+$ctdata-extra-light-blue:#CDEFFE;
+
+$extra-light-grey: #ececec;
+$light-grey: #4A4A4A;
+$dark-grey: #979797;
+$extra-dark-grey: #4A4A4A;
+$light-tan: #F2F2EA;
+$extra-light-tan: #F7F6F2;
+$off-black: #343434;
+
+.extra-dark-blue, {background:$ctdata-extra-dark-blue;}
+.dark-blue {background: $ctdata-dark-blue;}
+.medium-blue {background: $ctdata-medium-blue;}
+.light-blue {background: $ctdata-light-blue;}
+.extra-light-blue {background: $ctdata-extra-light-blue;}
+.off-black {background: $off-black;}
+.dark-grey { background: $dark-grey;}

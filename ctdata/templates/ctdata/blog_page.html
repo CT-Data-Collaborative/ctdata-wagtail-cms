@@ -1,0 +1,36 @@
+{% extends "ctdata/__left_sidebar.html" %}
+{% load wagtailcore_tags %}
+{% block title %}{{ self.title }}{% endblock %}
+{% block page_row_class %}blog-page{% endblock %}
+{% block side_col %}
+    <div class="post-meta">
+        <div class="logo-dots">
+            <div class="dot extra-light-blue"></div>
+            <div class="dot light-blue"></div>
+            <div class="dot medium-blue"></div>
+            <div class="dot dark-blue"></div>
+        </div>
+        <p>
+            <span class="post-date">{{ self.date |date:"F d, Y"}}</span>
+            <br>
+            <span class="post-author">{{ self.author }}</span>
+        </p>
+        <p>
+            <span class="tags" itemprop="keywords">
+                {% for tag in self.tags.all %}
+                    <a href="{% pageurl self.blog_index %}?tag={{ tag }}">{{ tag }}</a>
+                {% endfor %}
+            </span>
+        </p>
+    </div>
+{% endblock side_col %}
+{% block main_col %}
+    <div class="post-content">
+        {% if self.body %}
+            {% include "ctdata/includes/streamfield.html" with content=self.body %}
+        {% endif %}
+        <hr>
+    </div>
+    {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
+    {% include 'ctdata/includes/disqus.html' %}
+{% endblock main_col %}

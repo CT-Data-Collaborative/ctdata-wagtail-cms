@@ -1,0 +1,29 @@
+.flexbox.projects {
+  .box {
+    a {
+      color:black;
+    }
+  }
+  .box:hover {
+    background: $ctdata-extra-dark-blue;
+    a {
+      color:white;
+      p { color: white;}
+      h3 { color: white}
+    }
+    .fa-circle {
+      color: white;
+    }
+    .fa-inverse {
+      color: $ctdata-extra-dark-blue;
+    }
+  }
+  a {
+    h3,p { text-decoration: none;}
+    p { color: black;}
+  }
+  a:hover {
+    text-decoration: none;
+  }
+
+}

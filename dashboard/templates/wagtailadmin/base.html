@@ -1,0 +1,10 @@
+{% extends "wagtailadmin/base.html" %}
+{% load staticfiles %}
+
+{% block extra_css %}
+    <link href="{% static 'wagtailadmin/css/custom_admin.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block branding_logo %}
+    <img class="wagtail-logo" src="{% static 'wagtailadmin/images/logo.svg' %}" alt="CTData" width="100px" />
+{% endblock %}

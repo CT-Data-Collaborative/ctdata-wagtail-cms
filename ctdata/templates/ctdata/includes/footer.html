@@ -1,0 +1,61 @@
+<div class="row" id="footer">
+    <div class="footer-spacing">
+        <div class="footerbox">
+            <h2>Work</h2>
+            <ul>
+                <li><a href="http://data.ctdata.org">Data</a></li>
+                <li><a href="/#projects">Special Projects</a></li>
+                <li><a href="/services">Our Services</a></li>
+            </ul>
+        </div>
+        <div class="footerbox">
+            <h2>About Us</h2>
+            <ul>
+                <li><a href="/about/">Team</a></li>
+                <li><a href="/about/jobs/">Jobs</a></li>
+            </ul>
+        </div>
+        <div class="footerbox">
+            <h2>Resources</h2>
+            <ul>
+                <li><a href="/news/">News</a></li>
+                <li><a href="/data/resources/">Resources</a></li>
+                <li><a href="http://nccsweb.urban.org/communityplatform/ct">CT Nonprofit Strategy Platform</a></li>
+                {% if settings.ctdata.SocialMediaSettings.github %}
+                <li></li><a href="{{ settings.ctdata.SocialMediaSettings.github }}">Our Code</a></li>
+                {% else %}
+                <li><a href="#">Our Code</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="footerbox">
+            <h2>Get in Touch</h2>
+            <ul>
+                <li><a href="mailto:info@ctdata.org">Support & Feedback</a></li>
+                <li><a href="/signup/">Signup For Our Newsletter</a></li>
+                <li><a href="http://data.ctdata.org/datarequest">Request a dataset</a></li>
+            </ul>
+            {% if settings.ctdata.SocialMediaSettings.facebook %}
+                <a href="{{ settings.ctdata.SocialMediaSettings.facebook }}"><i class="fa fa-inverse fa-facebook-square fa-lg"></i> &nbsp;Find us on
+                Facebook</a><br/>
+            {% else %}
+                <a href="#"><i class="fa fa-inverse fa-facebook-square fa-lg"></i> &nbsp;Find us on
+                Facebook</a><br/>
+            {% endif %}
+            {% if settings.ctdata.SocialMediaSettings.twitter %}
+                <a href="https://twitter.com/{{ settings.ctdata.SocialMediaSettings.twitter }}"><i class="fa fa-inverse fa-twitter-square fa-lg"></i> &nbsp;Find us on
+                Twitter</a><br/>
+            {% else %}
+                <a href="#"><i class="fa fa-inverse fa-twitter-square fa-lg"></i> &nbsp;Find us on
+                Twitter</a><br/>
+            {% endif %}
+            <br/><br/>
+        </div>
+        <div class="footercopy">
+            <div class="brand">
+                CTdata.org is a Project of the Connecticut Data Collaborative<br/>
+                Copyright &copy; 2014 &mdash; 2016 CT Data Collaborative
+            </div>
+        </div>
+    </div>
+</div>

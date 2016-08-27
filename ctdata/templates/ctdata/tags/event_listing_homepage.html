@@ -1,0 +1,12 @@
+<h3>Upcoming Events</h3>
+{% if events %}
+    <div class="events">
+        <div class="list-group">
+          {% for event in events %}
+            {% include "demo/includes/event_list_item.html" %}
+          {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <p>No events currently scheduled.</p>
+{% endif %}

@@ -1,0 +1,64 @@
+.flexbox {
+  display: flex;
+  flex-direction: column;
+
+  margin: 0;
+  padding-top: 3rem;
+
+  .box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin: 1rem;
+    padding: 1rem;
+    min-width: calc(100%-4rem);
+    min-height: 69px;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3);
+
+    .service-block {
+      h3 {
+        font-weight: bold;
+        text-align: center;
+        font-family: $font1;
+      }
+      .fa-stack {
+        width: 100%;
+      }
+      .fa-circle {
+        color: $dark-grey;
+      }
+      p {
+        font-family: $font1;
+      }
+    }
+  }
+}
+
+@media (min-width: 1040px) {
+  .flexbox {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    min-height: 100%;
+
+    .box {
+      flex-basis: calc(100% / 2 - 2rem);
+      align-items: flex-start;
+      justify-content: flex-end;
+
+      padding: 1rem;
+      margin: .5rem;
+      min-width: 0;
+      min-height: 20%;
+
+    }
+  }
+  .flexbox.projects {
+    .box {
+      flex-basis: calc(100% / 3 - 2rem);
+    }
+  }
+}

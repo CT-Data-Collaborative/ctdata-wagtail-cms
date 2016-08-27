@@ -1,0 +1,15 @@
+{% extends "ctdata/__left_sidebar.html" %}
+{% load wagtailcore_tags %}
+{% block title %}{{ self.title }}{% endblock %}
+{% block page_row_id %}services{% endblock %}
+{% block side_col_classes %}col-sm-3 offset-sm-1{% endblock %}
+{% block main_col_classes %}col-sm-7{% endblock %}
+{% block side_col %}
+    <div class="services">
+        <h1>{{ self.title }}</h1>
+        {{ self.body|richtext }}
+    </div>
+{% endblock side_col %}
+{% block main_col %}
+    {% include 'ctdata/includes/service_cards.html' with services=self.services.all only %}
+{% endblock main_col %}

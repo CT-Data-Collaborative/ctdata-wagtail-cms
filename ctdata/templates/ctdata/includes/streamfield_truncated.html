@@ -1,0 +1,10 @@
+{% load wagtailcore_tags %}
+<div class="stream-field">
+    {% filter truncatewords_html:75 %}
+        {% for child in content %}
+            {% if child.block_type == 'paragraph' %}
+                {{ child.value|richtext }}
+            {% endif %}
+        {% endfor %}
+    {% endfilter %}
+</div>

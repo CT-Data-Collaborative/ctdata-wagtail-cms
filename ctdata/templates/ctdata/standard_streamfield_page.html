@@ -1,0 +1,10 @@
+{% extends 'ctdata/__base_2.html' %}
+{% load wagtailcore_tags %}
+{% block title %}{{ self.title }}{% endblock %}
+
+{% block content %}
+    {% if self.body %}
+        {% include "ctdata/includes/streamfield.html" with content=self.body %}
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

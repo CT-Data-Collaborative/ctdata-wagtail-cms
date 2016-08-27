@@ -1,0 +1,206 @@
+  .hero {
+  height: 55vh;
+}
+
+.alt-hero {
+  height: 50vh;
+}
+
+.hero, .alt-hero {
+
+  overflow-y: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  .overlay.clear {
+    height:100%;
+    width: 100%;
+    background: rgba(0,0,0,0);
+    position: absolute;
+    top: 0;
+
+    .note {
+      position: relative;
+      top: 10rem;
+      left: 10rem;
+    }
+
+    h1,h2,h3,h4, p {
+      color: white;
+    }
+  }
+
+  .top-gradient {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 35%;
+    z-index: 500;
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0.75), rgba(0,0,0,0.0));
+  }
+}
+
+.alt-hero {
+  img {
+    max-width: 100%;
+    position: relative;
+    height: auto;
+    width: 100%;
+    top: -30vh;
+  }
+  .top-gradient {
+    height: 100%;
+  }
+  .page-title {
+    position: absolute;
+    top: 10rem;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    color: white;
+    font-weight: bold;
+    font-size: 4rem;
+    p {
+      text-align: center;
+    }
+  }
+}
+
+@media (max-width: 65rem) {
+  .hero, .alt-hero {
+    height: 40vh;
+
+    .page-title {
+      font-size: 2.5rem;
+      top: 10rem;
+    }
+  }
+}
+
+@media (max-width: 45rem) {
+  .hero, .alt-hero {
+    height: 35vh;
+
+    img {
+      top: -10vh;
+    }
+    .page-title {
+      top: 10rem;
+      font-size: 2rem;
+    }
+  }
+
+}
+.jumbo-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20rem;
+  overflow-y: hidden;
+
+  img {
+    width: 100%;
+  }
+
+  .titlebox {
+    position: absolute;
+    top: 3rem;
+    width: 100%;
+    height: 9.5rem;
+    background: rgba(0,0,0,0.3);
+  }
+
+  .text {
+    padding-top: 10rem;
+    color: white;
+    text-align: center;
+    z-index: 100;
+    font-size: 3rem;
+    text-shadow: $ctdata-extra-dark-blue 0 1px 1px;
+  }
+}
+
+.module {
+  background:
+          linear-gradient(
+                          rgba(0, 0, 0, 0.4),
+                          rgba(0, 0, 0, 0.4)
+          ),
+          url('../images/slider1.jpg');
+
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+  //margin: 10px 0 0 10px;
+  position: relative;
+  float: left;
+}
+
+.mid h1 {
+  padding-top: 2rem;
+  color: white;
+  text-align: center;
+  z-index: 100;
+  font-size: 2rem;
+  text-shadow: $ctdata-extra-dark-blue 0 1px 1px;
+}
+
+@media (min-width: 48em) {
+  .jumbo-image {
+    height: 20rem;
+
+    .titlebox {
+      height: 12rem;
+    }
+    .text {
+      padding-top: 10rem;
+      font-size: 3rem;
+    }
+  }
+}
+
+@media (min-width: 62em) {
+  .jumbo-image {
+    height: 26rem;
+
+    .titlebox {
+      height: 16rem;
+    }
+    .text {
+      padding-top: 10rem;
+      font-size: 4rem;
+    }
+  }
+}
+
+@media (min-width: 75em) {
+  .jumbo-image {
+    height: 28rem;
+
+    .titlebox {
+      height: 18rem;
+    }
+    .text {
+      padding-top: 10rem;
+      font-size: 4rem;
+    }
+  }
+}
+
+@media (min-width: 86em) {
+  .jumbo-image {
+    height: 32rem;
+
+    .titlebox {
+      height: 22rem;
+    }
+    .text {
+      padding-top: 14rem;
+      font-size: 4rem;
+    }
+  }
+}

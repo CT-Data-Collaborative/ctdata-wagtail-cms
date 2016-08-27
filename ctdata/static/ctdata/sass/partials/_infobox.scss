@@ -1,0 +1,45 @@
+.info-box {
+  //border: solid .2rem black;
+  padding: .75rem;
+  background: whitesmoke;
+  color: black;
+  h4 {
+    text-decoration: underline;
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+    li {
+      padding-left: 0;
+      margin-left: 0;
+      margin-bottom: 1rem;
+
+      p {
+          font-size: .75rem;
+          color: black;
+          margin-bottom: 0;
+        }
+      p.dataset-date-updated {
+        font-style:italic;
+        margin-bottom: 0.25rem;
+        color: darkgray;
+      }
+      a {
+          font-weight: 500;
+          line-height: .75rem;
+          color: #474747;
+        }
+
+      a:hover {
+        color: $ctdata-dark-blue;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 61.9em) {
+  .info-box {
+    margin-top: 1rem;
+  }
+}

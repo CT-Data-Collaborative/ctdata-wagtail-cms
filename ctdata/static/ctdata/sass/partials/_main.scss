@@ -1,0 +1,110 @@
+body {
+  font-family: "Roboto";
+  p {
+    font-family: "Roboto Condensed", helvetica, arial, verdana, sans-serif;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: 'Roboto', helvetica, arial, verdana, sans-serif;
+    font-weight: bold;
+  }
+  h1 {
+    font-size: 218%;
+  }
+  h2 {
+    font-size: 164%;
+  }
+  h3 {
+    font-size: 145%;
+  }
+  h4 {
+    font-size: 118%;
+  }
+  h5 {
+    font-size: 105%;
+  }
+}
+
+
+.content {
+  top: 55vh;
+}
+.alt-content {
+  top: 50vh;
+
+}
+.content, .alt-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: white;
+  color: black;
+
+  .row {
+    padding-bottom: 2rem;
+    padding-top: 1rem;
+  }
+
+  h3 {
+    color: $ctdata-extra-dark-blue;
+  }
+}
+
+.welcome {
+  h1 {
+    font-weight: $heavy;
+  }
+  .emphasis {
+    color: $ctdata-extra-dark-blue;
+  }
+}
+
+.row.heading-row {
+  padding-top: 0;
+  padding-bottom: 0;
+  color: white;
+  .heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    padding: 1rem;
+    padding-left: 2rem;
+    max-width: 15rem;
+    text-shadow: 1px 1px 1px #000;
+  }
+}
+
+i.filetype {
+  background:  $ctdata-dark-blue;
+  padding: .25rem;
+  font-size: .65rem;
+  color: white;
+  margin-right: .25rem;
+  -webkit-border-radius: .25rem;
+  -moz-border-radius: .25rem;
+  border-radius: .25rem;
+}
+
+.exploration-paths {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+@media (max-width: 65rem) {
+  body {
+    font-size: 125%;
+  }
+  .content, .alt-content {
+    //top: 45vh;
+    top: 18vh;
+  }
+}
+
+@media (max-width: 50rem) {
+  .content, .alt-content {
+    top: 35vh;
+  }
+}

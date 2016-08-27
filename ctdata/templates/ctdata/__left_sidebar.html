@@ -1,0 +1,15 @@
+{% extends "ctdata/__base_2.html" %}
+
+{% block content %}
+    <div>
+        <div class="row {% block page_row_class %}{% endblock %}" id="{% block page_row_id %}{% endblock %}">
+            <div class="{% block side_col_classes %}col-md-12 col-lg-3{% endblock %}">
+                {% block side_col %}{% endblock %}
+            </div>
+            <div class="{% block main_col_classes %}col-md-12 col-lg-7{% endblock %}">
+                {% block main_col %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock content %}

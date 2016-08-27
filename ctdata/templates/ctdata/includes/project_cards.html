@@ -1,0 +1,13 @@
+<div class="flexbox projects">
+    {% for project in projects %}
+        <div class="box">
+            <div class="service-block">
+                <a href="{{project.project_link}}">
+                {% include 'ctdata/includes/project_icons.html' with category=project.project_category %}
+                <h3>{{ project.project_title }}</h3>
+                {{ project.project_description }}
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>

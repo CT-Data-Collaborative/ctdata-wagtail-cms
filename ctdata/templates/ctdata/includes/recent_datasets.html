@@ -1,0 +1,20 @@
+<div class="info-box">
+    <a href="#"><h4>Recent Data Updates</h4></a>
+    <ul class="dataset-list" id="datasetTarget">
+    </ul>
+    <script id="datasetTemplate" type="x-tmpl-mustache">
+    {% verbatim %}
+        {{#datasets}}
+        <li class="dataset">
+            <a class="dataset-name" href="{{url}}">
+                {{ name }}
+            </a>
+            <p class="dataset-date-updated">{{date}}</p>
+            <p>{{desc}}</p>
+            <i class="filetype csv">CSV</i>
+        </li>
+        {{/datasets}}
+    {% endverbatim %}
+    </script>
+</div>
+<!-- /.info-box -->
