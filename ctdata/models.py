@@ -552,7 +552,7 @@ class BlogIndexPage(Page):
         # Order by most recent date first
         blogs = blogs.order_by('-date')
 
-        return blogs[:3]
+        return blogs
 
     def get_context(self, request):
         # Get blogs
