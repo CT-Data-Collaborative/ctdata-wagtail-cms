@@ -291,9 +291,10 @@ class ProjectItem(LinkFields):
 
 class RelatedLink(LinkFields):
     title = models.CharField(max_length=255, help_text="Link title")
-
+    description = models.CharField(max_length=500, help_text="Description", blank=True)
     panels = [
         FieldPanel('title'),
+        FieldPanel('description'),
         MultiFieldPanel(LinkFields.panels, "Link"),
     ]
 
@@ -325,7 +326,6 @@ class HomePage(Page):
     search_fields = Page.search_fields + [
         index.SearchField('body'),
     ]
-
 
     class Meta:
         verbose_name = "Homepage"
@@ -704,7 +704,7 @@ PersonPage.promote_panels = Page.promote_panels + [
 ################################################################################################
 ########
 ########
-########            Conact page
+########            Contact page
 ########
 ########
 ################################################################################################
@@ -887,10 +887,8 @@ class EventPage(Page):
     )
     time_from = models.TimeField("Start time", null=True, blank=True)
     time_to = models.TimeField("End time", null=True, blank=True)
-    audience = models.CharField(max_length=255, choices=EVENT_AUDIENCE_CHOICES)
     location = models.CharField(max_length=255)
     body = RichTextField(blank=True)
-    cost = models.CharField(max_length=255)
     signup_link = models.URLField(blank=True)
     feed_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -901,7 +899,6 @@ class EventPage(Page):
     )
 
     search_fields = Page.search_fields + [
-        index.SearchField('get_audience_display'),
         index.SearchField('location'),
         index.SearchField('body'),
     ]
@@ -936,8 +933,6 @@ EventPage.content_panels = [
     FieldPanel('time_from'),
     FieldPanel('time_to'),
     FieldPanel('location'),
-    FieldPanel('audience'),
-    FieldPanel('cost'),
     FieldPanel('signup_link'),
     InlinePanel('carousel_items', label="Carousel items"),
     FieldPanel('body', classname="full"),

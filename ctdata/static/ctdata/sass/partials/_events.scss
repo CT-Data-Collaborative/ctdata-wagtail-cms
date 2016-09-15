@@ -1,5 +1,6 @@
 .events {
   padding-top: 1rem;
+  padding-bottom: 1rem;
   ul {
     padding-left: 0;
     li {
@@ -14,5 +15,8 @@
       p { font-family: 'Roboto Condensed';}
 
     }
+  }
+  .list-group-item {
+    border: none;
   }
 }

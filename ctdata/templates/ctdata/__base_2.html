@@ -33,13 +33,13 @@
             {% endblock %}
         </div>
         <!-- /#footer -->
-        {% compress js %}
+{#        {% compress js %}#}
             <script src="{% static 'ctdata/js/lib/jquery.min.js' %}"></script>
             <script src="{% static 'ctdata/js/navtag.js' %}"></script>
             <script src="{% static 'ctdata/js/lib/tether.min.js' %}"></script>
             <script src="{% static 'ctdata/js/lib/bootstrap.min.js' %}"></script>
             <script src="{% static 'ctdata/js/lib/lodash.js' %}"></script>
-        {%  endcompress %}
+{#        {%  endcompress %}#}
         {% block external_js %}{% endblock %} {# Override this block in individual templates in order to add javascript on a template by template basis #}
     </body>
 </html>

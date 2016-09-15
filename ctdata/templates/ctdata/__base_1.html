@@ -29,7 +29,7 @@
         <!-- </div> Extra closing div is hack so that we get the footer
          wrapped in the content tag w/o tying us to using content on all pages -->
         <!-- /#footer -->
-        {% compress js %}
+{#        {% compress js %}#}
             <script src="{% static 'ctdata/js/lib/pym.min.js' %}"></script>
             <script src="{% static 'ctdata/js/lib/jquery.min.js' %}"></script>
             <script src="{% static 'ctdata/js/navtag.js' %}"></script>
@@ -37,7 +37,7 @@
             <script src="{% static 'ctdata/js/lib/bootstrap.min.js' %}"></script>
             <script src="{% static 'ctdata/js/lib/lodash.js' %}"></script>
             {% block extra_js %}{% endblock %} {# Override this block in individual templates in order to add javascript on a template by template basis #}
-        {%  endcompress %}
+{#        {%  endcompress %}#}
         {% block external_js %}{% endblock %} {# Override this block in individual templates in order to add javascript on a template by template basis #}
     </body>
 </html>

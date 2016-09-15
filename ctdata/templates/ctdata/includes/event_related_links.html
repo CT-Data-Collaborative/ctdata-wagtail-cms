@@ -1,0 +1,17 @@
+{% if related_links %}
+    <div class="related">
+        <h4>Related links</h4>
+        <ul class="related-posts">
+            {% for related_link in related_links %}
+                <li>
+                    <p>
+                        <a class="related-url" href="{{ related_link.link }}">{{ related_link.title }}</a>
+                    </p>
+                    {% if related_link.description %}
+                    <p class="link-description">{{ related_link.description }}</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

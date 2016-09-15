@@ -1,41 +1,47 @@
 {% extends "ctdata/__no_sidebar.html" %}
-{% load demo_tags wagtailcore_tags wagtailimages_tags %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags %}
 
 {% block centered_content %}
-    <div class="well">
-        <p><strong>
-            {{ self.date_from }}{% if self.date_to %} to {{ self.date_to }}{% endif %}
-            {% if self.time_from %}{{ self.time_from|time }}{% endif %}{% if self.time_to %} to {{ self.time_to|time }}{% endif %}
-        </strong></p>
-        {% if self.location %}<p>Location: {{ self.location }}</p>{% endif %}
-        {% if self.audience %}
-            <p>Audience:
-            {# From EVENT_AUDIENCE_CHOICES in models.py #}
-            {{ self.get_audience_display }}</p>
-        {% endif %}
-        {% if self.cost %}
-            <p>Cost: {{ self.cost|safe }}</p>
-        {% endif %}
+    <div>
+        <div class="row">
+            <div class="col-md-12 col-lg-6 offset-lg-2">
+                <h3>Event Details</h3>
+                <p><strong>When:</strong>
+                    {{ self.date_from }}{% if self.date_to %} to {{ self.date_to }}{% endif %}
+                    {% if self.time_from %}{{ self.time_from|time }}{% endif %}{% if self.time_to %} to {{ self.time_to|time }}{% endif %}
+                </p>
+                {% if self.location %}<p><strong>Where:</strong> {{ self.location }}</p>{% endif %}
+                {% if self.audience %}
+                    <p>Audience:
+                        {# From EVENT_AUDIENCE_CHOICES in models.py #}
+                        {{ self.get_audience_display }}</p>
+                {% endif %}
+                {% if self.cost > 0 %}
+                    <p>Cost: {{ self.cost|safe }}</p>
+                {% endif %}
 
-        {% if self.signup_link %}
-            <p>Sign up: <a href="{{ self.signup_link }}">{{ self.signup_link }}</a></p>
-        {% endif %}
+                {% if self.signup_link %}
+                    <p>Sign up: <a href="{{ self.signup_link }}">{{ self.signup_link }}</a></p>
+                {% endif %}
 
-        <p>
-            <a class='calendar' href= "{{ self.url }}?format=ical">
-                Add to calendar
-            </a>
-        </p>
-    </div>
+                <p>
+                    <a class='calendar' href= "{{ self.url }}?format=ical">
+                        <i class="fa fa-calendar"></i> Add to calendar
+                    </a>
+                </p>
 
-    {% include "ctdata/includes/carousel.html" with carousel_items=self.carousel_items.all only %}
+                {#    {% include "ctdata/includes/carousel.html" with carousel_items=self.carousel_items.all only %}#}
 
-    {% if self.body %}
-        <div class="body-content">
-            {{ self.body|richtext }}
+                {% if self.body %}
+                    <h3>Event Description</h3>
+                    <div class="body-content">
+                        {{ self.body|richtext }}
+                    </div>
+                {% endif %}
+
+                {% include "ctdata/includes/event_related_links.html" with related_links=self.related_links.all only %}
+{#                {% include 'ctdata/includes/prev_next.html' %}#}
+            </div>
         </div>
-    {% endif %}
-
-    {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
-    {% include 'ctdata/includes/prev_next.html' %}
+    </div>
 {% endblock %}

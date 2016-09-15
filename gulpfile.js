@@ -59,7 +59,7 @@ gulp.task('styles', function() {
     .pipe(plumber()) // Checks for errors
     .pipe(autoprefixer({browsers: ['last 2 version']})) // Adds vendor prefixes
     .pipe(pixrem())  // add fallbacks for rem units
-    .pipe(gulp.dest(paths.css))
+    .pipe(gulp.dest(paths.wagtail_css))
     .pipe(rename({ suffix: '.min' }))
     .pipe(cssnano()) // Minifies the result
     .pipe(gulp.dest(paths.wagtail_css));
@@ -126,4 +126,5 @@ gulp.task('watch', ['default'], function() {
 
 gulp.task('print_paths', function() {
     gutil.log(paths.wagtail_js);
+    gutil.log(paths.wagtail_css);
 ;})
