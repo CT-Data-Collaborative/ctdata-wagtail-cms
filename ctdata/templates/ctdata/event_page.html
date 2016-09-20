@@ -24,12 +24,13 @@
                     <p>Sign up: <a href="{{ self.signup_link }}">{{ self.signup_link }}</a></p>
                 {% endif %}
 
+                {% if now < self.date_from %}
                 <p>
                     <a class='calendar' href= "{{ self.url }}?format=ical">
                         <i class="fa fa-calendar"></i> Add to calendar
                     </a>
                 </p>
-
+                {% endif %}
                 {#    {% include "ctdata/includes/carousel.html" with carousel_items=self.carousel_items.all only %}#}
 
                 {% if self.body %}
