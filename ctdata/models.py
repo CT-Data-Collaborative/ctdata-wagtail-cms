@@ -827,6 +827,21 @@ class EventIndexPage(Page):
 
         return events
 
+    @property
+    def past_events(self):
+        # Get a list of past events
+        past_events = EventPage.objects.live().descendant_of(self)
+
+        # Filter events list to get ones that are either
+        # running now or start in the future
+        past_events = past_events.filter(date_from__lt=date.today())
+
+        # Order by date
+        past_events = past_events.order_by('date_from')
+
+        return past_events
+
+
 EventIndexPage.content_panels = [
     FieldPanel('title', classname="full title"),
     FieldPanel('intro', classname="full"),

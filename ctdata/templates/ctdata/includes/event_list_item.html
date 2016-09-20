@@ -15,6 +15,9 @@
       {% if event.search_description %}
         <p>{{ event.search_description }}</p>
       {% endif %}
+      {% if event.body %}
+        <p>{{ event.body | richtext }}</p>
+      {% endif %}
     </div>
   </div>
 </a>
