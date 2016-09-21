@@ -536,16 +536,18 @@ nav {
     min-width: calc(100%-4rem);
     min-height: 69px;
     box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3); }
-    .flexbox .box .service-block h3 {
-      font-weight: bold;
-      text-align: center;
-      font-family: "Roboto Condensed", sans-serif; }
-    .flexbox .box .service-block .fa-stack {
+    .flexbox .box .service-block {
       width: 100%; }
-    .flexbox .box .service-block .fa-circle {
-      color: #979797; }
-    .flexbox .box .service-block p {
-      font-family: "Roboto Condensed", sans-serif; }
+      .flexbox .box .service-block h3 {
+        font-weight: bold;
+        text-align: center;
+        font-family: "Roboto Condensed", sans-serif; }
+      .flexbox .box .service-block .fa-stack {
+        width: 100%; }
+      .flexbox .box .service-block .fa-circle {
+        color: #979797; }
+      .flexbox .box .service-block p {
+        font-family: "Roboto Condensed", sans-serif; }
 
 @media (min-width: 1040px) {
   .flexbox {
