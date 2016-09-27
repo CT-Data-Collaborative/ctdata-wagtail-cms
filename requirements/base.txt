@@ -45,11 +45,6 @@ redis>=2.10.0
 
 celery==3.1.23
 
-
-
-
-
-
 # Your custom requirements go here
 # Wagtail
 
