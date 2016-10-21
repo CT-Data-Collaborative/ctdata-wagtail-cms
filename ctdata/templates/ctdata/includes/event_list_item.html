@@ -15,9 +15,9 @@
             {% if event.search_description %}
                 <p>{{ event.search_description }}</p>
             {% endif %}
-            {% if event.body %}
-                <p>{{ event.body | richtext | truncatewords:25 }}</p>
-            {% endif %}
+{#            {% if event.body %}#}
+{#                <p>{{ event.body | richtext | truncatewords:0 }}</p>#}
+{#            {% endif %}#}
         </div>
     </div>
 </a>
