@@ -935,12 +935,12 @@ nav {
   font-weight: bold;
   color: #36454F; }
 
-.conference #main-content h3 {
+.conference #main-content h2, .conference h3 {
   text-align: center;
   color: #36454F;
   font-style: italic; }
 
-.conference #main-content h4 {
+.conference #main-content h4, .conference p {
   margin-top: 32px;
   margin-top: 2rem;
   color: #36454F;
@@ -951,13 +951,6 @@ nav {
   font-weight: 400;
   font-size: 16px;
   font-size: 1rem; }
-
-.conference #main-content img {
-  max-width: 60%;
-  height: auto;
-  margin-left: 20%;
-  padding-top: 16px;
-  padding-top: 1rem; }
 
 .conference #survey {
   max-width: 600px;
@@ -1061,6 +1054,25 @@ nav {
 .conference #sponsors .sponsor-conf .btn:hover {
   color: #4670A7; }
 
+.conference .sponsor-list {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto; }
+  .conference .sponsor-list li.sponsor {
+    list-style-type: none;
+    display: inline-block;
+    padding-left: 32px;
+    padding-left: 2rem; }
+    .conference .sponsor-list li.sponsor a.sponsor-link {
+      display: block;
+      width: 100%;
+      height: 100%; }
+    .conference .sponsor-list li.sponsor img.sponsor-image {
+      margin-left: 0 !important; }
+    .conference .sponsor-list li.sponsor p > a {
+      color: #4670A7; }
+
 .conference .register-link {
   padding-top: 16px;
   padding-top: 1rem;
@@ -1086,11 +1098,7 @@ nav {
   .conference #main-content h4 {
     text-align: center;
     font-weight: 600;
-    font-size: 118%; }
-  .conference #main-content img {
-    max-width: 30%;
-    height: auto;
-    margin-left: 35%; } }
+    font-size: 118%; } }
 
 p[data-pullquote] {
   display: block; }

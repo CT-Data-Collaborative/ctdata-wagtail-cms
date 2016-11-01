@@ -18,10 +18,12 @@
         </div>
     </div>
     <div class="row" id="main-content">
+        <div class="col-sm-12">
+            {{ self.body | richtext }}
+        </div>
         {% if self.sponsors %}
             <div class="col-sm-12">
-                <h4>Sponsored by:</h4>
-                <a href="http://www.hfpg.org"><img src="/static/images/hfpg.jpg" alt="Hartford Foundation for Public Giving"></a>
+                {% include "ctdata/includes/sponsors.html" with sponsors=self.sponsors.all only %}
             </div>
         {% endif %}
     </div>

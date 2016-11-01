@@ -31,13 +31,13 @@
     color: #36454F;
   }
 
-  #main-content h3 {
+  #main-content h2, h3 {
     text-align: center;
     color: #36454F;
     font-style: italic;
   }
 
-  #main-content h4 {
+  #main-content h4, p {
     margin-top: 2rem;
     color: #36454F;
     //text-align: center;
@@ -47,12 +47,12 @@
     font-size: 1rem;
   }
 
-  #main-content img {
-    max-width: 60%;
-    height: auto;
-    margin-left: 20%;
-    padding-top: 1rem;
-  }
+  //#main-content img {
+  //  max-width: 60%;
+  //  height: auto;
+  //  margin-left: 20%;
+  //  padding-top: 1rem;
+  //}
 
   #survey {
     max-width: 600px;
@@ -153,6 +153,28 @@
   #sponsors .sponsor-conf .btn:hover {
     color: #4670A7; }
 
+  .sponsor-list {
+    width: fit-content;
+    margin: auto;
+
+    li.sponsor {
+      list-style-type: none;
+      display: inline-block;
+      padding-left: 2rem;
+
+      a.sponsor-link {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      img.sponsor-image {
+        margin-left: 0 !important;
+      }
+      p > a {
+        color: #4670A7;
+      }
+    }
+  }
   .register-link {
     padding-top: 1rem;
     z-index: 999;
@@ -180,9 +202,9 @@
     font-weight: 600;
     font-size: 118%;
     }
-  .conference #main-content img {
-    max-width: 30%;
-    height: auto;
-    margin-left: 35%;
-  }
+  //.conference #main-content img {
+  //  max-width: 30%;
+  //  height: auto;
+  //  margin-left: 35%;
+  //}
 }

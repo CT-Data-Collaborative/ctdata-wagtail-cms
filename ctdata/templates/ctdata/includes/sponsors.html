@@ -1,0 +1,21 @@
+{% load wagtailimages_tags %}
+{% if sponsors %}
+    <div class="sponsors">
+        <h4>Sponsored by:</h4>
+        <ul class="sponsor-list">
+            {% for sponsor in sponsors %}
+                <li class="sponsor">
+                    {% if sponsor.image %}
+                        <a class="sponsor-link" href="{{ sponsor.link }}">
+                            {% image sponsor.image max-200x100 class="sponsor-image" %}
+                        </a>
+                    {% else %}
+                    <p>
+                        <a href="{{ sponsor.link }}">{{ sponsor.title }}</a>
+                    </p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

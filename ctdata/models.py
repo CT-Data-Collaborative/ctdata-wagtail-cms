@@ -301,6 +301,36 @@ class RelatedLink(LinkFields):
     class Meta:
         abstract = True
 
+
+
+################################################################################################
+########
+########
+########           Sponsor Link
+########
+########
+################################################################################################
+
+
+class SponsorLink(LinkFields):
+    title = models.CharField(max_length=255, help_text="Link title")
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    panels = [
+        FieldPanel('title'),
+        ImageChooserPanel('image'),
+        MultiFieldPanel(LinkFields.panels, "Link"),
+    ]
+
+    class Meta:
+        abstract = True
+
+
 ################################################################################################
 ########
 ########
@@ -1028,6 +1058,10 @@ ConferenceSession.content_panels = [
     InlinePanel('participants', label="Participants")
 ]
 
+class ConferenceSponsorLink(Orderable, SponsorLink):
+    page = ParentalKey('ctdata.ConferencePage', related_name='sponsors')
+
+
 
 class ConferencePage(EventPage):
     subpage_types = ['ctdata.ConferenceSession']
@@ -1071,6 +1105,7 @@ ConferencePage.content_panels = [
     InlinePanel('carousel_items', label="Carousel items"),
     FieldPanel('body', classname="full"),
     InlinePanel('related_links', label="Related links"),
+    InlinePanel('sponsors', label="Sponsors")
 ]
 
 ConferencePage.promote_panels = Page.promote_panels + [
