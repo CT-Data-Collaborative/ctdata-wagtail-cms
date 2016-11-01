@@ -539,7 +539,7 @@ class BlogIndexPageRelatedLink(Orderable, RelatedLink):
 
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
-
+    subpage_types = ['ctdata.BlogPage']
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
     ]
@@ -620,6 +620,7 @@ class BlogPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    parent_page_types = ['ctdata.BlogIndexPage']
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
@@ -808,10 +809,11 @@ class EventIndexPageRelatedLink(Orderable, RelatedLink):
 
 class EventIndexPage(Page):
     intro = RichTextField(blank=True)
-
+    subpage_types = ['ctdata.EventPage', 'ctdata.ConferenceSession']
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
     ]
+
 
     @property
     def events(self):
@@ -958,6 +960,123 @@ EventPage.content_panels = [
 EventPage.promote_panels = Page.promote_panels + [
     ImageChooserPanel('feed_image'),
 ]
+
+################################################################################################
+########
+########
+########            Conference page
+########
+########
+################################################################################################
+
+class ConferenceSessionParticipants(Orderable, LinkFields):
+    page = ParentalKey('ctdata.ConferenceSession', related_name='participants')
+    first_name = models.CharField("Name", max_length=255, blank=True)
+    last_name = models.CharField("Surname", max_length=255, blank=True)
+    title = models.CharField("Title", max_length=255, blank=True)
+
+    @property
+    def name_display(self):
+        return self.first_name + " " + self.last_name
+
+    panels = [
+        FieldPanel('first_name'),
+        FieldPanel('last_name'),
+        FieldPanel('title'),
+        MultiFieldPanel(LinkFields.panels, "Link"),
+    ]
+
+
+
+class ConferenceSession(Page):
+    conference = models.ForeignKey(
+        'ctdata.ConferencePage',
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name='sessions',
+        help_text="Leave blank if you want to add session to the parent conference."
+    )
+    session_title = models.CharField("Session Title", max_length=255, blank=True)
+    time_from = models.TimeField("Start time", null=True, blank=True)
+    time_to = models.TimeField("End time", null=True, blank=True)
+    description = RichTextField(blank=True)
+
+    @property
+    def parent_conference(self):
+        parent_conference = ConferencePage.objects.live().ancestor_of(self).first()
+        return parent_conference.title
+
+    @property
+    def name_display(self):
+        return self.session_title
+
+    def save(self, *args, **kwargs):
+        if not self.conference:
+            parent_conference = ConferencePage.objects.live().ancestor_of(self).first()
+            self.conference = parent_conference
+        if not self.title:
+            self.title = self.session_title
+        super(ConferenceSession, self).save(*args, **kwargs)
+
+ConferenceSession.content_panels = [
+    PageChooserPanel('conference', 'ctdata.ConferencePage'),
+    FieldPanel('session_title'),
+    FieldPanel('time_from'),
+    FieldPanel('time_to'),
+    FieldPanel('description', classname="full"),
+    InlinePanel('participants', label="Participants")
+]
+
+
+class ConferencePage(EventPage):
+    subpage_types = ['ctdata.ConferenceSession']
+
+    @property
+    def sessions(self):
+        # Get list of live event pages that are descendants of this page
+        sessions = ConferenceSession.objects.live().descendant_of(self)
+
+        # Order by date
+        sessions = sessions.order_by('time_from')
+
+        return sessions
+
+    def serve(self, request):
+        if "format" in request.GET:
+            if request.GET['format'] == 'ical':
+                # Export to ical format
+                response = HttpResponse(
+                    export_event(self, 'ical'),
+                    content_type='text/calendar',
+                )
+                response['Content-Disposition'] = 'attachment; filename=' + self.slug + '.ics'
+                return response
+            else:
+                # Unrecognised format error
+                message = 'Could not export event\n\nUnrecognised format: ' + request.GET['format']
+                return HttpResponse(message, content_type='text/plain')
+        else:
+            # Display event page as usual
+            return super(ConferencePage, self).serve(request)
+
+ConferencePage.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('date_from'),
+    FieldPanel('date_to'),
+    FieldPanel('time_from'),
+    FieldPanel('time_to'),
+    FieldPanel('location'),
+    FieldPanel('signup_link'),
+    InlinePanel('carousel_items', label="Carousel items"),
+    FieldPanel('body', classname="full"),
+    InlinePanel('related_links', label="Related links"),
+]
+
+ConferencePage.promote_panels = Page.promote_panels + [
+    ImageChooserPanel('feed_image'),
+]
+
 
 
 ################################################################################################

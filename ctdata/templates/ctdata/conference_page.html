@@ -1,0 +1,71 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags %}
+
+
+{% block centered_content %}
+<div class="conference">
+    <div class="row" id="details">
+        <div class="col-sm-6">
+            <h5>when</h5>
+            <h1>{{ self.date_from }}{% if self.date_to %} to {{ self.date_to }}{% endif %}</h1>
+            <h3>{% if self.time_from %}{{ self.time_from|time }}{% endif %}{% if self.time_to %} to {{ self.time_to|time }}{% endif %}</h3>
+        </div>
+        <div class="col-sm-6">
+            {% if self.location %}
+                <h5>where</h5>
+                <h1>{{ self.location }}</h1>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row" id="main-content">
+        {% if self.sponsors %}
+            <div class="col-sm-12">
+                <h4>Sponsored by:</h4>
+                <a href="http://www.hfpg.org"><img src="/static/images/hfpg.jpg" alt="Hartford Foundation for Public Giving"></a>
+            </div>
+        {% endif %}
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12">
+            {% if self.signup_link %}
+                <div class="register-link">
+                    <a class="btn btn-lg" href="{{ self.signup_link }}">Register Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+    <div class="row" id="schedule">
+        <div class="col-xs-10 offset-xs-1">
+            <h1>Conference Schedule</h1>
+            <table>
+                <tbody>
+                {% for session in self.sessions.all  %}
+                <tr class="timeslot">
+                    <td class="schedule time">{{ session.time_from }} - {{ session.time_to }}</td>
+                    <td class="schedule title">
+                        <h3>{{ session.session_title }}</h3>
+                        {% if session.description %}<div>{{ session.description | richtext }}</div>{% else %}{% endif %}
+                    </td>
+                    <td class="schedule participants">
+                        <ul class="participant-list">
+                            {% if session.participants %}
+                                {% for participant in session.participants.all %}
+                                    <li class="participant">
+                                        {{ participant.name_display }}{% if participant.title %}, {{ participant.title }}{%  else %}{% endif %}
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                            <li class="participant solo">TBD</li>
+                            {% endif %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
