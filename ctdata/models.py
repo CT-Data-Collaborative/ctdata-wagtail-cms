@@ -809,7 +809,7 @@ class EventIndexPageRelatedLink(Orderable, RelatedLink):
 
 class EventIndexPage(Page):
     intro = RichTextField(blank=True)
-    subpage_types = ['ctdata.EventPage', 'ctdata.ConferenceSession']
+    subpage_types = ['ctdata.EventPage', 'ctdata.ConferencePage']
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
     ]
