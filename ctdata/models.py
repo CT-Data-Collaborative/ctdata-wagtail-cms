@@ -3,6 +3,8 @@ from datetime import date
 from django.db import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
+from django.utils.text import slugify
+
 from django import forms
 
 from wagtail.wagtailcore.models import Page, Orderable
@@ -1027,7 +1029,6 @@ class ConferenceSession(Page):
         related_name='sessions',
         help_text="Leave blank if you want to add session to the parent conference."
     )
-    session_title = models.CharField("Session Title", max_length=255, blank=True)
     time_from = models.TimeField("Start time", null=True, blank=True)
     time_to = models.TimeField("End time", null=True, blank=True)
     description = RichTextField(blank=True)
@@ -1045,13 +1046,11 @@ class ConferenceSession(Page):
         if not self.conference:
             parent_conference = ConferencePage.objects.live().ancestor_of(self).first()
             self.conference = parent_conference
-        if not self.title:
-            self.title = self.session_title
         super(ConferenceSession, self).save(*args, **kwargs)
 
 ConferenceSession.content_panels = [
     PageChooserPanel('conference', 'ctdata.ConferencePage'),
-    FieldPanel('session_title'),
+    FieldPanel('title'),
     FieldPanel('time_from'),
     FieldPanel('time_to'),
     FieldPanel('description', classname="full"),

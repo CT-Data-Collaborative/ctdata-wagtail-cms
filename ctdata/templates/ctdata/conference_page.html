@@ -47,7 +47,7 @@
                 <tr class="timeslot">
                     <td class="schedule time">{{ session.time_from }} - {{ session.time_to }}</td>
                     <td class="schedule title">
-                        <h3>{{ session.session_title }}</h3>
+                        <h3>{{ session.title }}</h3>
                         {% if session.description %}<div>{{ session.description | richtext }}</div>{% else %}{% endif %}
                     </td>
                     <td class="schedule participants">
