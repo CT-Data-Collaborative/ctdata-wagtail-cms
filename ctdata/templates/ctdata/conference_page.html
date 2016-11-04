@@ -43,7 +43,7 @@
             <h1>Conference Schedule</h1>
             <table>
                 <tbody>
-                {% for session in self.sessions.all  %}
+                {% for session in self.sessions.all|dictsort:"time_from"  %}
                 <tr class="timeslot">
                     <td class="schedule time">{{ session.time_from }} - {{ session.time_to }}</td>
                     <td class="schedule title">

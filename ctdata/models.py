@@ -1019,7 +1019,7 @@ class ConferenceSessionParticipants(Orderable, LinkFields):
     ]
 
 
-
+# TODO FIX SORT ORDER
 class ConferenceSession(Page):
     conference = models.ForeignKey(
         'ctdata.ConferencePage',
@@ -1069,9 +1069,6 @@ class ConferencePage(EventPage):
     def sessions(self):
         # Get list of live event pages that are descendants of this page
         sessions = ConferenceSession.objects.live().descendant_of(self)
-
-        # Order by date
-        sessions = sessions.order_by('time_from')
 
         return sessions
 
