@@ -18,11 +18,14 @@
         </div>
     </div>
     <div class="row" id="main-content">
-        {% if self.body %}
+        {% with count=self.body|wordcount %}
+        {% if count > 0 %}
             <div class="col-sm-12">
                 {{ self.body | richtext }}
             </div>
         {% endif %}
+        {% endwith %}
+
         {% if self.sponsors %}
             <div class="col-sm-12">
                 {% include "ctdata/includes/sponsors.html" with sponsors=self.sponsors.all only %}
