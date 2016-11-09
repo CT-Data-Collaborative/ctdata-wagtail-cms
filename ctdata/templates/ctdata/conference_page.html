@@ -18,9 +18,11 @@
         </div>
     </div>
     <div class="row" id="main-content">
-        <div class="col-sm-12">
-            {{ self.body | richtext }}
-        </div>
+        {% if self.body %}
+            <div class="col-sm-12">
+                {{ self.body | richtext }}
+            </div>
+        {% endif %}
         {% if self.sponsors %}
             <div class="col-sm-12">
                 {% include "ctdata/includes/sponsors.html" with sponsors=self.sponsors.all only %}
