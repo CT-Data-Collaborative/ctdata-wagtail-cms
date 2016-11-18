@@ -1161,3 +1161,34 @@ class SocialMediaSettings(BaseSetting):
 
     class Meta:
         verbose_name = 'social media accounts'
+
+
+################################################################################################
+########
+########
+########            Data Academy Models
+########
+########
+################################################################################################
+
+class DataAcademyPage(Page):
+    parent_page_types = ['HomePage']
+    subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex']
+
+
+class DataAcademyEventIndex(Page):
+    parent_page_types = ['DataAcademyPage']
+    subpage_types = ['DataAcademyEvent']
+
+
+class DataAcademyResourceIndex(Page):
+    parent_page_types = ['DataAcademyPage']
+    subpage_types = ['DataAcademyResource']
+
+
+class DataAcademyEvent(Page):
+    parent_page_types = ['DataAcademyEventIndex']
+
+
+class DataAcademyResource(Page):
+    parent_page_types = ['DataAcademyResourceIndex']
