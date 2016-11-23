@@ -1227,7 +1227,8 @@ AcademyEventPanels = [
     FieldPanel('date_from'),
     FieldPanel('date_to'),
     FieldPanel('time_from'),
-    FieldPanel('time_to')
+    FieldPanel('time_to'),
+    FieldPanel('create_eventbrite')
     ]
 
 class DataAcademyAbstractEvent(Page):
@@ -1243,8 +1244,10 @@ class DataAcademyAbstractEvent(Page):
     )
     time_from = models.TimeField("Start time", null=True, blank=True)
     time_to = models.TimeField("End time", null=True, blank=True)
+    create_eventbrite = models.BooleanField(default=False, blank=False)
     signup_link = models.URLField(blank=True)
     body = RichTextField(blank=True)
+# TODO add custom save function that tries to create an eventbrite event and then populates the signup link
 
 DataAcademyAbstractEvent.content_panels = AcademyEventPanels
 
@@ -1277,6 +1280,18 @@ DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + 
 ]
 
 class DataAcademyResource(Page):
+    parent_page_types = ['DataAcademyResourceIndex']
+
+class MediaResource(DataAcademyResource):
+    parent_page_types = ['DataAcademyResourceIndex']
+
+class TutorialResource(DataAcademyResource):
+    parent_page_types = ['DataAcademyResourceIndex']
+
+class FileResource(DataAcademyResource):
+    parent_page_types = ['DataAcademyResourceIndex']
+
+class TopicGuideResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
 
 
