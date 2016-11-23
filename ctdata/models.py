@@ -4,6 +4,7 @@ from django.db import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.utils.text import slugify
+from django.conf import settings
 
 from django import forms
 
@@ -30,6 +31,9 @@ from taggit.models import TaggedItemBase
 from ctdata.utils import export_event
 
 from fontawesome.fields import IconField
+
+from eventbrite import Eventbrite
+import datetime
 
 CHART_TYPE_CHOICES = (
     ('hbar', "Horizontal Bar"),
@@ -1251,12 +1255,30 @@ class DataAcademyAbstractEvent(Page):
         blank=True,
         help_text="Not required if event is on a single day"
     )
-    time_from = models.TimeField("Start time", null=True, blank=True)
-    time_to = models.TimeField("End time", null=True, blank=True)
+    time_from = models.TimeField("Start time", null=True, blank=False)
+    time_to = models.TimeField("End time", null=True, blank=False)
     create_eventbrite = models.BooleanField(default=False, blank=False)
+    publish_eventbrite = models.BooleanField(default=False, blank=False)
+    eventbrite_event_id = models.CharField(max_length=50)
     signup_link = models.URLField(blank=True)
+    size_limit = models.IntegerField(blank=True, null=True)
     body = RichTextField(blank=True)
-# TODO add custom save function that tries to create an eventbrite event and then populates the signup link
+
+    @property
+    def start(self):
+        return datetime.datetime.combine(self.date_from, self.time_from)
+
+    @property
+    def start_str(self):
+        return self.start.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    @property
+    def end(self):
+        return datetime.datetime.combine(self.date_from, self.time_from)
+
+    @property
+    def end_str(self):
+        return self.end.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def serve(self, request):
         if "format" in request.GET:
@@ -1286,6 +1308,32 @@ class DataAcademyWebEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     event_link = models.URLField(blank=True, help_text="Link to web conference page or archived webcast.")
 
+    def save(self, *args, **kwargs):
+        if self.publish_eventbrite:
+            current_site = self.get_parent().get_site()
+            oauth = EventBriteSettings.for_site(current_site).eventbrite
+            eventbrite = Eventbrite(oauth)
+            event_data = {
+                'event.name': {
+                    'html': self.title,
+                },
+                'event.start': {
+                    'utc': self.start_str,
+                    'timezone': 'America/New_York',
+                },
+                'event.end': {
+                    'utc': self.end_str,
+                    'timezone': 'America/New_York',
+                },
+                'event.currency': 'USD',
+                'event.online_event': True,
+                'event.listed': False
+            }
+            event = eventbrite.post_event(event_data)
+            self.eventbrite_event_id = event['id']
+            self.signup_link = event['url']
+        super(DataAcademyWebEvent, self).save(*args, **kwargs)  # Call the "real" save() method.
+
 DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('event_link'),
     FieldPanel('body', classname="full"),
@@ -1297,7 +1345,33 @@ DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
 class DataAcademyLiveEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     location = models.CharField(max_length=255)
-    size_limit = models.IntegerField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.publish_eventbrite:
+            current_site = self.get_parent().get_site()
+            oauth = EventBriteSettings.for_site(current_site).eventbrite
+            eventbrite = Eventbrite(oauth)
+            event_data = {
+                'event.name': {
+                    'html': self.title,
+                },
+                'event.start': {
+                    'utc': self.start_str,
+                    'timezone': 'America/New_York',
+                },
+                'event.end': {
+                    'utc': self.end_str,
+                    'timezone': 'America/New_York',
+                },
+                'event.currency': 'USD',
+                'event.online_event': False,
+                'event.listed': False,
+                'event.capacity': self.size_limit,
+            }
+            event = eventbrite.post_event(event_data)
+            self.eventbrite_event_id = event['id']
+            self.signup_link = event['url']
+        super(DataAcademyLiveEvent, self).save(*args, **kwargs)  # Call the "real" save() method.
 
 DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('location'),

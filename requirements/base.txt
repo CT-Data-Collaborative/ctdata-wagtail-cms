@@ -51,3 +51,6 @@ celery==3.1.23
 wagtail==1.6
 django-compressor>=1.4
 -e git+https://github.com/scuerda/django-fontawesome.git@f554fd415ad9906cbdc2ed6a7479b1c5db8a5974#egg=fontawesome
+
+#eventbrite
+eventbrite==3.3.3
