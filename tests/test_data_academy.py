@@ -1,22 +1,28 @@
-from wagtail.tests.utils import WagtailPageTests
+import pytest
+from pytest_wagtail import assertAllowedSubpageTypes, assertAllowedParentPageTypes, assertCanCreateAt
 from ctdata.models import ConferencePage, ConferenceSession, HomePage, DataAcademyPage, DataAcademyEventIndex, \
-    DataAcademyResourceIndex, DataAcademyEvent, DataAcademyResource
+    DataAcademyResourceIndex, DataAcademyAbstractEvent, DataAcademyLiveEvent, DataAcademyWebEvent, DataAcademyResource, \
+    DataAcademyCollection
+import datetime
 
-class ConferencePageTests(WagtailPageTests):
-    def test_can_create_session_under_conference(self):
-        self.assertCanCreateAt(ConferencePage, ConferenceSession)
+def test_can_create_session_under_conference():
+    assertCanCreateAt(ConferencePage, ConferenceSession)
 
+def test_academy_allowable_parent_and_subpages():
+    assertAllowedParentPageTypes(DataAcademyPage, {HomePage})
+    assertAllowedSubpageTypes(DataAcademyPage, {DataAcademyEventIndex, DataAcademyResourceIndex, DataAcademyCollection})
 
-class DataAcademyPageTests(WagtailPageTests):
+def test_academy_event_index():
+    assertAllowedParentPageTypes(DataAcademyEventIndex, {DataAcademyPage})
+    assertAllowedSubpageTypes(DataAcademyEventIndex, {DataAcademyWebEvent, DataAcademyLiveEvent})
 
-    def test_academy_allowable_parent_and_subpages(self):
-        self.assertAllowedParentPageTypes(DataAcademyPage, {HomePage})
-        self.assertAllowedSubpageTypes(DataAcademyPage, {DataAcademyEventIndex, DataAcademyResourceIndex})
+def test_academy_abstract_event():
+    assertAllowedParentPageTypes(DataAcademyAbstractEvent, {})
+    assertAllowedSubpageTypes(DataAcademyAbstractEvent, {})
 
-    def test_academy_event_index(self):
-        self.assertAllowedParentPageTypes(DataAcademyEventIndex, {DataAcademyPage})
-        self.assertAllowedSubpageTypes(DataAcademyEventIndex, {DataAcademyEvent})
+def test_academy_resource_index():
+    assertAllowedParentPageTypes(DataAcademyResourceIndex, {DataAcademyPage})
+    assertAllowedSubpageTypes(DataAcademyResourceIndex, {DataAcademyResource})
 
-    def test_academy_resource_index(self):
-        self.assertAllowedParentPageTypes(DataAcademyResourceIndex, {DataAcademyPage})
-        self.assertAllowedSubpageTypes(DataAcademyResourceIndex, {DataAcademyResource})
+def test_academy_collections():
+    assertAllowedParentPageTypes(DataAcademyCollection, {DataAcademyPage})

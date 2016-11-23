@@ -75,3 +75,5 @@ tests/.hitch
 *.env
 backup/
 env.example
+
+.cache/

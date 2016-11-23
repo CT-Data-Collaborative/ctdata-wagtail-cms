@@ -1171,24 +1171,114 @@ class SocialMediaSettings(BaseSetting):
 ########
 ################################################################################################
 
+class RelatedResource(LinkFields):
+    title = models.CharField(max_length=255, help_text="Link title")
+    description = models.CharField(max_length=500, help_text="Description", blank=True)
+    related_resource = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    panels = [
+        FieldPanel('title'),
+        FieldPanel('description'),
+        PageChooserPanel('related_resource', 'ctdata.DataAcademyResource')
+    ]
+
+    class Meta:
+        abstract = True
+
+
+
+
 class DataAcademyPage(Page):
     parent_page_types = ['HomePage']
-    subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex']
+    subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex', 'DataAcademyCollection']
 
 
 class DataAcademyEventIndex(Page):
+    """Page type for event index. This will also be """
     parent_page_types = ['DataAcademyPage']
-    subpage_types = ['DataAcademyEvent']
+    subpage_types = ['DataAcademyWebEvent', 'DataAcademyLiveEvent']
 
+DataAcademyEventIndex.content_panels = [
+    FieldPanel('title')
+    ]
 
 class DataAcademyResourceIndex(Page):
     parent_page_types = ['DataAcademyPage']
     subpage_types = ['DataAcademyResource']
 
+DataAcademyResourceIndex.content_panels = [
+    FieldPanel('title')
+    ]
 
-class DataAcademyEvent(Page):
+
+class AcademyEventRelatedLink(Orderable, RelatedResource):
+    page = ParentalKey('ctdata.DataAcademyAbstractEvent', related_name='related_resources')
+
+class AcademyEventTag(TaggedItemBase):
+    content_object = ParentalKey('ctdata.DataAcademyAbstractEvent', related_name='tagged_items')
+
+AcademyEventPanels = [
+    FieldPanel('title'),
+    FieldPanel('date_from'),
+    FieldPanel('date_to'),
+    FieldPanel('time_from'),
+    FieldPanel('time_to')
+    ]
+
+class DataAcademyAbstractEvent(Page):
+    parent_page_types = []
+    subpage_types = []
+    tags = ClusterTaggableManager(through=AcademyEventTag, blank=True)
+    date_from = models.DateField("Start date")
+    date_to = models.DateField(
+        "End date",
+        null=True,
+        blank=True,
+        help_text="Not required if event is on a single day"
+    )
+    time_from = models.TimeField("Start time", null=True, blank=True)
+    time_to = models.TimeField("End time", null=True, blank=True)
+    signup_link = models.URLField(blank=True)
+    body = RichTextField(blank=True)
+
+DataAcademyAbstractEvent.content_panels = AcademyEventPanels
+
+DataAcademyAbstractEvent.promote_panels = Page.promote_panels + [
+    FieldPanel('tags'),
+]
+
+class DataAcademyWebEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
+    event_link = models.URLField(blank=True, help_text="Link to web conference page or archived webcast.")
 
+DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
+    FieldPanel('event_link'),
+    FieldPanel('body', classname="full"),
+    InlinePanel('related_resources', label="Related Resources")
+]
+
+
+
+class DataAcademyLiveEvent(DataAcademyAbstractEvent):
+    parent_page_types = ['DataAcademyEventIndex']
+    location = models.CharField(max_length=255)
+    size_limit = models.IntegerField(blank=True, null=True)
+
+DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
+    FieldPanel('location'),
+    FieldPanel('size_limit'),
+    FieldPanel('body', classname="full"),
+    InlinePanel('related_resources', label="Related Resources")
+]
 
 class DataAcademyResource(Page):
     parent_page_types = ['DataAcademyResourceIndex']
+
+
+class DataAcademyCollection(Page):
+    parent_page_types = ['DataAcademyPage']
