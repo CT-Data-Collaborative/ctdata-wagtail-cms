@@ -1162,6 +1162,15 @@ class SocialMediaSettings(BaseSetting):
     class Meta:
         verbose_name = 'social media accounts'
 
+@register_setting(icon="placeholder")
+class EventBriteSettings(BaseSetting):
+    eventbrite = models.CharField(
+        max_length=20,
+        help_text='Your eventbrite personal oauth token'
+    )
+
+    class Meta:
+        verbose_name = 'eventbrite settings'
 
 ################################################################################################
 ########
@@ -1249,6 +1258,24 @@ class DataAcademyAbstractEvent(Page):
     body = RichTextField(blank=True)
 # TODO add custom save function that tries to create an eventbrite event and then populates the signup link
 
+    def serve(self, request):
+        if "format" in request.GET:
+            if request.GET['format'] == 'ical':
+                # Export to ical format
+                response = HttpResponse(
+                    export_event(self, 'ical'),
+                    content_type='text/calendar',
+                )
+                response['Content-Disposition'] = 'attachment; filename=' + self.slug + '.ics'
+                return response
+            else:
+                # Unrecognised format error
+                message = 'Could not export event\n\nUnrecognised format: ' + request.GET['format']
+                return HttpResponse(message, content_type='text/plain')
+        else:
+            # Display event page as usual
+            return super(DataAcademyAbstractEvent, self).serve(request)
+
 DataAcademyAbstractEvent.content_panels = AcademyEventPanels
 
 DataAcademyAbstractEvent.promote_panels = Page.promote_panels + [
@@ -1279,23 +1306,35 @@ DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + 
     InlinePanel('related_resources', label="Related Resources")
 ]
 
+AcademyResourcePanels = [
+    FieldPanel('title'),
+    StreamFieldPanel('body')
+    ]
+
+
 class DataAcademyResource(Page):
     parent_page_types = ['DataAcademyResourceIndex']
+    body = StreamField(CTDataStreamBlock())
 
     @property
     def related_events(self):
         events = DataAcademyAbstractEvent.objects.filter(related_reources__page=self)
         return events
 
+DataAcademyResource.content_panels = AcademyResourcePanels
+
 
 class MediaResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
 
+
 class TutorialResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
 
+
 class FileResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
+
 
 class TopicGuideResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
