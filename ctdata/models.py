@@ -1282,6 +1282,12 @@ DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + 
 class DataAcademyResource(Page):
     parent_page_types = ['DataAcademyResourceIndex']
 
+    @property
+    def related_events(self):
+        events = DataAcademyAbstractEvent.objects.filter(related_reources__page=self)
+        return events
+
+
 class MediaResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
 
