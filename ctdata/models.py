@@ -7,6 +7,8 @@ from django.utils.text import slugify
 from django.conf import settings
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404, render
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django import forms
 
 from wagtail.wagtailcore.models import Page, Orderable
@@ -1395,10 +1397,6 @@ def create_or_update_eventbrite_event(eventpage):
         event = _update_event(eventpage)
     return event
 
-def delete_eventbrite_event(eventpage):
-    eventbrite = _get_eventbrite(eventpage)
-    eventbrite.delete('/events/{0}/'.format(eventpage.eventbrite_event_id))
-
 
 ################################################################################################
 ########
@@ -1498,11 +1496,6 @@ class DataAcademyWebEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     event_link = models.URLField(blank=True, help_text="Link to web conference page or archived webcast.")
 
-    def delete(self, *args, **kwargs):
-        delete_eventbrite_event(self)
-        super(DataAcademyWebEvent,self).delete(*args, **kwargs)
-
-
 DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('event_link'),
     FieldPanel('body', classname="full"),
@@ -1514,18 +1507,18 @@ class DataAcademyLiveEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     location = models.CharField(max_length=255)
 
-    def delete(self, *args, **kwargs):
-        delete_eventbrite_event(self)
-        raise NotImplemented
-        super(DataAcademyLiveEvent,self).delete(*args, **kwargs)
-
-
 DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('location'),
     FieldPanel('size_limit'),
     FieldPanel('body', classname="full"),
     InlinePanel('related_resources', label="Related Resources")
 ]
+
+
+@receiver(pre_delete, sender=DataAcademyAbstractEvent)
+def delete_eventbrite_event(sender, instance, **kwargs):
+    eventbrite = _get_eventbrite(instance)
+    eventbrite.delete('/events/{0}/'.format(instance.eventbrite_event_id))
 
 
 ################################################################################################
