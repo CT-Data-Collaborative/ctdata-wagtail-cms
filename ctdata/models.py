@@ -5,7 +5,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.conf import settings
-
+from django.template.response import TemplateResponse
+from django.shortcuts import get_object_or_404, render
 from django import forms
 
 from wagtail.wagtailcore.models import Page, Orderable
@@ -1232,16 +1233,63 @@ class DataAcademyPage(Page):
     subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex', 'DataAcademyCollection']
 
 
-class DataAcademyEventIndex(Page):
+class DataAcademyEventIndex(RoutablePageMixin, Page):
     """Page type for event index. This will also be """
     parent_page_types = ['DataAcademyPage']
     subpage_types = ['DataAcademyWebEvent', 'DataAcademyLiveEvent']
+
+    @property
+    def events(self):
+        # Get list of live event pages that are descendants of this page
+        events = DataAcademyAbstractEvent.objects.live().descendant_of(self)
+
+        # Filter events list to get ones that are either
+        # running now or start in the future
+        events = events.filter(date_from__gte=date.today())
+
+        # Order by date
+        events = events.order_by('date_from')
+
+        return events
+
+    @property
+    def past_events(self):
+        # Get a list of past events
+        past_events = DataAcademyAbstractEvent.objects.live().descendant_of(self)
+
+        # Filter events list to get ones that are either
+        # running now or start in the future
+        past_events = past_events.filter(date_from__lt=date.today())
+
+        # Order by date
+        past_events = past_events.order_by('date_from')
+
+        return past_events
+
+
+    @route(r'^$')
+    def base(self, request):
+        return TemplateResponse(
+            request,
+            self.get_template(request),
+            self.get_context(request)
+        )
+
+    @route(r'^past/$')
+    def archive(self, request):
+        return render(
+            request,
+            'ctdata/data_academy_event_archive.html', {
+                'past': self.past_events,
+                'page': self,
+            }
+        )
 
 DataAcademyEventIndex.content_panels = [
     FieldPanel('title')
     ]
 
-class DataAcademyResourceIndex(Page):
+class DataAcademyResourceIndex(RoutablePageMixin, Page):
     parent_page_types = ['DataAcademyPage']
     subpage_types = ['DataAcademyResource']
 

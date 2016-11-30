@@ -1,0 +1,27 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags %}
+
+
+{% block centered_content %}
+    <div class="row">
+        <div class="col-md-12 col-lg-6 offset-lg-2">
+            {% include "ctdata/includes/intro.html" with intro=self.intro only %}
+
+            {# Uses method defined in models.py to retrieve all upcoming events #}
+            {# See also standard index for creating a listing with a tag #}
+            {% with self.past.all as past_events %}
+                <h2>Past Events</h2>
+                {% if past_events %}
+                    <div class="list-group">
+                        {% for event in past_events %}
+                            {% include "ctdata/includes/event_list_item.html" %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No events currently scheduled</p>
+                {% endif %}
+            {% endwith %}
+            {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
+        </div>
+    </div>
+{% endblock %}
