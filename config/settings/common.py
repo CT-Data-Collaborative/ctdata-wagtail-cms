@@ -58,6 +58,8 @@ WAGTAIL_APPS = (
     'wagtail.wagtailadmin',
     'wagtail.wagtailcore',
     'wagtail.contrib.settings',
+    'wagtail.contrib.modeladmin',
+    'wagtail.contrib.table_block',
     'modelcluster',
     'taggit',
     'compressor'

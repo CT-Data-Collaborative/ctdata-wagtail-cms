@@ -19,6 +19,7 @@ from wagtail.wagtailforms.models import AbstractEmailForm, AbstractFormField
 from wagtail.wagtailsearch import index
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
 
 from wagtail.wagtailcore.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, IntegerBlock
 from wagtail.wagtailimages.blocks import ImageChooserBlock
@@ -26,12 +27,10 @@ from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
-from taggit.models import TaggedItemBase
+from taggit.models import TaggedItemBase, TagBase, GenericTaggedItemBase, ItemBase
 
 from ctdata.utils import export_event
-
 from fontawesome.fields import IconField
-
 from eventbrite import Eventbrite
 import datetime
 
@@ -1184,6 +1183,30 @@ class EventBriteSettings(BaseSetting):
 ########
 ################################################################################################
 
+################################################################################################
+########
+########            Data Academy Tags and Tag Indices
+########
+################################################################################################
+#
+class DataAcademyTag(TagBase):
+    description = StreamField(CTDataStreamBlock(), blank=True)
+    panels = [
+        FieldPanel('name'),
+        StreamFieldPanel('description')
+    ]
+    class Meta:
+        verbose_name = "Academy Tag"
+        verbose_name_plural = "Academy Tags"
+
+
+################################################################################################
+########
+########            Data Academy Indices and Main Pages
+########
+################################################################################################
+
+
 class RelatedResource(LinkFields):
     title = models.CharField(max_length=255, help_text="Link title")
     description = models.CharField(max_length=500, help_text="Description", blank=True)
@@ -1202,8 +1225,6 @@ class RelatedResource(LinkFields):
 
     class Meta:
         abstract = True
-
-
 
 
 class DataAcademyPage(Page):
@@ -1228,20 +1249,111 @@ DataAcademyResourceIndex.content_panels = [
     FieldPanel('title')
     ]
 
+################################################################################################
+########
+########            Data Academy Eventbrite Functions
+########
+################################################################################################
+
+
+def _get_eventbrite(eventpage):
+    current_site = eventpage.get_parent().get_site()
+    oauth = EventBriteSettings.for_site(current_site).eventbrite
+    return Eventbrite(oauth)
+
+def _create_event(eventpage):
+    # TODO Create tickets
+    # TODO Fix bug with start and end times not being correct
+    eventbrite = _get_eventbrite(eventpage)
+    if isinstance(eventpage, DataAcademyWebEvent):
+        type = 'web'
+    if isinstance(eventpage, DataAcademyLiveEvent):
+        type = 'live'
+    event_data = {
+        'event.name': {
+            'html': eventpage.title
+        },
+        'event.description': {
+            'html': eventpage.body,
+        },
+        'event.start': {
+            'utc': eventpage.start_str,
+            'timezone': 'America/New_York',
+        },
+        'event.end': {
+            'utc': eventpage.end_str,
+            'timezone': 'America/New_York',
+        },
+        'event.currency': 'USD',
+        'event.online_event': False,
+        'event.listed': False,
+        'event.capacity': eventpage.size_limit,
+    }
+    event = eventbrite.post_event(event_data)
+    return event
+
+def _update_event(eventpage):
+    eventbrite = _get_eventbrite(eventpage)
+    event = eventbrite.get_event(eventpage.eventbrite_event_id)
+    event_data = {
+        'event.name': {
+            'html': eventpage.title
+        },
+        'event.description': {
+            'html': eventpage.body,
+        },
+        'event.start': {
+            'utc': eventpage.start_str,
+            'timezone': 'America/New_York',
+        },
+        'event.end': {
+            'utc': eventpage.end_str,
+            'timezone': 'America/New_York',
+        },
+        'event.currency': 'USD',
+        'event.online_event': False,
+        'event.listed': False,
+        'event.capacity': eventpage.size_limit,
+    }
+    updated_event = eventbrite.post("/events/{0}/".format(event['id']), data=event_data)
+    return updated_event
+
+def create_or_update_eventbrite_event(eventpage):
+    if eventpage.eventbrite_event_id is None:
+        event = _create_event(eventpage)
+    else:
+        event = _update_event(eventpage)
+    return event
+
+def delete_eventbrite_event(eventpage):
+    eventbrite = _get_eventbrite(eventpage)
+    eventbrite.delete('/events/{0}/'.format(eventpage.eventbrite_event_id))
+
+
+################################################################################################
+########
+########            Data Academy Events
+########
+################################################################################################
 
 class AcademyEventRelatedLink(Orderable, RelatedResource):
     page = ParentalKey('ctdata.DataAcademyAbstractEvent', related_name='related_resources')
 
-class AcademyEventTag(TaggedItemBase):
+class AcademyEventTag(ItemBase):
+    tag = models.ForeignKey(DataAcademyTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
     content_object = ParentalKey('ctdata.DataAcademyAbstractEvent', related_name='tagged_items')
 
 AcademyEventPanels = [
     FieldPanel('title'),
-    FieldPanel('date_from'),
-    FieldPanel('date_to'),
-    FieldPanel('time_from'),
-    FieldPanel('time_to'),
-    FieldPanel('create_eventbrite')
+    FieldRowPanel([
+        FieldPanel('date_from'),
+        FieldPanel('time_from'),
+        FieldPanel('date_to'),
+        FieldPanel('time_to')]),
+    FieldRowPanel([
+        FieldPanel('create_eventbrite'),
+        FieldPanel('publish_eventbrite')
+    ])
     ]
 
 class DataAcademyAbstractEvent(Page):
@@ -1259,7 +1371,7 @@ class DataAcademyAbstractEvent(Page):
     time_to = models.TimeField("End time", null=True, blank=False)
     create_eventbrite = models.BooleanField(default=False, blank=False)
     publish_eventbrite = models.BooleanField(default=False, blank=False)
-    eventbrite_event_id = models.CharField(max_length=50)
+    eventbrite_event_id = models.CharField(max_length=50, null=True, default=None)
     signup_link = models.URLField(blank=True)
     size_limit = models.IntegerField(blank=True, null=True)
     body = RichTextField(blank=True)
@@ -1270,7 +1382,7 @@ class DataAcademyAbstractEvent(Page):
 
     @property
     def start_str(self):
-        return self.start.strftime("%Y-%m-%dT%H:%M:%SZ")
+        return self.start.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     @property
     def end(self):
@@ -1278,7 +1390,7 @@ class DataAcademyAbstractEvent(Page):
 
     @property
     def end_str(self):
-        return self.end.strftime("%Y-%m-%dT%H:%M:%SZ")
+        return self.end.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def serve(self, request):
         if "format" in request.GET:
@@ -1298,6 +1410,14 @@ class DataAcademyAbstractEvent(Page):
             # Display event page as usual
             return super(DataAcademyAbstractEvent, self).serve(request)
 
+    def save(self, *args, **kwargs):
+        if self.create_eventbrite:
+            event = create_or_update_eventbrite_event(self)
+            self.eventbrite_event_id = event['id']
+            self.signup_link = event['url']
+        super(DataAcademyAbstractEvent, self).save(*args, **kwargs)  # Call the "real" save() method.
+
+
 DataAcademyAbstractEvent.content_panels = AcademyEventPanels
 
 DataAcademyAbstractEvent.promote_panels = Page.promote_panels + [
@@ -1308,31 +1428,10 @@ class DataAcademyWebEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     event_link = models.URLField(blank=True, help_text="Link to web conference page or archived webcast.")
 
-    def save(self, *args, **kwargs):
-        if self.publish_eventbrite:
-            current_site = self.get_parent().get_site()
-            oauth = EventBriteSettings.for_site(current_site).eventbrite
-            eventbrite = Eventbrite(oauth)
-            event_data = {
-                'event.name': {
-                    'html': self.title,
-                },
-                'event.start': {
-                    'utc': self.start_str,
-                    'timezone': 'America/New_York',
-                },
-                'event.end': {
-                    'utc': self.end_str,
-                    'timezone': 'America/New_York',
-                },
-                'event.currency': 'USD',
-                'event.online_event': True,
-                'event.listed': False
-            }
-            event = eventbrite.post_event(event_data)
-            self.eventbrite_event_id = event['id']
-            self.signup_link = event['url']
-        super(DataAcademyWebEvent, self).save(*args, **kwargs)  # Call the "real" save() method.
+    def delete(self, *args, **kwargs):
+        delete_eventbrite_event(self)
+        super(DataAcademyWebEvent,self).delete(*args, **kwargs)
+
 
 DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('event_link'),
@@ -1341,37 +1440,15 @@ DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
 ]
 
 
-
 class DataAcademyLiveEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     location = models.CharField(max_length=255)
 
-    def save(self, *args, **kwargs):
-        if self.publish_eventbrite:
-            current_site = self.get_parent().get_site()
-            oauth = EventBriteSettings.for_site(current_site).eventbrite
-            eventbrite = Eventbrite(oauth)
-            event_data = {
-                'event.name': {
-                    'html': self.title,
-                },
-                'event.start': {
-                    'utc': self.start_str,
-                    'timezone': 'America/New_York',
-                },
-                'event.end': {
-                    'utc': self.end_str,
-                    'timezone': 'America/New_York',
-                },
-                'event.currency': 'USD',
-                'event.online_event': False,
-                'event.listed': False,
-                'event.capacity': self.size_limit,
-            }
-            event = eventbrite.post_event(event_data)
-            self.eventbrite_event_id = event['id']
-            self.signup_link = event['url']
-        super(DataAcademyLiveEvent, self).save(*args, **kwargs)  # Call the "real" save() method.
+    def delete(self, *args, **kwargs):
+        delete_eventbrite_event(self)
+        raise NotImplemented
+        super(DataAcademyLiveEvent,self).delete(*args, **kwargs)
+
 
 DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('location'),
@@ -1380,23 +1457,37 @@ DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + 
     InlinePanel('related_resources', label="Related Resources")
 ]
 
+
+################################################################################################
+########
+########            Data Academy Resources
+########
+################################################################################################
+
+
 AcademyResourcePanels = [
     FieldPanel('title'),
     StreamFieldPanel('body')
     ]
 
+class AcademyResourceTag(ItemBase):
+    tag = models.ForeignKey(DataAcademyTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
+    content_object = ParentalKey('ctdata.DataAcademyResource', related_name='tagged_items')
 
 class DataAcademyResource(Page):
     parent_page_types = ['DataAcademyResourceIndex']
     body = StreamField(CTDataStreamBlock())
+    tags = ClusterTaggableManager(through=AcademyResourceTag, blank=True)
 
     @property
     def related_events(self):
-        events = DataAcademyAbstractEvent.objects.filter(related_reources__page=self)
+        events = DataAcademyAbstractEvent.objects.filter(related_resources__related_resource=self)
         return events
 
 DataAcademyResource.content_panels = AcademyResourcePanels
-
+DataAcademyResource.promote_panels = Page.promote_panels + [
+    FieldPanel('tags'),
+]
 
 class MediaResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']

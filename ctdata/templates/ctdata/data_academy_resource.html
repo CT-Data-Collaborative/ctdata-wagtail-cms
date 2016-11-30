@@ -1,0 +1,20 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags %}
+
+{% block centered_content %}
+    <div>
+        <div class="row">
+            <div class="col-md-12 col-lg-6 offset-lg-2">
+                <p>{{ self.title }}
+                {% if self.body %}
+                    {{ self.body }}
+                {% endif %}
+            </div>
+            <ul>
+            {% for event in self.related_events %}
+                <li><a href="{{ event.url }}">{{ event.title }}</a></li>
+            {% endfor %}
+                </ul>
+        </div>
+    </div>
+{% endblock %}

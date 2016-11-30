@@ -1,0 +1,35 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags %}
+
+{% block centered_content %}
+    <div class="row">
+        <div class="col-sm-10 col-offset-sm-1">
+            {{ tag.description }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5 col-offset-md-1 col-sm-10 col-sm-offset-1">
+            <h2>Resources</h2>
+            {% if resources %}
+                {% for resource in resources %}
+                    <a href="{{ resource.url }}">{{ resource.title }}</a>
+                {% endfor %}
+            {% else %}
+            <p>No resources currently.</p>
+            {% endif %}
+        </div>
+        <!-- /.col-sm-5 -->
+        <div class="col-md-5 col-sm-10 col-sm-offset-1">
+            <h2>Events</h2>
+            {% if events %}
+                {% for event in events %}
+                    <a href="{{ event.url }}">{{ event.title }}</a>
+                {% endfor %}
+            {% else %}
+            <p>No events currently.</p>
+            {% endif %}
+        </div>
+        <!-- /.col-sm-5 -->
+    </div>
+    <!-- /.row -->
+{% endblock %}

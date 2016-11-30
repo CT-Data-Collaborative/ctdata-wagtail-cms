@@ -1,0 +1,36 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags %}
+
+{% block centered_content %}
+    <div>
+        <div class="row">
+            <div class="col-md-12 col-lg-6 offset-lg-2">
+                <h3>Event Details</h3>
+                <p><strong>When:</strong>
+                    {{ self.date_from }}{% if self.date_to %} to {{ self.date_to }}{% endif %}
+                    {% if self.time_from %}{{ self.time_from|time }}{% endif %}{% if self.time_to %} to {{ self.time_to|time }}{% endif %}
+                </p>
+                {% if self.location %}<p><strong>Where:</strong> {{ self.location }}</p>{% endif %}
+                <p>
+                    <a href="{{ self.signup_link }}">Signup</a>
+                </p>
+                {% if now < self.date_from %}
+                <p>
+                    <a class='calendar' href= "{{ self.url }}?format=ical">
+                        <i class="fa fa-calendar"></i> Add to calendar
+                    </a>
+                </p>
+                {% endif %}
+                {#    {% include "ctdata/includes/carousel.html" with carousel_items=self.carousel_items.all only %}#}
+
+                {% if self.body %}
+                    <h3>Event Description</h3>
+                    <div class="body-content">
+                        {{ self.body|richtext }}
+                    </div>
+                {% endif %}
+                {% include "ctdata/includes/academy_related_resources.html" with resources=self.related_resources.all only %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

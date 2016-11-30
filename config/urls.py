@@ -10,7 +10,7 @@ from django.views import defaults as default_views
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
-
+from ctdata.views import categories
 
 urlpatterns = [
     # url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
@@ -22,6 +22,9 @@ urlpatterns = [
     # User management
     url(r'^users/', include('ctdata_wagtail.users.urls', namespace='users')),
     url(r'^accounts/', include('allauth.urls')),
+
+    # Category
+    url(r'^categories/(?P<tag_name>.*)/$', categories),
 
     # Wagtail
     url(r'^cms/', include(wagtailadmin_urls)),
