@@ -9,30 +9,18 @@
 
             {# Uses method defined in models.py to retrieve all upcoming events #}
             {# See also standard index for creating a listing with a tag #}
-            {% with self.events.all as events %}
-                <h2>Upcoming Events</h2>
-                {% if events %}
-                    <div class="list-group">
-                        {% for event in events %}
-                            {% include "ctdata/includes/event_list_item.html" %}
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p>No events currently scheduled</p>
-                {% endif %}
-            {% endwith %}
-            {% with self.past_events.all as past_events %}
-                <h2>Past Events</h2>
-                {% if past_events %}
-                    <div class="list-group">
-                        {% for event in past_events %}
-                            {% include "ctdata/includes/event_list_item.html" %}
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p>No events currently scheduled</p>
-                {% endif %}
-            {% endwith %}
+
+            <h2>Upcoming Events</h2>
+            {% if events %}
+                <div class="list-group">
+                    {% for event in events %}
+                        {% include "ctdata/includes/event_list_item.html" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No events currently scheduled</p>
+            {% endif %}
+
             {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
         </div>
     </div>

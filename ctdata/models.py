@@ -1230,7 +1230,7 @@ class RelatedResource(LinkFields):
 
 class DataAcademyPage(Page):
     parent_page_types = ['HomePage']
-    subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex', 'DataAcademyCollection']
+    subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex']
 
 
 class DataAcademyEventIndex(RoutablePageMixin, Page):
@@ -1249,7 +1249,6 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
 
         # Order by date
         events = events.order_by('date_from')
-
         return events
 
     @property
@@ -1266,13 +1265,18 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
 
         return past_events
 
-
     @route(r'^$')
     def base(self, request):
+        events = self.events
+        tag = request.GET.get('tag')
+        if tag:
+            events = events.filter(tags__name=tag)
         return TemplateResponse(
             request,
-            self.get_template(request),
-            self.get_context(request)
+            self.get_template(request), {
+                'page': self,
+                'events': events
+            }
         )
 
     @route(r'^past/$')
@@ -1292,6 +1296,24 @@ DataAcademyEventIndex.content_panels = [
 class DataAcademyResourceIndex(RoutablePageMixin, Page):
     parent_page_types = ['DataAcademyPage']
     subpage_types = ['DataAcademyResource']
+
+    @property
+    def resources(self):
+        return DataAcademyResource.objects.live().descendant_of(self)
+
+    @route(r'^$')
+    def base(self, request):
+        resources = self.resources
+        tag = request.GET.get('tag')
+        if tag:
+            resources = resources.filter(tags__name=tag)
+        return TemplateResponse(
+            request,
+            self.get_template(request), {
+                'page': self,
+                'resources': resources
+            }
+        )
 
 DataAcademyResourceIndex.content_panels = [
     FieldPanel('title')
@@ -1552,6 +1574,3 @@ class FileResource(DataAcademyResource):
 class TopicGuideResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
 
-
-class DataAcademyCollection(Page):
-    parent_page_types = ['DataAcademyPage']
