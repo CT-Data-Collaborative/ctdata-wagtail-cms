@@ -1,2 +1,37 @@
 {% extends "ctdata/__no_sidebar.html" %}
 {% load ctdata_tags wagtailcore_tags wagtailimages_tags %}
+
+{% block centered_content %}
+    <div>
+        <div class="row">
+            <div class="col-sm-12 col-md-10 offset-md-1">
+                {% if page.body %}
+                    {% include "ctdata/includes/streamfield.html" with content=page.body %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6 offset-md-1">
+                <h2>Resources</h2>
+                {% include "ctdata/includes/tags.html" with tags=tags class="wide"%}
+                <ul>
+                    {% for resource in resources %}
+                        <li><a href="{{ resource.url }}">{{ resource.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-sm-12 col-md-5">
+                <h2>Upcoming Events</h2>
+                {% if upcoming_events %}
+                    <div class="list-group">
+                        {% for event in upcoming_events %}
+                            {% include "ctdata/includes/event_list_item.html" %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No events currently scheduled</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

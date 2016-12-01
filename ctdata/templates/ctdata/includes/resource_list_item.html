@@ -1,0 +1,11 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{# Individual event item in a list - used on event index and home page #}
+<a href="{% pageurl resource %}">
+    <div class="media-body">
+        <h4 class="media-heading">{{ resource.title }}</h4>
+        {% if resource.short_description %}
+            <p>{{ resource.short_description }}</p>
+        {% endif %}
+    </div>
+</a>

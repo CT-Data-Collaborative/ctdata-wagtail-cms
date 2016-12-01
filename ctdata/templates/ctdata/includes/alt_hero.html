@@ -1,5 +1,8 @@
 {% load static %}
-{% static 'ctdata/images/slider1.jpg' as image %}
+{% if image %}
+{% else %}
+    {% static 'ctdata/images/slider1.jpg' as image %}
+{% endif %}
 <div class="jumbo-image">
     <div class="module mid" style="background: linear-gradient(
                           rgba(0, 0, 0, 0.4),

@@ -1236,12 +1236,67 @@ class RelatedResource(LinkFields):
 class DataAcademyPage(Page):
     parent_page_types = ['HomePage']
     subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex']
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    body = StreamField(CTDataStreamBlock())
 
+    @property
+    def events(self):
+        # Get list of live event pages that are descendants of this page
+        events = DataAcademyAbstractEvent.objects.live().descendant_of(self)
+
+        # Filter events list to get ones that are either
+        # running now or start in the future
+        events = events.filter(date_from__gte=date.today())
+
+        # Order by date
+        events = events.order_by('date_from').all()[0:2]
+        return events
+
+    @property
+    def event_index(self):
+        return DataAcademyEventIndex.objects.live().descendant_of(self).first()
+
+    @property
+    def highlighted_resources(self):
+        return DataAcademyResource.objects.all()[0:2]
+
+    @property
+    def resource_index(self):
+        return DataAcademyResourceIndex.objects.live().descendant_of(self).first()
+
+    def serve(self, request):
+        context = {
+            'page': self,
+            'events': self.events,
+            'highlighted_resources': self.highlighted_resources,
+            'event_index': self.event_index,
+            'resource_index': self.resource_index
+        }
+        if self.image:
+            context['image'] = self.image.file.url
+        return TemplateResponse(
+            request,
+            self.get_template(request),
+            context
+        )
+
+DataAcademyPage.content_panels = [
+    FieldPanel('title'),
+    StreamFieldPanel('body'),
+    ImageChooserPanel('image')
+    ]
 
 class DataAcademyEventIndex(RoutablePageMixin, Page):
     """Page type for event index. This will also be """
     parent_page_types = ['DataAcademyPage']
     subpage_types = ['DataAcademyWebEvent', 'DataAcademyLiveEvent']
+    body = StreamField(CTDataStreamBlock())
 
     @property
     def events(self):
@@ -1270,6 +1325,14 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
 
         return past_events
 
+    @property
+    def tags(self):
+        return DataAcademyTag.objects.all()
+
+    @property
+    def highlighted_resources(self):
+        return DataAcademyResource.objects.all()[0:2]
+
     @route(r'^$')
     def base(self, request):
         events = self.events
@@ -1280,7 +1343,9 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
             request,
             self.get_template(request), {
                 'page': self,
-                'events': events
+                'events': events,
+                'tags': self.tags,
+                'highlighted_resources': self.highlighted_resources
             }
         )
 
@@ -1295,16 +1360,26 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
         )
 
 DataAcademyEventIndex.content_panels = [
-    FieldPanel('title')
+    FieldPanel('title'),
+    StreamFieldPanel('body')
     ]
 
 class DataAcademyResourceIndex(RoutablePageMixin, Page):
     parent_page_types = ['DataAcademyPage']
     subpage_types = ['DataAcademyResource']
+    body = StreamField(CTDataStreamBlock())
 
     @property
     def resources(self):
         return DataAcademyResource.objects.live().descendant_of(self)
+
+    @property
+    def tags(self):
+        return DataAcademyTag.objects.all()
+
+    @property
+    def events(self):
+        return DataAcademyAbstractEvent.objects.order_by('-date_from').all()[0:2]
 
     @route(r'^$')
     def base(self, request):
@@ -1316,12 +1391,15 @@ class DataAcademyResourceIndex(RoutablePageMixin, Page):
             request,
             self.get_template(request), {
                 'page': self,
-                'resources': resources
+                'resources': resources,
+                'tags': self.tags,
+                'upcoming_events': self.events
             }
         )
 
 DataAcademyResourceIndex.content_panels = [
-    FieldPanel('title')
+    FieldPanel('title'),
+    StreamFieldPanel('body')
     ]
 
 ################################################################################################

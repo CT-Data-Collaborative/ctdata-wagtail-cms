@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<div class="tag-list {{ class }}">
+    {% for tag in tags %}
+        <span><a href="{% pageurl page %}?tag={{ tag }}">{{ tag }}</a></span>
+    {% endfor %}
+</div>

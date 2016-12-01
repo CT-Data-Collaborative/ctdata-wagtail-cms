@@ -1,0 +1,61 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags static %}
+
+{% block centered_content %}
+    <div class="row">
+        <div class="col-sm-12 col-md-5 offset-md-1">
+            <h2>About the Data Academy</h2>
+            {% if page.body %}
+                {% include "ctdata/includes/streamfield.html" with content=page.body %}
+            {% endif %}
+        </div>
+        <div class="col-md-5 col-sm-10 offset-md-1 offset-sm-1">
+            <h2>Upcoming Events</h2>
+            {% if events %}
+                <div class="list-group">
+                    {% for event in events %}
+                        {% include "ctdata/includes/event_list_item.html" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No events currently scheduled</p>
+            {% endif %}
+            <a href="{% pageurl event_index %}">See all events</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-sm-10 offset-md-1 offset-sm-1">
+            <h2>Resources</h2>
+            <div class="list-group">
+                {% for resource in highlighted_resources %}
+                    {% include "ctdata/includes/resource_list_item.html" with resource=resource %}
+                {% endfor %}
+            </div>
+            <a href="{% pageurl resource_index %}">Explore all resources</a>
+        </div>
+        <div class="col-md-3 col-sm-10 offset-md-0 offset-sm-1">
+            <h2>Showcase</h2>
+        </div>
+        <div class="col-md-3 col-sm-10 offset-md-0 offset-sm-1">
+            {% include 'ctdata/includes/twitter.html' %}
+        </div>
+        <!-- /.col-md-5 -->
+        <!-- /.col-md-5 -->
+    </div>
+    <!-- /.row -->
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        !function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+            if (!d.getElementById(id)) {
+                js = d.createElement(s);
+                js.id = id;
+                js.src = p + "://platform.twitter.com/widgets.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }
+        }(document, "script", "twitter-wjs");
+    </script>
+{% endblock %}
+

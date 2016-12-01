@@ -6,9 +6,6 @@
     <div class="row">
         <div class="col-md-12 col-lg-6 offset-lg-2">
             {% include "ctdata/includes/intro.html" with intro=self.intro only %}
-
-            {# Uses method defined in models.py to retrieve all upcoming events #}
-            {# See also standard index for creating a listing with a tag #}
             {% with self.past.all as past_events %}
                 <h2>Past Events</h2>
                 {% if past_events %}
