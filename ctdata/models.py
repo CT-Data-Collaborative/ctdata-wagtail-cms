@@ -36,6 +36,9 @@ from ctdata.utils import export_event
 from fontawesome.fields import IconField
 from eventbrite import Eventbrite
 import datetime
+import requests
+import urllib
+import pytz
 
 CHART_TYPE_CHOICES = (
     ('hbar', "Horizontal Bar"),
@@ -1327,20 +1330,50 @@ DataAcademyResourceIndex.content_panels = [
 ########
 ################################################################################################
 
+MEDIA_UPLOAD_URL = 'https://www.eventbriteapi.com/v3/media/upload/'
+
+def upload_image(eventpage, token):
+    instructions_url = MEDIA_UPLOAD_URL + '?' + urllib.parse.urlencode({
+        'type': 'image-event-logo',
+        'token': token
+    })
+    data = requests.get(instructions_url).json()
+    post_args = data['upload_data']
+    imagefile = eventpage.event_image.file.file.name
+    with open(imagefile, 'rb') as image:
+        response = requests.post(data['upload_url'],
+            data = post_args,
+            files = {
+                data['file_parameter_name']: image
+            }
+        )
+    return response, data['upload_token']
+
+def _add_event_image_logo(data, eventpage):
+    OAUTH_TOKEN = _get_eventbrite_token(eventpage)
+    response, upload_token = upload_image(eventpage, OAUTH_TOKEN)
+    notify_url = MEDIA_UPLOAD_URL + '?' + urllib.parse.urlencode({
+        'token': OAUTH_TOKEN
+    })
+    image_response = requests.post(notify_url, {'upload_token': upload_token})
+    data['event.logo_id'] = image_response.json()['id']
+    return data
+
+def _get_eventbrite_token(eventpage):
+    current_site = eventpage.get_parent().get_site()
+    return EventBriteSettings.for_site(current_site).eventbrite
 
 def _get_eventbrite(eventpage):
-    current_site = eventpage.get_parent().get_site()
-    oauth = EventBriteSettings.for_site(current_site).eventbrite
-    return Eventbrite(oauth)
+    OAUTH_TOKEN = _get_eventbrite_token(eventpage)
+    return Eventbrite(OAUTH_TOKEN)
 
-def _create_event(eventpage):
+def _get_event_data(eventpage):
     # TODO Create tickets
     # TODO Fix bug with start and end times not being correct
-    eventbrite = _get_eventbrite(eventpage)
     if isinstance(eventpage, DataAcademyWebEvent):
-        type = 'web'
-    if isinstance(eventpage, DataAcademyLiveEvent):
-        type = 'live'
+        web_event = True
+    else:
+        web_event = False
     event_data = {
         'event.name': {
             'html': eventpage.title
@@ -1348,53 +1381,27 @@ def _create_event(eventpage):
         'event.description': {
             'html': eventpage.body,
         },
-        'event.start': {
-            'utc': eventpage.start_str,
-            'timezone': 'America/New_York',
-        },
-        'event.end': {
-            'utc': eventpage.end_str,
-            'timezone': 'America/New_York',
-        },
+        'event.start.utc': eventpage.start_utc_str,
+        'event.start.timezone': 'America/New_York',
+        'event.end.utc': eventpage.end_utc_str,
+        'event.end.timezone': 'America/New_York',
         'event.currency': 'USD',
-        'event.online_event': False,
+        'event.online_event': web_event,
         'event.listed': False,
         'event.capacity': eventpage.size_limit,
     }
-    event = eventbrite.post_event(event_data)
-    return event
-
-def _update_event(eventpage):
-    eventbrite = _get_eventbrite(eventpage)
-    event = eventbrite.get_event(eventpage.eventbrite_event_id)
-    event_data = {
-        'event.name': {
-            'html': eventpage.title
-        },
-        'event.description': {
-            'html': eventpage.body,
-        },
-        'event.start': {
-            'utc': eventpage.start_str,
-            'timezone': 'America/New_York',
-        },
-        'event.end': {
-            'utc': eventpage.end_str,
-            'timezone': 'America/New_York',
-        },
-        'event.currency': 'USD',
-        'event.online_event': False,
-        'event.listed': False,
-        'event.capacity': eventpage.size_limit,
-    }
-    updated_event = eventbrite.post("/events/{0}/".format(event['id']), data=event_data)
-    return updated_event
+    return event_data
 
 def create_or_update_eventbrite_event(eventpage):
+    eventbrite = _get_eventbrite(eventpage)
     if eventpage.eventbrite_event_id is None:
-        event = _create_event(eventpage)
+        url = "/events/"
     else:
-        event = _update_event(eventpage)
+        url = "/events/{0}/".format(eventpage.eventbrite_event_id)
+    event_data = _get_event_data(eventpage)
+    if eventpage.event_image is not None: # TODO Add check to see if we need to remove the image from Eventbrite side
+        event_data = _add_event_image_logo(event_data, eventpage)
+    event = eventbrite.post(url, data=event_data)
     return event
 
 
@@ -1421,25 +1428,29 @@ AcademyEventPanels = [
     FieldRowPanel([
         FieldPanel('create_eventbrite'),
         FieldPanel('publish_eventbrite')
-    ])
+    ]),
+    ImageChooserPanel('event_image'),
     ]
+
 
 class DataAcademyAbstractEvent(Page):
     parent_page_types = []
     subpage_types = []
-    tags = ClusterTaggableManager(through=AcademyEventTag, blank=True)
-    date_from = models.DateField("Start date")
-    date_to = models.DateField(
-        "End date",
+    event_image = models.ForeignKey(
+        'wagtailimages.Image',
         null=True,
         blank=True,
-        help_text="Not required if event is on a single day"
+        on_delete=models.SET_NULL,
+        related_name='+'
     )
+    tags = ClusterTaggableManager(through=AcademyEventTag, blank=True)
+    date_from = models.DateField("Start date")
+    date_to = models.DateField("End date")
     time_from = models.TimeField("Start time", null=True, blank=False)
     time_to = models.TimeField("End time", null=True, blank=False)
-    create_eventbrite = models.BooleanField(default=False, blank=False)
-    publish_eventbrite = models.BooleanField(default=False, blank=False)
-    eventbrite_event_id = models.CharField(max_length=50, null=True, default=None)
+    create_eventbrite = models.BooleanField(default=False)
+    publish_eventbrite = models.BooleanField(default=False)
+    eventbrite_event_id = models.CharField(max_length=50, null=True, blank=True, default=None)
     signup_link = models.URLField(blank=True)
     size_limit = models.IntegerField(blank=True, null=True)
     body = RichTextField(blank=True)
@@ -1453,12 +1464,32 @@ class DataAcademyAbstractEvent(Page):
         return self.start.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     @property
+    def start_utc(self):
+        local = pytz.timezone(settings.TIME_ZONE)
+        local_dt = local.localize(self.start, is_dst=None)
+        return local_dt.astimezone(pytz.utc)
+
+    @property
+    def start_utc_str(self):
+        return self.start_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    @property
     def end(self):
-        return datetime.datetime.combine(self.date_from, self.time_from)
+        return datetime.datetime.combine(self.date_to, self.time_to)
 
     @property
     def end_str(self):
         return self.end.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    @property
+    def end_utc(self):
+        local = pytz.timezone(settings.TIME_ZONE)
+        local_dt = local.localize(self.end, is_dst=None)
+        return local_dt.astimezone(pytz.utc)
+
+    @property
+    def end_utc_str(self):
+        return self.end_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def serve(self, request):
         if "format" in request.GET:
@@ -1517,6 +1548,7 @@ DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + 
 
 @receiver(pre_delete, sender=DataAcademyAbstractEvent)
 def delete_eventbrite_event(sender, instance, **kwargs):
+    """Listener for deleting events from eventbrite. Needed b/c of Wagtail/Treebeard handle delete"""
     eventbrite = _get_eventbrite(instance)
     eventbrite.delete('/events/{0}/'.format(instance.eventbrite_event_id))
 
