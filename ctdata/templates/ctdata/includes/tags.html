@@ -1,7 +1,16 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
-<div class="tag-list {{ class }}">
+<div class="tag-link-list {% if class %} tag-link-list--{{ class }}{% endif %}">
     {% for tag in tags %}
-        <span><a href="{% pageurl page %}?tag={{ tag }}">{{ tag }}</a></span>
+        <div class="tag-link tag-link--data-academy"><a href="{% pageurl page %}?tag={{ tag }}">{{ tag | title }}</a></div>
     {% endfor %}
+    <div class="tag-link tag-link--data-academy">
+        <a href="{% pageurl page %}">
+            {% if type = "event" %}
+                All Events
+            {% else %}
+                All Resources
+            {% endif %}
+        </a></div>
+    <!-- /.tag-link tag-link--data-academy -->
 </div>

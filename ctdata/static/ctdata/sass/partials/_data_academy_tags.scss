@@ -1,0 +1,21 @@
+.tag-link--data-academy {
+  background: $ctdata-dark-blue;
+  padding: .25rem;
+  a {
+    color: floralwhite;
+  }
+}
+
+.tag-link--data-academy:hover {
+  background: $ctdata-extra-dark-blue;
+  a, a:hover {
+    text-decoration: none;
+  }
+}
+
+.tag-link-list--wide {
+  margin-bottom: .75rem;
+  .tag-link--data-academy {
+    display: inline-block;
+  }
+}

@@ -1,11 +1,13 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
 {# Individual event item in a list - used on event index and home page #}
-<a href="{% pageurl resource %}">
-    <div class="media-body">
-        <h4 class="media-heading">{{ resource.title }}</h4>
-        {% if resource.short_description %}
-            <p>{{ resource.short_description }}</p>
-        {% endif %}
-    </div>
-</a>
+<div class="data-academy-resource data-academy-resource--list-item">
+    <h4><span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="{{ resource.icon }} fa-stack-1x fa-inverse"></i>
+        </span>
+        <a href="{% pageurl resource %}">{{ resource.title | title }}</a></h4>
+    {% if resource.short_description %}
+        <p>{{ resource.short_description }}</p>
+    {% endif %}
+</div>

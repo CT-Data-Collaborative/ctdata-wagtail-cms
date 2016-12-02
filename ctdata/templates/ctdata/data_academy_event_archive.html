@@ -5,6 +5,7 @@
 {% block centered_content %}
     <div class="row">
         <div class="col-md-12 col-lg-6 offset-lg-2">
+            {% include 'ctdata/includes/breadcrumbs.html' %}
             {% include "ctdata/includes/intro.html" with intro=self.intro only %}
             {% with self.past.all as past_events %}
                 <h2>Past Events</h2>

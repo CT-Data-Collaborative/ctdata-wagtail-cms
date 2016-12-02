@@ -5,6 +5,7 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
 from .models import DataAcademyTag
+from ctdata.utils import is_tag_full
 
 # try:
 #     # Wagtail >= 1.1
@@ -48,15 +49,19 @@ from .models import DataAcademyTag
 
 
 def categories(request, tag_name):
+
     if tag_name:
         tag = DataAcademyTag.objects.get(name=tag_name)
         events_tags = tag.ctdata_academyeventtag_items.all()
         resources_tags = tag.ctdata_academyresourcetag_items.all()
+        other_tags = [tag for tag in DataAcademyTag.objects.exclude(name=tag_name) if is_tag_full(tag)]
     else:
         events_tags = None
         resources_tags = None
+        other_tags = [tag for tag in DataAcademyTag.objects.all() if is_tag_full(tag)]
     return render(request, 'ctdata/categories.html', {
         'tag': tag,
         'events': sorted([e.content_object for e in events_tags], key=lambda e: e.date_from),
-        'resources': [r.content_object for r in resources_tags]
+        'resources': [r.content_object for r in resources_tags],
+        'other_tags': other_tags
     })

@@ -1,35 +1,61 @@
 {% extends "ctdata/__no_sidebar.html" %}
-{% load ctdata_tags %}
+{% load ctdata_tags wagtailcore_tags %}
 
 {% block centered_content %}
     <div class="row">
-        <div class="col-sm-10 col-offset-sm-1">
+        <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-1">
+            {% include 'ctdata/includes/breadcrumbs.html' %}
             {{ tag.description }}
         </div>
     </div>
     <div class="row">
-        <div class="col-md-5 col-offset-md-1 col-sm-10 col-sm-offset-1">
+        <div class="col-sm-10 offset-sm-1 col-md-3 offset-md-1">
             <h2>Resources</h2>
             {% if resources %}
-                {% for resource in resources %}
-                    <a href="{{ resource.url }}">{{ resource.title }}</a>
-                {% endfor %}
+                <div class="data-academy-resource data-academy-resource--list">
+                    {% for resource in resources %}
+                        {% include "ctdata/includes/resource_list_item.html" with resource=resource %}
+                    {% endfor %}
+                </div>
             {% else %}
-            <p>No resources currently.</p>
+                <p>No resources currently.</p>
             {% endif %}
         </div>
         <!-- /.col-sm-5 -->
-        <div class="col-md-5 col-sm-10 col-sm-offset-1">
+        <div class="col-sm-10 offset-sm-1 col-md-4 offset-md-0">
             <h2>Events</h2>
             {% if events %}
-                {% for event in events %}
-                    <a href="{{ event.url }}">{{ event.title }}</a>
-                {% endfor %}
+                <div class="list-group">
+                    {% for event in events %}
+                        <div class="data-academy-event">
+                            <h4 class="media-heading">
+                                {% if event.event_type = 'live' %}
+                                    <i class="fa fa-desktop"> </i>
+                                {% else %}
+                                    <i class="fa fa-users"> </i>
+                                {% endif %} {{ event.title | title }}
+                            </h4>
+                            <div>
+                                <strong>{{ event.date_from }}{% if event.date_to %} to
+                                    {{ event.date_to }}{% endif %}</strong>
+                            </div>
+                            {% if event.body %}
+                                {{ event.body | truncatewords_html:25 | richtext }}
+                            {% endif %}
+                            <a class="data-academy-event--signup-link" href="{{ event.signup_link }}">Register now</a>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
-            <p>No events currently.</p>
+                <p>No events currently scheduled</p>
             {% endif %}
         </div>
-        <!-- /.col-sm-5 -->
+        <div class="col-sm-10 offset-sm-1 col-md-3 offset-md-0">
+            <h2>Additional Tags</h2>
+             {% for tag in other_tags %}
+                    <h3><a href="/categories/{{ tag.name }}/">{{ tag.name | title }}</a></h3>
+            {% endfor %}
+        </div>
     </div>
     <!-- /.row -->
 {% endblock %}

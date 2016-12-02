@@ -4,34 +4,52 @@
 {% block centered_content %}
     <div>
         <div class="row">
-            <div class="col-sm-12 col-md-10 offset-md-1">
+            <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+                {% include 'ctdata/includes/breadcrumbs.html' %}
                 {% if page.body %}
                     {% include "ctdata/includes/streamfield.html" with content=page.body %}
                 {% endif %}
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12 col-md-6 offset-md-1">
+            <div class="col-sm-10 offset-sm-1 col-md-6 offset-md-1 col-lg-5 offset-lg-2">
                 <h2>Upcoming Events</h2>
-                {% include "ctdata/includes/tags.html" with tags=tags class="wide"%}
+                <p>Filter by tag</p>
+                {% include "ctdata/includes/tags.html" with tags=tags class="wide" type="events" %}
                 {% if events %}
                     <div class="list-group">
                         {% for event in events %}
-                            {% include "ctdata/includes/event_list_item.html" %}
+                            <div class="data-academy-event">
+                                <h4 class="media-heading">
+                                    {% if event.event_type = 'live' %}
+                                        <i class="fa fa-desktop"> </i>
+                                    {% else %}
+                                        <i class="fa fa-users"> </i>
+                                    {% endif %} {{ event.title | title }}
+                                </h4>
+                                <div>
+                                    <strong>{{ event.date_from }}{% if event.date_to %} to
+                                    {{ event.date_to }}{% endif %}</strong>
+                                </div>
+                                {% if event.body %}
+                                    {{ event.body | truncatewords_html:25 | richtext  }}
+                                {% endif %}
+                                <a class="data-academy-event--signup-link" href="{{ event.signup_link }}">Register now</a>
+                            </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     <p>No events currently scheduled</p>
                 {% endif %}
             </div>
-            <div class="col-sm-12 col-md-5">
+            <div class="col-sm-10 offset-sm-1 col-md-5 col-lg-4">
                 <h2>Highlighted Resources</h2>
-                <div class="list-group">
+                <div class="data-academy-resource data-academy-resource--list">
                     {% for resource in highlighted_resources %}
                         {% include "ctdata/includes/resource_list_item.html" with resource=resource %}
                     {% endfor %}
                 </div>
-                <!-- /.list-group -->
+                <a href="{{ resource_index }}">Explore all resources</a>
             </div>
         </div>
     </div>

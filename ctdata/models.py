@@ -32,7 +32,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase, TagBase, GenericTaggedItemBase, ItemBase
 
-from ctdata.utils import export_event
+from ctdata.utils import export_event, is_tag_full
 from fontawesome.fields import IconField
 from eventbrite import Eventbrite
 import datetime
@@ -1255,7 +1255,7 @@ class DataAcademyPage(Page):
         events = events.filter(date_from__gte=date.today())
 
         # Order by date
-        events = events.order_by('date_from').all()[0:2]
+        events = events.order_by('date_from').all()[0:3]
         return events
 
     @property
@@ -1264,27 +1264,27 @@ class DataAcademyPage(Page):
 
     @property
     def highlighted_resources(self):
-        return DataAcademyResource.objects.all()[0:2]
+        return DataAcademyResource.objects.all()[0:3]
 
     @property
     def resource_index(self):
         return DataAcademyResourceIndex.objects.live().descendant_of(self).first()
 
-    def serve(self, request):
-        context = {
-            'page': self,
-            'events': self.events,
-            'highlighted_resources': self.highlighted_resources,
-            'event_index': self.event_index,
-            'resource_index': self.resource_index
-        }
+    @property
+    def tags(self):
+        return [tag for tag in DataAcademyTag.objects.all() if is_tag_full(tag)]
+
+    def get_context(self, request):
+        context = super(DataAcademyPage, self).get_context(request)
+        context['events'] = self.events
+        context['highlighted_resources'] = self.highlighted_resources
+        context['event_index'] = self.event_index
+        context['resource_index'] = self.resource_index
+        context['tags'] = self.tags
         if self.image:
             context['image'] = self.image.file.url
-        return TemplateResponse(
-            request,
-            self.get_template(request),
-            context
-        )
+        return context
+
 
 DataAcademyPage.content_panels = [
     FieldPanel('title'),
@@ -1331,7 +1331,12 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
 
     @property
     def highlighted_resources(self):
-        return DataAcademyResource.objects.all()[0:2]
+        return DataAcademyResource.objects.all()[0:3]
+
+    @property
+    def resource_index_url(self):
+        resource_index = DataAcademyResourceIndex.objects.live().first()
+        return resource_index.url
 
     @route(r'^$')
     def base(self, request):
@@ -1345,7 +1350,8 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
                 'page': self,
                 'events': events,
                 'tags': self.tags,
-                'highlighted_resources': self.highlighted_resources
+                'highlighted_resources': self.highlighted_resources,
+                'resource_index': self.resource_index_url
             }
         )
 
@@ -1366,7 +1372,7 @@ DataAcademyEventIndex.content_panels = [
 
 class DataAcademyResourceIndex(RoutablePageMixin, Page):
     parent_page_types = ['DataAcademyPage']
-    subpage_types = ['DataAcademyResource']
+    subpage_types = ['MediaResource', 'TutorialResource', 'FileResource', 'LinkResource']
     body = StreamField(CTDataStreamBlock())
 
     @property
@@ -1381,6 +1387,11 @@ class DataAcademyResourceIndex(RoutablePageMixin, Page):
     def events(self):
         return DataAcademyAbstractEvent.objects.order_by('-date_from').all()[0:2]
 
+    @property
+    def event_index_url(self):
+        event_index = DataAcademyEventIndex.objects.live().first()
+        return event_index.url
+
     @route(r'^$')
     def base(self, request):
         resources = self.resources
@@ -1393,7 +1404,8 @@ class DataAcademyResourceIndex(RoutablePageMixin, Page):
                 'page': self,
                 'resources': resources,
                 'tags': self.tags,
-                'upcoming_events': self.events
+                'upcoming_events': self.events,
+                'event_index': self.event_index_url
             }
         )
 
@@ -1534,6 +1546,13 @@ class DataAcademyAbstractEvent(Page):
     body = RichTextField(blank=True)
 
     @property
+    def event_type(self):
+        if isinstance(self.specific, DataAcademyLiveEvent):
+            return 'live'
+        else:
+            return 'web'
+
+    @property
     def start(self):
         return datetime.datetime.combine(self.date_from, self.time_from)
 
@@ -1605,6 +1624,8 @@ class DataAcademyWebEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     event_link = models.URLField(blank=True, help_text="Link to web conference page or archived webcast.")
 
+
+
 DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('event_link'),
     FieldPanel('body', classname="full"),
@@ -1615,6 +1636,11 @@ DataAcademyWebEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
 class DataAcademyLiveEvent(DataAcademyAbstractEvent):
     parent_page_types = ['DataAcademyEventIndex']
     location = models.CharField(max_length=255)
+
+    @property
+    def event_type(self):
+        return 'live'
+
 
 DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + [
     FieldPanel('location'),
@@ -1653,6 +1679,19 @@ class DataAcademyResource(Page):
     tags = ClusterTaggableManager(through=AcademyResourceTag, blank=True)
 
     @property
+    def icon(self):
+        if isinstance(self.specific, MediaResource):
+            return "fa fa-film"
+        if isinstance(self.specific, TutorialResource):
+            return "fa fa-book"
+        if isinstance(self.specific, FileResource):
+            return "fa fa-file"
+        if isinstance(self.specific, LinkResource):
+            return "fa fa-link"
+        else:
+            return ""
+
+    @property
     def related_events(self):
         events = DataAcademyAbstractEvent.objects.filter(related_resources__related_resource=self)
         return events
@@ -1664,16 +1703,16 @@ DataAcademyResource.promote_panels = Page.promote_panels + [
 
 class MediaResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
-
+    template = 'ctdata/data_academy_resource.html'
 
 class TutorialResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
-
+    template = 'ctdata/data_academy_resource.html'
 
 class FileResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
+    template = 'ctdata/data_academy_resource.html'
 
-
-class TopicGuideResource(DataAcademyResource):
+class LinkResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
-
+    template = 'ctdata/data_academy_resource.html'
