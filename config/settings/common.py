@@ -40,6 +40,7 @@ THIRD_PARTY_APPS = (
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
     'fontawesome',
+    'wagtail_feeds'
 )
 
 CUSTOM_WAGTAIL_ADMIN_APPS = (

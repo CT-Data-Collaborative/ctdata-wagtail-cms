@@ -11,6 +11,8 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 from ctdata.views import categories
+from wagtail_feeds.feeds import BasicFeed, ExtendedFeed
+
 
 urlpatterns = [
     # url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
@@ -26,6 +28,9 @@ urlpatterns = [
     # Category
     url(r'^categories/(?P<tag_name>.*)/$', categories),
 
+    # RSS Feeds
+    url(r'^news/rss/basic$', BasicFeed(), name='basic_feed'),
+    url(r'^news/rss/extended$', ExtendedFeed(), name='extended_feed'),
     # Wagtail
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),

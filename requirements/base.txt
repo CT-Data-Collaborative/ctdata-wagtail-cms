@@ -54,3 +54,4 @@ django-compressor>=1.4
 
 #eventbrite
 eventbrite==3.3.3
+django-wagtail-feeds
