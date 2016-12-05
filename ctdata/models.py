@@ -1663,6 +1663,9 @@ def delete_eventbrite_event(sender, instance, **kwargs):
 ########
 ################################################################################################
 
+class AcademyResourceRelatedLink(Orderable, RelatedLink):
+    page = ParentalKey('ctdata.DataAcademyResource', related_name='related_links')
+
 
 AcademyResourcePanels = [
     FieldPanel('title'),
@@ -1705,14 +1708,21 @@ class MediaResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
     template = 'ctdata/data_academy_resource.html'
 
+
 class TutorialResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
     template = 'ctdata/data_academy_resource.html'
+
 
 class FileResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
     template = 'ctdata/data_academy_resource.html'
 
+
 class LinkResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
     template = 'ctdata/data_academy_resource.html'
+
+LinkResource.content_panels = DataAcademyResource.content_panels + [
+    InlinePanel('related_links', label="Links")
+]
