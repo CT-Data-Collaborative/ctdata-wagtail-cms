@@ -1,0 +1,22 @@
+{% extends "ctdata/__no_sidebar.html" %}
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags  wagtailembeds_tags %}
+
+{% block centered_content %}
+    <div>
+        <div class="row">
+            <div class="col-sm-10 offset-sm-2 col-lg-6 offset-lg-2">
+                {% include 'ctdata/includes/breadcrumbs.html' %}
+                <p>{{ self.title }}</p>
+                {{ self.video_url|embed:1500 }}
+                {% if self.body %}
+                    {{ self.body }}
+                {% endif %}
+            </div>
+            <ul>
+            {% for event in self.related_events %}
+                <li><a href="{{ event.url }}">{{ event.title }}</a></li>
+            {% endfor %}
+                </ul>
+        </div>
+    </div>
+{% endblock %}

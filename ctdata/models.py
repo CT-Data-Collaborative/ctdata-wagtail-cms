@@ -1706,8 +1706,10 @@ DataAcademyResource.promote_panels = Page.promote_panels + [
 
 class MediaResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
-    template = 'ctdata/data_academy_resource.html'
+    template = 'ctdata/data_academy_media_resource.html'
+    video_url = models.URLField("Video URL", blank=True)
 
+MediaResource.content_panels = DataAcademyResource.content_panels + [FieldPanel('video_url')]
 
 class TutorialResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
