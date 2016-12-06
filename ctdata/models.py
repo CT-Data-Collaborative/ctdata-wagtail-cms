@@ -1678,7 +1678,7 @@ class AcademyResourceTag(ItemBase):
 
 class DataAcademyResource(Page):
     parent_page_types = ['DataAcademyResourceIndex']
-    body = StreamField(CTDataStreamBlock())
+    body = StreamField(CTDataStreamBlock(), blank=True)
     tags = ClusterTaggableManager(through=AcademyResourceTag, blank=True)
 
     @property
