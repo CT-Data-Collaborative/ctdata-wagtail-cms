@@ -16,20 +16,7 @@
                     {% if events %}
                         <div class="list-group">
                             {% for event in events %}
-                                <div class="event">
-                                    <h4 class="media-heading">
-                                        {% if event.event_type = 'live' %}
-                                            <i class="fa fa-desktop"> </i>
-                                        {% else %}
-                                            <i class="fa fa-users"> </i>
-                                        {% endif %} {{ event.title | title }}
-                                    </h4>
-                                    <p><strong>{{ event.date_from }}{% if event.date_to %} to {{ event.date_to }}{% endif %}</strong></p>
-                                    {% if event.search_description %}
-                                        <p>{{ event.search_description }}</p>
-                                    {% endif %}
-                                    <a href="{% pageurl event %}">See full event description</a>
-                                </div>
+                                {% include "ctdata/includes/academy_event_item.html" with event=event %}
                             {% endfor %}
                         </div>
                     {% else %}

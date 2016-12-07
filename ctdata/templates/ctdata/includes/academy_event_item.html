@@ -1,0 +1,23 @@
+{% load ctdata_tags wagtailcore_tags wagtailimages_tags static %}
+
+<div class="event">
+    <h4 class="media-heading">
+        {% if event.event_type = 'live' %}
+            <i class="fa fa-desktop"> </i>
+        {% else %}
+            <i class="fa fa-users"> </i>
+        {% endif %} {{ event.title | title }}
+    </h4>
+    <p><strong>
+        {% if event.date_to = event.date_from %}
+            {{ event.date_from }}, {{ event.time_from }} to {{ event.time_to }}
+        {% else %}
+            {{ event.start }} to {{ event.end }}
+        {% endif %}
+    </strong></p>
+    {% if event.body %}
+        {{ event.body | truncatewords_html:25 | richtext  }}
+    {% endif %}
+    <a class="data-academy-event--signup-link" href="{{ event.signup_link }}">Register now</a><br>
+    <a href="{% pageurl event %}">See full event description</a>
+</div>
