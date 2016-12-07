@@ -9,10 +9,25 @@
                     {% else %}
                         {{ page.title }}
                     {% endif %}
-                </a></li>
+                </a><span class="separator"></span></li>
             {% endif %}
         {% endfor %}
         <li><a href="#">{{ self.title }}</a></li>
     </ol>
 {% endif %}
-
+{% if page.get_ancestors|length > 1 %}
+    <ol class="breadcrumbs">
+        {% for page in page.get_ancestors %}
+            {% if page.is_root == False %}
+                <li><a href={% pageurl page %}>
+                    {% if forloop.counter == 2 %}
+                        <i class="fa fa-home"></i>
+                    {% else %}
+                        {{ page.title }}
+                    {% endif %}
+                </a><span class="separator"></span></li>
+            {% endif %}
+        {% endfor %}
+        <li><a href="#">{{ page.title }}</a></li>
+    </ol>
+{% endif %}

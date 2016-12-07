@@ -1189,26 +1189,23 @@ ol.breadcrumbs {
     margin: 0 9px 0 -10px;
     padding: 0 20px;
     position: relative; }
-  ol.breadcrumbs li:before,
-  ol.breadcrumbs li:after {
-    border-right: 1px solid #666666;
+  ol.breadcrumbs .separator:before, ol.breadcrumbs .separator:after {
+    border-right: 3px solid #666666;
     content: '';
     display: block;
-    height: 50%;
+    height: 25%;
     position: absolute;
-    left: 0;
+    left: 98%;
     right: 0;
-    top: 0;
-    z-index: -1;
+    top: 25%;
+    z-index: 0;
     transform: skewX(45deg); }
-  ol.breadcrumbs li:after {
+  ol.breadcrumbs .separator:after {
     bottom: 0;
-    top: auto;
+    top: 50%;
     transform: skewX(-45deg); }
-  ol.breadcrumbs li:last-of-type:before, ol.breadcrumbs li:last-of-type:after {
-    display: none; }
   ol.breadcrumbs li a {
-    font: bold 24px Sans-Serif;
+    font: bold 24px Roboto;
     letter-spacing: -1px;
     text-decoration: none; }
   ol.breadcrumbs li:nth-of-type(1) a {

@@ -7,40 +7,36 @@ ol.breadcrumbs {
     margin: 0 9px 0 -10px;
     padding: 0 20px;
     position: relative;
-  }
-  li:before,
-  li:after {
-    border-right: 1px solid #666666;
-    content: '';
-    display: block;
-    height: 50%;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: -1;
-    -moz-transform: skewX(45deg);
-    -ms-transform: skewX(45deg);
-    -o-transform: skewX(45deg);
-    -webkit-transform: skewX(45deg);
-    transform: skewX(45deg);
-  }
-  li:after {
-    bottom: 0;
-    top: auto;
-    -moz-transform: skewX(-45deg);
-    -ms-transform: skewX(-45deg);
-    -o-transform: skewX(-45deg);
-    -webkit-transform: skewX(-45deg);
-    transform: skewX(-45deg);
-  }
 
-  li:last-of-type:before, li:last-of-type:after {
-    display: none;
   }
+  .separator:before, .separator:after {
+      border-right: 3px solid #666666;
+      content: '';
+      display: block;
+      height: 25%;
+      position: absolute;
+      left: 98%;
+      right: 0;
+      top: 25%;
+      z-index: 0;
+      -moz-transform: skewX(45deg);
+      -ms-transform: skewX(45deg);
+      -o-transform: skewX(45deg);
+      -webkit-transform: skewX(45deg);
+      transform: skewX(45deg);
+    }
+    .separator:after {
+      bottom: 0;
+      top: 50%;
+      -moz-transform: skewX(-45deg);
+      -ms-transform: skewX(-45deg);
+      -o-transform: skewX(-45deg);
+      -webkit-transform: skewX(-45deg);
+      transform: skewX(-45deg);
+    }
 
   li a {
-    font: bold 24px Sans-Serif;
+    font: bold 24px Roboto;
     letter-spacing: -1px;
     text-decoration: none;
   }
