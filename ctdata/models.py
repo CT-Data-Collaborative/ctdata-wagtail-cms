@@ -1244,6 +1244,9 @@ class DataAcademyPage(Page):
         related_name='+'
     )
     body = StreamField(CTDataStreamBlock())
+    explore_resources_text = RichTextField(blank=True)
+    category_list_text = RichTextField(blank=True)
+    showcase_text = RichTextField(blank=True)
 
     @property
     def events(self):
@@ -1289,6 +1292,9 @@ class DataAcademyPage(Page):
 DataAcademyPage.content_panels = [
     FieldPanel('title'),
     StreamFieldPanel('body'),
+    FieldPanel('explore_resources_text', classname="full"),
+    FieldPanel('category_list_text', classname="full"),
+    FieldPanel('showcase_text', classname="full"),
     ImageChooserPanel('image')
     ]
 

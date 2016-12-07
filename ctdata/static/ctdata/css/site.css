@@ -1167,6 +1167,12 @@ blockquote p {
   .tag-link-list--wide .tag-link--data-academy {
     display: inline-block; }
 
+.tag-link-list--tall {
+  margin-bottom: 12px;
+  margin-bottom: .75rem; }
+  .tag-link-list--tall .tag-link--data-academy {
+    display: inline-block; }
+
 .data-academy-resource--list {
   margin-top: 32px;
   margin-top: 2rem; }
