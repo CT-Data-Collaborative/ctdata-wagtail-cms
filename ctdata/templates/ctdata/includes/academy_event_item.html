@@ -1,12 +1,12 @@
 {% load ctdata_tags wagtailcore_tags wagtailimages_tags static %}
 
-<div class="event">
+<div class="event data-academy-event">
     <h4 class="media-heading">
         {% if event.event_type = 'live' %}
             <i class="fa fa-desktop"> </i>
         {% else %}
             <i class="fa fa-users"> </i>
-        {% endif %} {{ event.title | title }}
+        {% endif %} <a href="{% pageurl event %}">{{ event.title | title }}</a>
     </h4>
     <p><strong>
         {% if event.date_to = event.date_from %}
@@ -18,6 +18,5 @@
     {% if event.body %}
         {{ event.body | truncatewords_html:25 | richtext  }}
     {% endif %}
-    <a class="data-academy-event--signup-link" href="{{ event.signup_link }}">Register now</a><br>
-    <a href="{% pageurl event %}">See full event description</a>
+    <a class="btn btn-primary data-academy-event--signup-link" href="{{ event.signup_link }}">Register</a><br>
 </div>

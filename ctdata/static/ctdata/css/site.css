@@ -1180,6 +1180,19 @@ blockquote p {
 .data-academy-resource--list-item {
   display: block; }
 
+.data-academy-event {
+  padding-top: 12px;
+  padding-top: .75rem;
+  padding-bottom: 12px;
+  padding-bottom: .75rem; }
+  .data-academy-event .data-academy-event--signup-link {
+    background: #4670A7;
+    border: 1px solid #4670A7;
+    border-radius: 0; }
+  .data-academy-event .data-academy-event--signup-link:hover {
+    background: #1EACF1;
+    border: 1px solid #1EACF1; }
+
 ol.breadcrumbs {
   padding-left: 0;
   white-space: nowrap; }

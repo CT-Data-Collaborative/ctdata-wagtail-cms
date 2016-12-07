@@ -6,23 +6,24 @@
         <div class="col-sm-10 offset-sm-1 col-md-8 offset-md-1">
             <div class="row">
                 <div class="col-xs-12 col-lg-8">
-                    <h2>About the Data Academy</h2>
+                    <h1>About the Data Academy</h1>
                     {% if page.body %}
                         {% include "ctdata/includes/streamfield.html" with content=page.body %}
                     {% endif %}
                 </div>
                 <div class="col-xs-12 col-lg-4">
-                    <h2>Upcoming Events</h2>
+                    <h1>Upcoming Events</h1>
                     {% if events %}
                         <div class="list-group">
                             {% for event in events %}
                                 {% include "ctdata/includes/academy_event_item.html" with event=event %}
+                                <hr>
                             {% endfor %}
                         </div>
                     {% else %}
                         <p>No events currently scheduled</p>
                     {% endif %}
-                    <a href="{% pageurl event_index %}">See all events</a>
+                    <a class='btn ctdata-btn' href="{% pageurl event_index %}">See all events</a>
                 </div>
                 <!-- /.col-xs-12 col-md-4 -->
                 <!-- /.col-xs-12 -->

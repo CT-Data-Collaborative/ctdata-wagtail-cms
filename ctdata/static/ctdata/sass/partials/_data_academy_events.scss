@@ -1,5 +1,14 @@
 .data-academy-event {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
 
-  data-academy-event--signup-link {
+  .data-academy-event--signup-link {
+    background: $ctdata-extra-dark-blue;
+    border: 1px solid $ctdata-extra-dark-blue;
+    border-radius: 0;
+  }
+  .data-academy-event--signup-link:hover {
+    background: $ctdata-dark-blue;
+    border: 1px solid $ctdata-dark-blue;
   }
 }

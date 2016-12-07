@@ -20,6 +20,7 @@
                     <div class="list-group">
                         {% for event in events %}
                             {% include "ctdata/includes/academy_event_item.html" with event=event %}
+                            {% if forloop.last %}{% else %}<hr>{% endif %}
                         {% endfor %}
                     </div>
                 {% else %}
@@ -33,7 +34,7 @@
                         {% include "ctdata/includes/resource_list_item.html" with resource=resource %}
                     {% endfor %}
                 </div>
-                <a href="{{ resource_index }}">Explore all resources</a>
+                <a class='btn ctdata-btn' href="{{ resource_index }}">Explore all resources</a>
             </div>
         </div>
     </div>
