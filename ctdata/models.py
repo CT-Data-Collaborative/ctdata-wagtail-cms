@@ -1391,7 +1391,7 @@ class DataAcademyResourceIndex(RoutablePageMixin, Page):
 
     @property
     def events(self):
-        return DataAcademyAbstractEvent.objects.order_by('-date_from').all()[0:2]
+        return DataAcademyAbstractEvent.objects.live().order_by('-date_from').all()[0:2]
 
     @property
     def event_index_url(self):
