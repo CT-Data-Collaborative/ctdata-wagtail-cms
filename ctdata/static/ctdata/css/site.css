@@ -1189,7 +1189,7 @@ ol.breadcrumbs {
     margin: 0 9px 0 -10px;
     padding: 0 20px;
     position: relative; }
-  ol.breadcrumbs .separator:before, ol.breadcrumbs .separator:after {
+  ol.breadcrumbs li:before, ol.breadcrumbs li:after {
     border-right: 3px solid #666666;
     content: '';
     display: block;
@@ -1200,7 +1200,7 @@ ol.breadcrumbs {
     top: 25%;
     z-index: 0;
     transform: skewX(45deg); }
-  ol.breadcrumbs .separator:after {
+  ol.breadcrumbs li:after {
     bottom: 0;
     top: 50%;
     transform: skewX(-45deg); }

@@ -9,7 +9,7 @@ ol.breadcrumbs {
     position: relative;
 
   }
-  .separator:before, .separator:after {
+  li:before, li:after {
       border-right: 3px solid #666666;
       content: '';
       display: block;
@@ -25,7 +25,7 @@ ol.breadcrumbs {
       -webkit-transform: skewX(45deg);
       transform: skewX(45deg);
     }
-    .separator:after {
+    li:after {
       bottom: 0;
       top: 50%;
       -moz-transform: skewX(-45deg);
