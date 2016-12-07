@@ -1,5 +1,6 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags ctdata_tags %}
 {% if self.get_ancestors|length > 1 %}
+    {% setvar "true" as rendered %}
     <ol class="breadcrumbs">
         {% for page in self.get_ancestors %}
             {% if page.is_root == False %}
@@ -14,8 +15,10 @@
         {% endfor %}
         <li><a href="#">{{ self.title }}</a></li>
     </ol>
+{% else %}
+    {% setvar "false" as rendered %}
 {% endif %}
-{% elif page.get_ancestors|length > 1 %}
+{% if page.get_ancestors|length > 1 and rendered = "false" %}
     <ol class="breadcrumbs">
         {% for page in page.get_ancestors %}
             {% if page.is_root == False %}
