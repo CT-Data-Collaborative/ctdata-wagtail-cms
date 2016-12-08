@@ -12,7 +12,7 @@
             </p>
             {% if self.location %}<p><strong>Where:</strong> {{ self.location }}</p>{% endif %}
             <p>
-                <a href="{{ self.signup_link }}">Signup</a>
+                <a class="btn btn-primary data-academy-event--signup-link" href="{{ self.signup_link }}">Signup</a>
             </p>
             {% if now < self.date_from %}
             <p>

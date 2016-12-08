@@ -27,23 +27,8 @@
             {% if events %}
                 <div class="list-group">
                     {% for event in events %}
-                        <div class="data-academy-event">
-                            <h4 class="media-heading">
-                                {% if event.event_type = 'live' %}
-                                    <i class="fa fa-desktop"> </i>
-                                {% else %}
-                                    <i class="fa fa-users"> </i>
-                                {% endif %} {{ event.title | title }}
-                            </h4>
-                            <div>
-                                <strong>{{ event.date_from }}{% if event.date_to %} to
-                                    {{ event.date_to }}{% endif %}</strong>
-                            </div>
-                            {% if event.body %}
-                                {{ event.body | truncatewords_html:25 | richtext }}
-                            {% endif %}
-                            <a class="data-academy-event--signup-link" href="{{ event.signup_link }}">Register now</a>
-                        </div>
+                      {% include "ctdata/includes/academy_event_item.html" with event=event %}
+                            {% if forloop.last %}{% else %}<hr>{% endif %}
                     {% endfor %}
                 </div>
             {% else %}
