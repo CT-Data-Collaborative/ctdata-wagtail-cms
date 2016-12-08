@@ -1505,9 +1505,12 @@ def create_or_update_eventbrite_event(eventpage):
         ticket_data = {'ticket_class.name': 'General Admission',
                        'ticket_class.free': True,
                        'ticket_class.maximum_quantity': 2}
-        if eventpage.size_limit > 0:
-            ticket_data['ticket_class.quantity_total'] = eventpage.size_limit
-        eventbrite.post(ticket_url, data=ticket_data)
+        try:
+            if eventpage.size_limit > 0:
+                ticket_data['ticket_class.quantity_total'] = eventpage.size_limit
+            eventbrite.post(ticket_url, data=ticket_data)
+        except: # TODO FIX THIS GARBAGE
+            pass
     return event
 
 
