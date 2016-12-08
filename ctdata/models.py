@@ -1333,7 +1333,7 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
 
     @property
     def tags(self):
-        return DataAcademyTag.objects.all()
+        return [tag for tag in DataAcademyTag.objects.all() if is_tag_full(tag)]
 
     @property
     def highlighted_resources(self):
@@ -1387,7 +1387,7 @@ class DataAcademyResourceIndex(RoutablePageMixin, Page):
 
     @property
     def tags(self):
-        return DataAcademyTag.objects.all()
+        return [tag for tag in DataAcademyTag.objects.all() if is_tag_full(tag)]
 
     @property
     def events(self):
