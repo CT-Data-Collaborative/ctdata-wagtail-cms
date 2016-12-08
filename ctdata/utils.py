@@ -78,8 +78,12 @@ def export_event(event, format='ical'):
     return '\r'.join(ical_components)
 
 def is_tag_full(tag):
-    if len(tag.ctdata_academyresourcetag_items.all()) > 0:
-        return True
-    if len(tag.ctdata_academyeventtag_items.all()) > 0:
-        return True
+    tagged_resources = tag.ctdata_academyresourcetag_items.all()
+    for r in tagged_resources:
+        if r.content_object.live:
+            return True
+    tagged_events = tag.ctdata_academyeventtag_items.all()
+    for e in tagged_events:
+        if e.content_object.live:
+            return True
     return False
