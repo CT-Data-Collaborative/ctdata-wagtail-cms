@@ -1484,7 +1484,7 @@ def _get_event_data(eventpage):
         'event.currency': 'USD',
         'event.online_event': web_event,
         'event.listed': False,
-        'event.capacity': eventpage.size_limit,
+        'event.capacity': eventpage.size_limit
     }
     return event_data
 
@@ -1492,12 +1492,22 @@ def create_or_update_eventbrite_event(eventpage):
     eventbrite = _get_eventbrite(eventpage)
     if eventpage.eventbrite_event_id is None:
         url = "/events/"
+        new = True
     else:
         url = "/events/{0}/".format(eventpage.eventbrite_event_id)
+        new = False
     event_data = _get_event_data(eventpage)
     if eventpage.event_image is not None: # TODO Add check to see if we need to remove the image from Eventbrite side
         event_data = _add_event_image_logo(event_data, eventpage)
     event = eventbrite.post(url, data=event_data)
+    if new:
+        ticket_url = "/events/{0}/ticket_classes/".format(event['id'])
+        ticket_data = {'ticket_class.name': 'General Admission',
+                       'ticket_class.free': True,
+                       'ticket_class.maximum_quantity': 2}
+        if eventpage.size_limit > 0:
+            ticket_data['ticket_class.quantity_total'] = eventpage.size_limit
+        eventbrite.post(ticket_url, data=ticket_data)
     return event
 
 
