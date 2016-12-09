@@ -10,6 +10,8 @@ $(document).ready( function() {
         $('.nav-item > a[href*="/about"]').parent().addClass('active');
     } else if(/\/data/.test(loc)) {
         $('.nav-item a[href*="/data"]').parent().addClass('active');
+    } else if(/\/academy/.test(loc)) {
+        $('.nav-item a[href*="/academy"]').parent().addClass('active');
     } else if(/services/.test(loc)) {
         $('.nav-item > a[href*="/services"]').parent().addClass('active');
     } else if(/ask/.test(loc)) {

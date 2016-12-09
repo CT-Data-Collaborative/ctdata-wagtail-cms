@@ -1464,8 +1464,6 @@ def _get_eventbrite(eventpage):
     return Eventbrite(OAUTH_TOKEN)
 
 def _get_event_data(eventpage):
-    # TODO Create tickets
-    # TODO Fix bug with start and end times not being correct
     if isinstance(eventpage, DataAcademyWebEvent):
         web_event = True
     else:
@@ -1500,17 +1498,17 @@ def create_or_update_eventbrite_event(eventpage):
     if eventpage.event_image is not None: # TODO Add check to see if we need to remove the image from Eventbrite side
         event_data = _add_event_image_logo(event_data, eventpage)
     event = eventbrite.post(url, data=event_data)
-    if new:
-        ticket_url = "/events/{0}/ticket_classes/".format(event['id'])
-        ticket_data = {'ticket_class.name': 'General Admission',
-                       'ticket_class.free': True,
-                       'ticket_class.maximum_quantity': 2}
-        try:
-            if eventpage.size_limit > 0:
-                ticket_data['ticket_class.quantity_total'] = eventpage.size_limit
-            eventbrite.post(ticket_url, data=ticket_data)
-        except: # TODO FIX THIS GARBAGE
-            pass
+    # if new:
+    #     ticket_url = "/events/{0}/ticket_classes/".format(event['id'])
+    #     ticket_data = {'ticket_class.name': 'General Admission',
+    #                    'ticket_class.free': True,
+    #                    'ticket_class.maximum_quantity': 2}
+    #     try:
+    #         if eventpage.size_limit > 0:
+    #             ticket_data['ticket_class.quantity_total'] = eventpage.size_limit
+    #         eventbrite.post(ticket_url, data=ticket_data)
+    #     except: # TODO FIX THIS GARBAGE
+    #         pass
     return event
 
 
