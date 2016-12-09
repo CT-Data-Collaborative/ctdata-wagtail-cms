@@ -1539,6 +1539,8 @@ AcademyEventPanels = [
         FieldPanel('publish_eventbrite')
     ]),
     ImageChooserPanel('event_image'),
+    FieldPanel('eventbrite_event_id'),
+    FieldPanel('signup_link')
     ]
 
 
