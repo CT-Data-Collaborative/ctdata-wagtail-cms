@@ -3,7 +3,7 @@ from datetime import date
 from django.db import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
-from django.utils.text import slugify
+from django.utils import timezone
 from django.conf import settings
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404, render
@@ -277,6 +277,7 @@ class ProjectItem(LinkFields):
     project_category = models.CharField(max_length=255, choices=PROJECT_CATEGORY_CHOICES)
     project_link = models.URLField("Project Link", blank=False)
     project_description = models.CharField(max_length=750, blank=True)
+    project_publish_date = models.DateTimeField(blank=True)
     featured = models.BooleanField()
 
     panels = [
@@ -284,6 +285,7 @@ class ProjectItem(LinkFields):
         FieldPanel('project_category'),
         FieldPanel('project_link'),
         FieldPanel('project_description'),
+        FieldPanel('project_publish_date'),
         FieldPanel('featured')
     ]
 
@@ -362,6 +364,13 @@ class HomePageRelatedLink(Orderable, RelatedLink):
 class HomePageProjectItem(Orderable, ProjectItem):
     page = ParentalKey('ctdata.HomePage', related_name='project_items')
 
+    @property
+    def active(self):
+        if self.project_publish_date <= timezone.now():
+            return True
+        else:
+            return False
+
 class HomePage(Page):
     body = StreamField(CTDataStreamBlock())
     search_fields = Page.search_fields + [
@@ -370,6 +379,10 @@ class HomePage(Page):
 
     class Meta:
         verbose_name = "Homepage"
+
+    @property
+    def active_projects(self):
+        return [p for p in self.project_items.all() if p.active]
 
     @property
     def blogs(self):

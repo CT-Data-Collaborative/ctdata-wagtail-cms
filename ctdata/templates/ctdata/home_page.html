@@ -56,7 +56,7 @@
             <!-- /.row blue-row -->
             <div class="row">
                 <div class="col-sm-12 col-md-10 col-lg-10 offset-md-1 offset-lg-1">
-                    {% include 'ctdata/includes/project_cards.html' with projects=self.project_items.all only %}
+                    {% include 'ctdata/includes/project_cards.html' with projects=self.active_projects %}
                 </div>
             </div>
         </div>
