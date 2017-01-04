@@ -10,12 +10,13 @@
                 {% if self.body %}
                     {{ self.body }}
                 {% endif %}
+                {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
             </div>
             <ul>
             {% for event in self.related_events %}
                 <li><a href="{{ event.url }}">{{ event.title }}</a></li>
             {% endfor %}
-                </ul>
+            </ul>
         </div>
     </div>
 {% endblock %}
