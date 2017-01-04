@@ -10,7 +10,8 @@
                 {% if self.body %}
                     {{ self.body }}
                 {% endif %}
-                {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
+                </p>
+                {% include "ctdata/includes/resource_links.html" with related_links=self.related_links.all only %}
             </div>
             <ul>
             {% for event in self.related_events %}
