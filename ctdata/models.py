@@ -1435,98 +1435,6 @@ DataAcademyResourceIndex.content_panels = [
 
 ################################################################################################
 ########
-########            Data Academy Eventbrite Functions
-########
-################################################################################################
-#
-# MEDIA_UPLOAD_URL = 'https://www.eventbriteapi.com/v3/media/upload/'
-#
-# def upload_image(eventpage, token):
-#     instructions_url = MEDIA_UPLOAD_URL + '?' + urllib.parse.urlencode({
-#         'type': 'image-event-logo',
-#         'token': token
-#     })
-#     data = requests.get(instructions_url).json()
-#     post_args = data['upload_data']
-#     imagefile = eventpage.event_image.file.file.name
-#     with open(imagefile, 'rb') as image:
-#         response = requests.post(data['upload_url'],
-#             data = post_args,
-#             files = {
-#                 data['file_parameter_name']: image
-#             }
-#         )
-#     return response, data['upload_token']
-#
-# def _add_event_image_logo(data, eventpage):
-#     OAUTH_TOKEN = _get_eventbrite_token(eventpage)
-#     response, upload_token = upload_image(eventpage, OAUTH_TOKEN)
-#     notify_url = MEDIA_UPLOAD_URL + '?' + urllib.parse.urlencode({
-#         'token': OAUTH_TOKEN
-#     })
-#     image_response = requests.post(notify_url, {'upload_token': upload_token})
-#     data['event.logo_id'] = image_response.json()['id']
-#     return data
-#
-# def _get_eventbrite_token(eventpage):
-#     current_site = eventpage.get_parent().get_site()
-#     return EventBriteSettings.for_site(current_site).eventbrite
-#
-# def _get_eventbrite(eventpage):
-#     OAUTH_TOKEN = _get_eventbrite_token(eventpage)
-#     return Eventbrite(OAUTH_TOKEN)
-
-# def _get_event_data(eventpage):
-#     if isinstance(eventpage, DataAcademyWebEvent):
-#         web_event = True
-#     else:
-#         web_event = False
-#     event_data = {
-#         'event.name': {
-#             'html': eventpage.title
-#         },
-#         'event.description': {
-#             'html': eventpage.body,
-#         },
-#         'event.start.utc': eventpage.start_utc_str,
-#         'event.start.timezone': 'America/New_York',
-#         'event.end.utc': eventpage.end_utc_str,
-#         'event.end.timezone': 'America/New_York',
-#         'event.currency': 'USD',
-#         'event.online_event': web_event,
-#         'event.listed': False,
-#         'event.capacity': eventpage.size_limit
-#     }
-#     return event_data
-#
-# def create_or_update_eventbrite_event(eventpage):
-#     eventbrite = _get_eventbrite(eventpage)
-#     if eventpage.eventbrite_event_id is None:
-#         url = "/events/"
-#         new = True
-#     else:
-#         url = "/events/{0}/".format(eventpage.eventbrite_event_id)
-#         new = False
-#     event_data = _get_event_data(eventpage)
-#     if eventpage.event_image is not None: # TODO Add check to see if we need to remove the image from Eventbrite side
-#         event_data = _add_event_image_logo(event_data, eventpage)
-#     event = eventbrite.post(url, data=event_data)
-#     # if new:
-#     #     ticket_url = "/events/{0}/ticket_classes/".format(event['id'])
-#     #     ticket_data = {'ticket_class.name': 'General Admission',
-#     #                    'ticket_class.free': True,
-#     #                    'ticket_class.maximum_quantity': 2}
-#     #     try:
-#     #         if eventpage.size_limit > 0:
-#     #             ticket_data['ticket_class.quantity_total'] = eventpage.size_limit
-#     #         eventbrite.post(ticket_url, data=ticket_data)
-#     #     except: # TODO FIX THIS GARBAGE
-#     #         pass
-#     return event
-
-
-################################################################################################
-########
 ########            Data Academy Events
 ########
 ################################################################################################
@@ -1545,12 +1453,7 @@ AcademyEventPanels = [
         FieldPanel('time_from'),
         FieldPanel('date_to'),
         FieldPanel('time_to')]),
-    # FieldRowPanel([
-    #     FieldPanel('create_eventbrite'),
-    #     FieldPanel('publish_eventbrite')
-    # ]),
     ImageChooserPanel('event_image'),
-    # FieldPanel('eventbrite_event_id'),
     FieldPanel('signup_link')
     ]
 
@@ -1570,11 +1473,7 @@ class DataAcademyAbstractEvent(Page):
     date_to = models.DateField("End date")
     time_from = models.TimeField("Start time", null=True, blank=False)
     time_to = models.TimeField("End time", null=True, blank=False)
-    # create_eventbrite = models.BooleanField(default=False)
-    # publish_eventbrite = models.BooleanField(default=False)
-    # eventbrite_event_id = models.CharField(max_length=50, null=True, blank=True, default=None)
     signup_link = models.URLField(blank=True)
-    # size_limit = models.IntegerField(blank=True, null=True)
     body = RichTextField(blank=True)
 
     @property
@@ -1638,13 +1537,6 @@ class DataAcademyAbstractEvent(Page):
             # Display event page as usual
             return super(DataAcademyAbstractEvent, self).serve(request)
 
-    # def save(self, *args, **kwargs):
-    #     if self.create_eventbrite:
-    #         event = create_or_update_eventbrite_event(self)
-    #         self.eventbrite_event_id = event['id']
-    #         self.signup_link = event['url']
-    #     super(DataAcademyAbstractEvent, self).save(*args, **kwargs)  # Call the "real" save() method.
-
 
 DataAcademyAbstractEvent.content_panels = AcademyEventPanels
 
@@ -1680,13 +1572,6 @@ DataAcademyLiveEvent.content_panels = DataAcademyAbstractEvent.content_panels + 
     FieldPanel('body', classname="full"),
     InlinePanel('related_resources', label="Related Resources")
 ]
-
-
-# @receiver(pre_delete, sender=DataAcademyAbstractEvent)
-# def delete_eventbrite_event(sender, instance, **kwargs):
-#     """Listener for deleting events from eventbrite. Needed b/c of Wagtail/Treebeard handle delete"""
-#     eventbrite = _get_eventbrite(instance)
-#     eventbrite.delete('/events/{0}/'.format(instance.eventbrite_event_id))
 
 
 ################################################################################################
