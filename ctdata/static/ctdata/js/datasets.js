@@ -8,8 +8,7 @@ var buildTemplate = function(data) {
 
 var extractMetadata = function(meta, base) {
     var extras = meta.extras;
-    var resources = meta.resources;
-    var shortDescription = _.find(extras, function(o) { return o.key === "Description"}).value;;
+    var shortDescription = _.find(extras, function(o) { return o.key === "Description"}).value;
     base.desc = shortDescription;
     return base;
 };
@@ -17,12 +16,21 @@ var extractMetadata = function(meta, base) {
 // todo update url to be dynamic from site.ckan variable
 var getMetadata = function(data, callback) {
     var dataWithMetadata = { datasets: [] };
-    data.forEach(function(d) {
+    data.forEach(function(d, index) {
         $.ajax("http://data.ctdata.org/api/3/action/package_show?id="+ d.id).done(function(meta) {
             var metadata = extractMetadata(meta.result, d);
-            dataWithMetadata.datasets.push(metadata);
-            if (dataWithMetadata.datasets.length === data.length) {
-                console.log(dataWithMetadata.datasets.length);
+            var created = meta.result.resources[0].created;
+            var last_modified = meta.result.resources[0].last_modified;
+            var timestamp = moment(d.timestamp);
+            var cutoff = 201600145;
+            var check = last_modified ? moment(last_modified) : moment(created);
+            var resource_updated = timestamp - check < cutoff ? true : false;
+            if (resource_updated) {
+                dataWithMetadata.datasets.push(metadata);
+            } else {
+
+            }
+            if (index === (data.length-1)) {
                 // call buildTemplate
                 callback(dataWithMetadata);
             }
@@ -48,9 +56,9 @@ var structureData = function(data, callback) {
     // call getMetadata
     var uniqData = _.chain(recentlyUpdated)
         .uniqBy(function(d) { return d.name; })
-        .slice(0,3)
         .value();
 
+    // call getMetadata
     callback(uniqData, buildTemplate);
 };
 

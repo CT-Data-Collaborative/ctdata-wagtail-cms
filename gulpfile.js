@@ -89,9 +89,10 @@ gulp.task('libs', function() {
 			paths.node_modules + '/mustache/mustache.min.js',
 			paths.node_modules + '/jquery/dist/jquery.min.js',
 			paths.node_modules + '/tether/dist/js/tether.min.js',
-			paths.node_modules +  '/pym.js/dist/pym.min.js'
+			paths.node_modules +  '/pym.js/dist/pym.min.js',
+            paths.node_modules + '/moment/min/moment.min.js'
 		])
-		.pipe(gulp.dest(paths.wagtail_js + '/libs'))
+		.pipe(gulp.dest(paths.wagtail_js + '/lib'))
 });
 
 gulp.task('css_libs', function() {
