@@ -5,7 +5,7 @@
 wheel==0.29.0
 
 # Bleeding edge Django
-django==1.9.9
+django==1.10
 
 # Configuration
 django-environ==0.4.0
@@ -48,10 +48,12 @@ celery==3.1.23
 # Your custom requirements go here
 # Wagtail
 
-wagtail==1.6
+wagtail==1.9
 django-compressor>=1.4
--e git+https://github.com/scuerda/django-fontawesome.git@f554fd415ad9906cbdc2ed6a7479b1c5db8a5974#egg=fontawesome
+django-fontawesome
 
 #eventbrite
 eventbrite==3.3.3
 django-wagtail-feeds
+
+Wand==0.4.4
