@@ -57,41 +57,5 @@ Moved to `Live reloading and SASS compilation`_.
 .. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
 
 
-
-
-Celery
-^^^^^^
-
-This app comes with Celery.
-
-To run a celery worker:
-
-.. code-block:: bash
-
-    cd ctdata_wagtail
-    celery -A ctdata_wagtail.taskapp worker -l info
-
-Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the same folder with *manage.py*, you should be right.
-
-
-
-
-
-
-
-
 Deployment
 ----------
-
-
-
-
-
-Docker
-^^^^^^
-
-See detailed `cookiecutter-django Docker documentation`_.
-
-.. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
-
-
