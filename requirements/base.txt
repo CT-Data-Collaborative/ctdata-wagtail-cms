@@ -50,7 +50,7 @@ celery==3.1.23
 
 wagtail==1.9
 django-compressor>=1.4
-django-fontawesome
+django-fontawesome==0.3.1
 
 #eventbrite
 eventbrite==3.3.3
