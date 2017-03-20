@@ -23,3 +23,5 @@ libwebp-dev
 ##django-extensions
 graphviz-dev
 
+libmagickwand-dev
+

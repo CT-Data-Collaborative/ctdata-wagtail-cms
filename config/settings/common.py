@@ -70,7 +70,8 @@ WAGTAIL_APPS = (
 LOCAL_APPS = (
     # custom users app
     'ctdata_wagtail.users.apps.UsersConfig',
-    'ctdata'
+    'ctdata',
+    'site_feed'
     # Your stuff: custom apps go here
 )
 

@@ -685,6 +685,10 @@ class BlogPage(Page):
         # Find closest ancestor which is a blog index
         return self.get_ancestors().type(BlogIndexPage).last()
 
+    def get_absolute_url(self):
+        return self.full_url
+
+
 BlogPage.content_panels = [
     FieldPanel('title', classname="full title"),
     FieldPanel('author'),
@@ -852,7 +856,7 @@ JobPage.content_panels = [
 ################################################################################################
 ########
 ########
-########            Evemt index page
+########            Event index page
 ########
 ########
 ################################################################################################
@@ -978,6 +982,9 @@ class EventPage(Page):
     def event_index(self):
         # Find closest ancestor which is an event index
         return self.get_ancestors().type(EventIndexPage).last()
+
+    def get_absolute_url(self):
+        return self.full_url
 
     def serve(self, request):
         if "format" in request.GET:
@@ -1518,6 +1525,9 @@ class DataAcademyAbstractEvent(Page):
     @property
     def end_utc_str(self):
         return self.end_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    def get_absolute_url(self):
+        return self.full_url
 
     def serve(self, request):
         if "format" in request.GET:
