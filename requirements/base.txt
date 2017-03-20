@@ -42,7 +42,6 @@ pytz==2016.6.1
 django-redis==4.4.4
 redis>=2.10.0
 
-
 celery==3.1.23
 
 # Your custom requirements go here
@@ -55,5 +54,3 @@ django-fontawesome==0.3.1
 #eventbrite
 eventbrite==3.3.3
 django-wagtail-feeds
-
-Wand==0.4.4

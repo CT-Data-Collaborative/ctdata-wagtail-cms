@@ -10,6 +10,7 @@ Production Configurations
 
 """
 from __future__ import absolute_import, unicode_literals
+import os
 
 from boto.s3.connection import OrdinaryCallingFormat
 from django.utils import six
@@ -32,6 +33,21 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # See: https://whitenoise.readthedocs.io/
 WHITENOISE_MIDDLEWARE = ('whitenoise.middleware.WhiteNoiseMiddleware', )
 MIDDLEWARE_CLASSES = WHITENOISE_MIDDLEWARE + MIDDLEWARE_CLASSES
+
+
+# Rollbar Config
+
+MIDDLEWARE_CLASSES = (
+    # ... other middleware classes ...
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
+) + MIDDLEWARE_CLASSES
+
+ROLLBAR = {
+    'access_token': env('DJANGO_ROLLBAR_TOKEN'),
+    'environment': 'production',
+    'branch': 'master',
+    'root': os.getcwd(),
+}
 
 
 # SECURITY CONFIGURATION
