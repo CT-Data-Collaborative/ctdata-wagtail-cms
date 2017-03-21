@@ -2,14 +2,14 @@
 
 <div class="event data-academy-event">
     <h4 class="media-heading">
-        {% if event.event_type = 'live' %}
+        {% if event.event_type == 'live' %}
             <i class="fa fa-desktop"> </i>
         {% else %}
             <i class="fa fa-users"> </i>
         {% endif %} <a href="{% pageurl event %}">{{ event.title | title }}</a>
     </h4>
     <p><strong>
-        {% if event.date_to = event.date_from %}
+        {% if event.date_to == event.date_from %}
             {{ event.date_from }}, {{ event.time_from }} to {{ event.time_to }}
         {% else %}
             {{ event.start }} to {{ event.end }}

@@ -1362,7 +1362,10 @@ class DataAcademyEventIndex(RoutablePageMixin, Page):
     @property
     def resource_index_url(self):
         resource_index = DataAcademyResourceIndex.objects.live().first()
-        return resource_index.url
+        if resource_index:
+            return resource_index.url
+        else:
+            return ''
 
     @route(r'^$')
     def base(self, request):
