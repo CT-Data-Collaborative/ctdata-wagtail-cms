@@ -1,9 +1,10 @@
+from itertools import chain
 from datetime import date
 from django import template
 from django.conf import settings
 import re
 
-from ctdata.models import BlogPage, EventPage, Page
+from ctdata.models import BlogPage, EventPage, Page, DataAcademyAbstractEvent
 
 register = template.Library()
 
@@ -60,11 +61,15 @@ def blog_listing_homepage(context, count=3):
     'ctdata/tags/event_listing_homepage.html',
     takes_context=True
 )
-def event_listing_homepage(context, count=2):
-    events = EventPage.objects.live()
-    events = events.filter(date_from__gte=date.today()).order_by('date_from')
+def event_listing_homepage(context, count=3):
+    events = EventPage.objects.live().filter(date_from__gte=date.today())
+    data_academy_events = DataAcademyAbstractEvent.objects.live().\
+        filter(display_in_event_index=True).\
+        filter(date_from__gte=date.today())
+    all_events = sorted(list(chain(events, data_academy_events)), key=lambda x: x.date_from)
+
     return {
-        'events': events[:count].select_related('feed_image'),
+        'events': all_events[:count],
         # required by the pageurl tag that we want to use within this template
         'request': context['request'],
     }

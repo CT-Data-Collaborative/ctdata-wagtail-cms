@@ -965,6 +965,7 @@ class EventPage(Page):
     location = models.CharField(max_length=255)
     body = RichTextField(blank=True)
     signup_link = models.URLField(blank=True)
+    academy_resources_list_display = models.BooleanField(default=False)
     feed_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1012,6 +1013,7 @@ EventPage.content_panels = [
     FieldPanel('time_to'),
     FieldPanel('location'),
     FieldPanel('signup_link'),
+    FieldPanel('academy_resources_list_display'),
     InlinePanel('carousel_items', label="Carousel items"),
     FieldPanel('body', classname="full"),
     InlinePanel('speakers', label="Speakers"),
@@ -1458,11 +1460,23 @@ class AcademyEventTag(ItemBase):
 
 AcademyEventPanels = [
     FieldPanel('title'),
-    FieldRowPanel([
-        FieldPanel('date_from'),
-        FieldPanel('time_from'),
-        FieldPanel('date_to'),
-        FieldPanel('time_to')]),
+    MultiFieldPanel([FieldRowPanel([
+        FieldPanel('academy_resources_list_display'),
+        FieldPanel('display_in_event_index')
+    ])],
+        heading='Flags',
+        classname='collapsible'
+    ),
+    MultiFieldPanel([
+        FieldRowPanel([
+            FieldPanel('date_from'),
+            FieldPanel('time_from'),
+            FieldPanel('date_to'),
+            FieldPanel('time_to')])
+    ],
+        heading='Dates and Times',
+        classname='collapsible'
+    ),
     ImageChooserPanel('event_image'),
     FieldPanel('signup_link')
     ]
@@ -1479,6 +1493,8 @@ class DataAcademyAbstractEvent(Page):
         related_name='+'
     )
     tags = ClusterTaggableManager(through=AcademyEventTag, blank=True)
+    academy_resources_list_display = models.BooleanField(default=False)
+    display_in_event_index = models.BooleanField(default=True)
     date_from = models.DateField("Start date")
     date_to = models.DateField("End date")
     time_from = models.TimeField("Start time", null=True, blank=False)
