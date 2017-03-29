@@ -1,0 +1,10 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{# Individual event item in a list - used on event index and home page #}
+<div class="media">
+    <div class="media-body">
+        <a href="{% pageurl event.item %}"><h4 class="media-heading">{{ event.title }}</h4></a>
+        <p>{{ event.event_type }}</p>
+        <p><strong>{{ event.date }}</strong></p>
+    </div>
+</div>

@@ -919,10 +919,8 @@ EventIndexPage.promote_panels = Page.promote_panels
 ########
 ################################################################################################
 
-
 class EventPageCarouselItem(Orderable, CarouselItem):
     page = ParentalKey('ctdata.EventPage', related_name='carousel_items')
-
 
 class EventPageRelatedLink(Orderable, RelatedLink):
     page = ParentalKey('ctdata.EventPage', related_name='related_links')
@@ -1017,7 +1015,7 @@ EventPage.content_panels = [
     InlinePanel('carousel_items', label="Carousel items"),
     FieldPanel('body', classname="full"),
     InlinePanel('speakers', label="Speakers"),
-    InlinePanel('related_links', label="Related links"),
+    InlinePanel('related_links', label="Related links")
 ]
 
 EventPage.promote_panels = Page.promote_panels + [
@@ -1049,6 +1047,8 @@ class ConferenceSessionParticipants(Orderable, LinkFields):
         MultiFieldPanel(LinkFields.panels, "Link"),
     ]
 
+class ConferenceSessionRelatedResources(Orderable, RelatedLink):
+    page = ParentalKey('ctdata.ConferenceSession', related_name='related_resources')
 
 # TODO FIX SORT ORDER
 class ConferenceSession(Page):
@@ -1085,7 +1085,8 @@ ConferenceSession.content_panels = [
     FieldPanel('time_from'),
     FieldPanel('time_to'),
     FieldPanel('description', classname="full"),
-    InlinePanel('participants', label="Participants")
+    InlinePanel('participants', label="Participants"),
+    InlinePanel('related_resources', label="Related Resources")
 ]
 
 class ConferenceSponsorLink(Orderable, SponsorLink):
@@ -1211,6 +1212,26 @@ class EventBriteSettings(BaseSetting):
 ########
 ################################################################################################
 
+class RelatedResource(LinkFields):
+    title = models.CharField(max_length=255, help_text="Link title")
+    description = models.CharField(max_length=500, help_text="Description", blank=True)
+    related_resource = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    panels = [
+        FieldPanel('title'),
+        FieldPanel('description'),
+        PageChooserPanel('related_resource', 'ctdata.DataAcademyResource')
+    ]
+
+    class Meta:
+        abstract = True
+
+
 ################################################################################################
 ########
 ########            Data Academy Tags and Tag Indices
@@ -1233,26 +1254,6 @@ class DataAcademyTag(TagBase):
 ########            Data Academy Indices and Main Pages
 ########
 ################################################################################################
-
-
-class RelatedResource(LinkFields):
-    title = models.CharField(max_length=255, help_text="Link title")
-    description = models.CharField(max_length=500, help_text="Description", blank=True)
-    related_resource = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
-    panels = [
-        FieldPanel('title'),
-        FieldPanel('description'),
-        PageChooserPanel('related_resource', 'ctdata.DataAcademyResource')
-    ]
-
-    class Meta:
-        abstract = True
 
 
 class DataAcademyPage(Page):
@@ -1623,7 +1624,7 @@ class AcademyResourceTag(ItemBase):
     content_object = ParentalKey('ctdata.DataAcademyResource', related_name='tagged_items')
 
 class DataAcademyResource(Page):
-    parent_page_types = ['DataAcademyResourceIndex']
+    parent_page_types = ['DataAcademyResourceIndex', 'EventPage', 'ConferencePage', 'ConferenceSession']
     body = StreamField(CTDataStreamBlock(), blank=True)
     tags = ClusterTaggableManager(through=AcademyResourceTag, blank=True)
 
@@ -1661,11 +1662,9 @@ class TutorialResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
     template = 'ctdata/data_academy_resource.html'
 
-
 class FileResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']
     template = 'ctdata/data_academy_resource.html'
-
 
 class LinkResource(DataAcademyResource):
     parent_page_types = ['DataAcademyResourceIndex']

@@ -4,7 +4,7 @@ from django import template
 from django.conf import settings
 import re
 
-from ctdata.models import BlogPage, EventPage, Page, DataAcademyAbstractEvent
+from ctdata.models import BlogPage, EventPage, Page, DataAcademyAbstractEvent, ConferencePage
 
 register = template.Library()
 
@@ -75,6 +75,65 @@ def event_listing_homepage(context, count=3):
     }
 
 
+def parse_resource_to_dict(resource):
+    r_dict = {'title': resource.title, 'id': resource.id, 'items': []}
+    if resource.link:
+        r_dict['items'].append({'type': 'link', 'link': resource.link})
+    if resource.link_document and (resource.link_document.url != resource.link):
+        r_dict['items'].append({'type': 'document', 'link': resource.link_document.url})
+    if resource.link_external:
+        r_dict['items'].append({'type': 'external', 'link': resource.link_external})
+    return r_dict
+
+def parse_session_to_dict(session):
+    s_dict = {
+        'title': session.title,
+        'id': session.id,
+        'items': [parse_resource_to_dict(r) for r in session.related_resources.all()]}
+    return s_dict
+
+def parse_event(event, event_type, get_resources=True):
+    e_dict = {
+        'title': event.title,
+        'id': event.id,
+        'item': event,
+        'url': event.full_url,
+        'date': event.date_from,
+        'event_type': event_type,
+        'resource_items': []
+    }
+    if get_resources:
+        if event_type == 'Conference':
+            e_dict['resource_items'] = [parse_session_to_dict(s) for s in event.sessions.all()]
+        else:
+            e_dict['resource_items'] = [parse_resource_to_dict(r) for r in event.related_links.prefetch_related()]
+    return e_dict
+
+@register.inclusion_tag(
+    'ctdata/tags/event_resources_list.html',
+    takes_context=True
+)
+def event_resource_list(context):
+    """Consolidate different event types and pull out their resources and links"""
+    # Fetch different events
+    events = EventPage.objects.live().filter(academy_resources_list_display=True)
+    data_academy_events = DataAcademyAbstractEvent.objects.live().filter(academy_resources_list_display=True)
+    conferences = ConferencePage.objects.live().all()
+
+    # Build structured data for passing to template
+    event_resources = [parse_event(e, event_type='Event') for e in events]
+    da_resources = [parse_event(e, event_type='Data Academy Event', get_resources=False) for e in data_academy_events]
+    c_resources = [parse_event(c, event_type='Conference') for c in conferences]
+
+    # Join and sort by date the various resources
+    resources = event_resources + da_resources + c_resources
+    return {
+        'events': sorted(resources, key=lambda x: x['date'], reverse=True),
+        # required by the pageurl tag that we want to use within this template
+        'request': context['request']
+    }
+
+
 class SetVarNode(template.Node):
     def __init__(self, new_val, var_name):
         self.new_val = new_val
@@ -98,3 +157,4 @@ def setvar(parser,token):
     if not (new_val[0] == new_val[-1] and new_val[0] in ('"', "'")):
         raise template.TemplateSyntaxError("{} tag's argument should be in quotes".format(tag_name))
     return SetVarNode(new_val[1:-1], var_name)
+
