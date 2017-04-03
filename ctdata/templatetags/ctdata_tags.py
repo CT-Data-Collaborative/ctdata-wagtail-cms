@@ -109,13 +109,7 @@ def parse_event(event, event_type, get_resources=True):
             e_dict['resource_items'] = [parse_resource_to_dict(r) for r in event.related_links.prefetch_related()]
     return e_dict
 
-@register.inclusion_tag(
-    'ctdata/tags/event_resources_list.html',
-    takes_context=True
-)
-def event_resource_list(context):
-    """Consolidate different event types and pull out their resources and links"""
-    # Fetch different events
+def resources():
     events = EventPage.objects.live().filter(academy_resources_list_display=True)
     data_academy_events = DataAcademyAbstractEvent.objects.live().filter(academy_resources_list_display=True)
     conferences = ConferencePage.objects.live().all()
@@ -126,9 +120,19 @@ def event_resource_list(context):
     c_resources = [parse_event(c, event_type='Conference') for c in conferences]
 
     # Join and sort by date the various resources
-    resources = event_resources + da_resources + c_resources
+    resource_list = event_resources + da_resources + c_resources
+    return sorted(resource_list, key=lambda x: x['date'], reverse=True)
+
+@register.inclusion_tag(
+    'ctdata/tags/event_resources_list.html',
+    takes_context=True
+)
+def event_resource_list(context):
+    """Consolidate different event types and pull out their resources and links"""
+    # Fetch different events
+
     return {
-        'events': sorted(resources, key=lambda x: x['date'], reverse=True),
+        'events': resources(),
         # required by the pageurl tag that we want to use within this template
         'request': context['request']
     }
