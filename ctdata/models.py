@@ -963,7 +963,7 @@ class EventPage(Page):
     location = models.CharField(max_length=255)
     body = RichTextField(blank=True)
     signup_link = models.URLField(blank=True)
-    academy_resources_list_display = models.BooleanField(default=False)
+    academy_resources_list_display = models.BooleanField("Resource List Display", default=False)
     feed_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
