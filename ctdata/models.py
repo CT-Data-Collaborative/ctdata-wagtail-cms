@@ -1005,13 +1005,13 @@ class EventPage(Page):
 
 EventPage.content_panels = [
     FieldPanel('title', classname="full title"),
+    FieldPanel('academy_resources_list_display'),
     FieldPanel('date_from'),
     FieldPanel('date_to'),
     FieldPanel('time_from'),
     FieldPanel('time_to'),
     FieldPanel('location'),
     FieldPanel('signup_link'),
-    FieldPanel('academy_resources_list_display'),
     InlinePanel('carousel_items', label="Carousel items"),
     FieldPanel('body', classname="full"),
     InlinePanel('speakers', label="Speakers"),
@@ -1124,6 +1124,7 @@ class ConferencePage(EventPage):
 
 ConferencePage.content_panels = [
     FieldPanel('title', classname="full title"),
+    FieldPanel('academy_resources_list_display'),
     FieldPanel('date_from'),
     FieldPanel('date_to'),
     FieldPanel('time_from'),
