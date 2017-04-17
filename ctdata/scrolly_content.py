@@ -119,7 +119,9 @@ def get_content(sheet, cache_duration=900):
         NEW = True
     else:
         ts = datetime.datetime.fromtimestamp(cms_content[0]['timestamp'])
-        if (now - ts).seconds >= cache_duration:
+        if cache_duration == None:
+            content = cms_content[0]['content']
+        elif (now - ts).seconds >= cache_duration:
             worksheet = fetch_sheet(sheet)
             content = build_content_object(worksheet)
             UPDATE = True

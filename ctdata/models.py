@@ -717,7 +717,13 @@ class ScrollyStory(RoutablePageMixin, Page):
     author = models.CharField(max_length=255)
     date = models.DateField("Post date")
     google_sheet_name = models.CharField(max_length=255)
+    polling_interval = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="""Enter how long (in minutes) the google sheets content 
+    should be cached for. Leave blank to disable checking. Enter zero to disable caching.""")
     parent_page_types = ['ctdata.BlogIndexPage']
+
 
     @property
     def blog_index(self):
@@ -729,9 +735,13 @@ class ScrollyStory(RoutablePageMixin, Page):
 
     @route(r'^$')
     def base(self, request):
+        try:
+            polling_interval = self.polling_interval * 60
+        except TypeError:
+            polling_interval = None
         base_context = {}
         base_context['page'] = self
-        base_context['content'] = get_content(self.google_sheet_name)
+        base_context['content'] = get_content(self.google_sheet_name, cache_duration=polling_interval)
 
         return TemplateResponse(
             request,
@@ -741,7 +751,8 @@ ScrollyStory.content_panels = [
     FieldPanel('title', classname="full title"),
     FieldPanel('author'),
     FieldPanel('date'),
-    FieldPanel('google_sheet_name')
+    FieldPanel('google_sheet_name'),
+    FieldPanel('polling_interval')
 ]
 
 
