@@ -1,4 +1,13 @@
 {% load wagtailcore_tags wagtailimages_tags %}
+<p>
+    Links can include external pages, internal pages, or files that you can download.
+    <ul>
+        <li>External links are indicated by a <i class="fa fa-external-link"></i></li>
+        <li>Internal links are indicated by a <i class="fa fa-link"></i></li>
+        <li>Downloadable files are indicated by a <i class="fa fa-file"></i></li>
+    </ul>
+
+</p>
 <h2>Event Resources</h2>
 {% if events %}
     <div class="events">
@@ -7,7 +16,7 @@
               {% if event.event_type == 'Event' %}
                 {% include 'ctdata/includes/event_resource_event.html' %}
               {% elif event.event_type == 'Data Academy Event' %}
-                {% include 'ctdata/includes/event_resource_event.html' %}
+                {% include 'ctdata/includes/event_resource_academy_event.html' %}
               {% else %}
                 {% include 'ctdata/includes/event_resource_conference.html' %}
               {% endif %}

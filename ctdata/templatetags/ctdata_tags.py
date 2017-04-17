@@ -74,6 +74,14 @@ def event_listing_homepage(context, count=3):
         'request': context['request'],
     }
 
+def parse_academy_resource(resource):
+    r_dict = {
+        'title': resource.title,
+        'id': resource.id,
+        'description': '',
+        'items': [{'type': 'link', 'link': resource.url}]
+    }
+    return r_dict
 
 def parse_resource_to_dict(resource):
     r_dict = {'title': resource.title, 'id': resource.id, 'description': resource.description, 'items': []}
@@ -83,7 +91,7 @@ def parse_resource_to_dict(resource):
         r_dict['items'].append({'type': 'document', 'link': resource.link_document.url})
     if resource.link_external and (resource.link_external != resource.link):
         r_dict['items'].append({'type': 'external', 'link': resource.link_external})
-    r_dict.items = r_dict.items[0]
+    r_dict['items'] = r_dict['items'][0:1]
     return r_dict
 
 def parse_session_to_dict(session):
@@ -106,6 +114,8 @@ def parse_event(event, event_type, get_resources=True):
     if get_resources:
         if event_type == 'Conference':
             e_dict['resource_items'] = [parse_session_to_dict(s) for s in event.sessions.all()]
+        elif event_type == 'Data Academy Event':
+            e_dict['resource_items'] = [parse_academy_resource(r.related_resource) for r in event.related_resources.prefetch_related()]
         else:
             e_dict['resource_items'] = [parse_resource_to_dict(r) for r in event.related_links.prefetch_related()]
     return e_dict
@@ -117,7 +127,7 @@ def resources():
 
     # Build structured data for passing to template
     event_resources = [parse_event(e, event_type='Event') for e in events]
-    da_resources = [parse_event(e, event_type='Data Academy Event', get_resources=False) for e in data_academy_events]
+    da_resources = [parse_event(e, event_type='Data Academy Event', get_resources=True) for e in data_academy_events]
     c_resources = [parse_event(c, event_type='Conference') for c in conferences]
 
     # Join and sort by date the various resources

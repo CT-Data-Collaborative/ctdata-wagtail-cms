@@ -1091,7 +1091,10 @@ ConferenceSession.content_panels = [
     FieldPanel('time_to'),
     FieldPanel('description', classname="full"),
     InlinePanel('participants', label="Participants"),
-    InlinePanel('related_resources', label="Related Resources")
+    InlinePanel('related_resources', label="Related Resources",
+                help_text="""When adding a link it is preferable to include only one type of link 
+                (external, internal link, or internal document. The Event resource archive will only display the first
+                link found.""")
 ]
 
 class ConferenceSponsorLink(Orderable, SponsorLink):

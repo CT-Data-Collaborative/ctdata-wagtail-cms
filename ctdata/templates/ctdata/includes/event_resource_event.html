@@ -3,23 +3,34 @@
 {# Individual event item in a list - used on event index and home page #}
 <div class="media">
     <div class="media-body">
-        <a href="{% pageurl event.item %}"><h4 class="media-heading">{{ event.title }}</h4></a>
-        <p>{{ event.event_type }}</p>
-        <p><strong>{{ event.date }}</strong></p>
+        <h4 class="media-heading">Event Name: <a href="{% pageurl event.item %}">{{ event.title }}</a></h4>
+        <p>{{ event.date }}</p>
         <h4>Resources:</h4>
         <ul>
             {% for resource in event.resource_items %}
                 <li>
                     {{ resource.title }},
-                    {% for i in resource.items %}
-                        {% if i.type == 'link' %}
-                            <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-link"></i></a>
-                        {% elif i.type == 'external' %}
-                            <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-external-link"></i></a>
-                        {% elif i.type == 'document' %}
-                            <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-file"></i></a>
-                        {% endif %}
-                    {% endfor %}
+                    {% if resource.description %}
+                        {% for i in resource.items %}
+                            {% if i.type == 'link' %}
+                                {{ resource.title }}, <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-link"></i></a>
+                            {% elif i.type == 'external' %}
+                                {{ resource.title }}, <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-external-link"></i></a>
+                            {% elif i.type == 'document' %}
+                                {{ resource.title }}, <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-file"></i></a>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for i in resource.items %}
+                            {% if i.type == 'link' %}
+                                <a href="{{ i.link }}">{{ resource.title }} <i class="fa fa-link"></i></a>
+                            {% elif i.type == 'external' %}
+                                <a href="{{ i.link }}">{{ resource.title }} <i class="fa fa-external-link"></i></a>
+                            {% elif i.type == 'document' %}
+                                <a href="{{ i.link }}">{{ resource.title }} <i class="fa fa-file"></i></a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
