@@ -10,15 +10,14 @@
         <ul>
             {% for resource in event.resource_items %}
                 <li>
-                    {{ resource.title }}
-                    {{ resource.items }}
+                    {{ resource.title }},
                     {% for i in resource.items %}
                         {% if i.type == 'link' %}
-                            <a href="{{ i.link }}"><i class="fa fa-link"></i></a>
+                            <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-link"></i></a>
                         {% elif i.type == 'external' %}
-                            <a href="{{ i.link }}"><i class="fa fa-external-link"></i></a>
+                            <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-external-link"></i></a>
                         {% elif i.type == 'document' %}
-                            <a href="{{ i.link }}"><i class="fa fa-file"></i></a>
+                            <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-file"></i></a>
                         {% endif %}
                     {% endfor %}
                 </li>

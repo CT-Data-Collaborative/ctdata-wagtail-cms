@@ -199,9 +199,9 @@ class LinkFields(models.Model):
             return self.link_external
 
     panels = [
-        FieldPanel('link_external'),
-        PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+            FieldPanel('link_external'),
+            PageChooserPanel('link_page'),
+            DocumentChooserPanel('link_document')
     ]
 
     class Meta:
@@ -308,7 +308,7 @@ class RelatedLink(LinkFields):
     panels = [
         FieldPanel('title'),
         FieldPanel('description'),
-        MultiFieldPanel(LinkFields.panels, "Link"),
+        MultiFieldPanel(LinkFields.panels)
     ]
 
     class Meta:
@@ -1005,17 +1005,22 @@ class EventPage(Page):
 
 EventPage.content_panels = [
     FieldPanel('title', classname="full title"),
+    FieldRowPanel([
+        FieldPanel('date_from'),
+        FieldPanel('date_to'),
+        FieldPanel('time_from'),
+        FieldPanel('time_to')
+    ]),
     FieldPanel('academy_resources_list_display'),
-    FieldPanel('date_from'),
-    FieldPanel('date_to'),
-    FieldPanel('time_from'),
-    FieldPanel('time_to'),
     FieldPanel('location'),
     FieldPanel('signup_link'),
     InlinePanel('carousel_items', label="Carousel items"),
     FieldPanel('body', classname="full"),
     InlinePanel('speakers', label="Speakers"),
-    InlinePanel('related_links', label="Related links")
+    InlinePanel('related_links', label="Related links",
+                help_text="""When adding a link it is preferable to include only one type of link 
+                (external, internal link, or internal document. The Event resource archive will only display the first
+                link found.""")
 ]
 
 EventPage.promote_panels = Page.promote_panels + [
