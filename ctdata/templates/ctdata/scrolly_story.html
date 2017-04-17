@@ -1,0 +1,79 @@
+{% extends "ctdata/__left_sidebar.html" %}
+{% load wagtailcore_tags %}
+{% block title %}{{ self.title }}{% endblock %}
+{% block page_row_class %}blog-page{% endblock %}
+{% block side_col %}
+    <div class="post-meta">
+        <div class="logo-dots">
+            <div class="dot extra-light-blue"></div>
+            <div class="dot light-blue"></div>
+            <div class="dot medium-blue"></div>
+            <div class="dot dark-blue"></div>
+        </div>
+        <p>
+            <span class="post-date">{{ self.date |date:"F d, Y" }}</span>
+            <br>
+            <span class="post-author">{{ self.author }}</span>
+        </p>
+        <p>
+            <span class="tags" itemprop="keywords">
+                {% for tag in self.tags.all %}
+                    <a href="{% pageurl self.blog_index %}?tag={{ tag }}">{{ tag }}</a>
+                {% endfor %}
+            </span>
+        </p>
+    </div>
+{% endblock side_col %}
+{% block main_col %}
+    <div class="post-content">
+        <div class="body-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div id="graphics">
+                        {% for section in content %}
+                            <section class="step">
+                                {% for item in section.items %}
+                                    {% if item.type == 'Title' %}
+                                        <h2>{{ item.content | safe }}</h2>
+                                    {% elif item.type == 'Heading' %}
+                                        <h3>{{ item.content | safe }}</h3>
+                                    {% elif item.type == 'Subheading' %}
+                                        <h4>{{ item.content | safe }}</h4>
+                                    {% elif item.type == 'Paragraph' %}
+                                        <p>{{ item.content | safe }}</p>
+                                    {% elif item.type == 'Ordered List' %}
+                                        <p>{{ item.content | safe }}</p>
+                                        <ol>
+                                            {% for list_item in item.list_items %}
+                                                <li>{{ list_item | safe }}</li>
+                                            {% endfor %}
+                                        </ol>
+                                    {% elif item.type == 'Unordered List' %}
+                                        <p>{{ item.content | safe }}</p>
+                                        <ul>
+                                            {% for list_item in item.list_items %}
+                                                <li>{{ list_item | safe }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endfor %}
+                            </section>
+                            <!-- /.step -->
+                        {% endfor %}
+                    </div>
+                    <!-- /#graphics -->
+                </div>
+            </div><!-- /.row -->
+        </div>
+        <hr>
+    </div>
+    {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
+    {% include 'ctdata/includes/disqus.html' %}
+{% endblock main_col %}
+{% block extra_js %}
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}

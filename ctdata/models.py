@@ -33,6 +33,7 @@ from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase, TagBase, GenericTaggedItemBase, ItemBase
 
 from ctdata.utils import export_event, is_tag_full
+from ctdata.scrolly_content import get_content
 from fontawesome.fields import IconField
 from eventbrite import Eventbrite
 import datetime
@@ -593,7 +594,7 @@ class BlogIndexPageRelatedLink(Orderable, RelatedLink):
 
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
-    subpage_types = ['ctdata.BlogPage']
+    subpage_types = ['ctdata.BlogPage', 'ctdata.ScrollyStory']
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
     ]
@@ -701,6 +702,46 @@ BlogPage.content_panels = [
 BlogPage.promote_panels = Page.promote_panels + [
     ImageChooserPanel('feed_image'),
     FieldPanel('tags'),
+]
+
+################################################################################################
+########
+########
+########            Google Sheets Scrolly Story Page
+########
+########
+################################################################################################
+
+class ScrollyStory(RoutablePageMixin, Page):
+    tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
+    author = models.CharField(max_length=255)
+    date = models.DateField("Post date")
+    google_sheet_name = models.CharField(max_length=255)
+    parent_page_types = ['ctdata.BlogIndexPage']
+
+    @property
+    def blog_index(self):
+        # Find closest ancestor which is a blog index
+        return self.get_ancestors().type(BlogIndexPage).last()
+
+    def get_absolute_url(self):
+        return self.full_url
+
+    @route(r'^$')
+    def base(self, request):
+        base_context = {}
+        base_context['page'] = self
+        base_context['content'] = get_content(self.google_sheet_name)
+
+        return TemplateResponse(
+            request,
+            self.get_template(request), base_context)
+
+ScrollyStory.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('author'),
+    FieldPanel('date'),
+    FieldPanel('google_sheet_name')
 ]
 
 

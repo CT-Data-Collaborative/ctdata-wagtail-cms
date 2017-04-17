@@ -77,3 +77,6 @@ backup/
 env.example
 
 .cache/
+
+service_creds.json
+immigration.json

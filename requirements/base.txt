@@ -27,6 +27,8 @@ Pillow==3.3.0
 # Well-built with regular release cycles!
 django-allauth==0.26.1
 
+# Database
+tinydb==3.2.2
 
 # Python-PostgreSQL Database Adapter
 psycopg2==2.6.2
@@ -54,3 +56,7 @@ django-fontawesome==0.3.1
 #eventbrite
 eventbrite==3.3.3
 django-wagtail-feeds
+
+# Google Sheets as CMS
+gspread==0.6.2
+oauth2client==4.0.0
