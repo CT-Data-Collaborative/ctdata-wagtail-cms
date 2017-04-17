@@ -11,6 +11,7 @@
               {% else %}
                 {% include 'ctdata/includes/event_resource_conference.html' %}
               {% endif %}
+              {% if not forloop.last %}<hr>{% endif %}
           {% endfor %}
         </div>
     </div>

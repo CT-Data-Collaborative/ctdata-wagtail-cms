@@ -1257,7 +1257,7 @@ class DataAcademyTag(TagBase):
 ################################################################################################
 
 
-class DataAcademyPage(Page):
+class DataAcademyPage(RoutablePageMixin, Page):
     parent_page_types = ['HomePage']
     subpage_types = ['DataAcademyEventIndex', 'DataAcademyResourceIndex']
     image = models.ForeignKey(
@@ -1271,6 +1271,7 @@ class DataAcademyPage(Page):
     explore_resources_text = RichTextField(blank=True)
     category_list_text = RichTextField(blank=True)
     showcase_text = RichTextField(blank=True)
+    resource_index_page_title = models.CharField(max_length=20, blank=False)
 
     @property
     def events(self):
@@ -1301,20 +1302,40 @@ class DataAcademyPage(Page):
     def tags(self):
         return [tag for tag in DataAcademyTag.objects.all() if is_tag_full(tag)]
 
-    def get_context(self, request):
-        context = super(DataAcademyPage, self).get_context(request)
-        context['events'] = self.events
-        context['highlighted_resources'] = self.highlighted_resources
-        context['event_index'] = self.event_index
-        context['resource_index'] = self.resource_index
-        context['tags'] = self.tags
-        if self.image:
-            context['image'] = self.image.file.url
-        return context
+    @property
+    def resource_index_page(self):
+        return r'^{}/$'.format(self.resource_index_page_title)
 
+    @route(r'^$')
+    def base(self, request):
+        base_context = {}
+        base_context['page'] = self
+        base_context['events'] = self.events
+        base_context['highlighted_resources'] = self.highlighted_resources
+        base_context['event_index'] = self.event_index
+        base_context['resource_index'] = self.resource_index
+        base_context['tags'] = self.tags
+        if self.image:
+            base_context['image'] = self.image.file.url
+
+        return TemplateResponse(
+            request,
+            self.get_template(request), base_context)
+
+    @route(r'^event-resources-archive/$')
+    def archive(self, request):
+        self.title = self.resource_index_page_title
+        return render(
+            request,
+            'ctdata/event_resource_archive_index.html', {
+                'past': [],
+                'page': self,
+            }
+        )
 
 DataAcademyPage.content_panels = [
     FieldPanel('title'),
+    FieldPanel('resource_index_page_title'),
     StreamFieldPanel('body'),
     FieldPanel('explore_resources_text', classname="full"),
     FieldPanel('category_list_text', classname="full"),
@@ -1674,3 +1695,5 @@ class LinkResource(DataAcademyResource):
 LinkResource.content_panels = DataAcademyResource.content_panels + [
     InlinePanel('related_links', label="Links")
 ]
+
+

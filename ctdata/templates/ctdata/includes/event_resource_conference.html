@@ -6,5 +6,13 @@
         <a href="{% pageurl event.item %}"><h4 class="media-heading">{{ event.title }}</h4></a>
         <p>{{ event.event_type }}</p>
         <p><strong>{{ event.date }}</strong></p>
+        {% for i in event.resource_items %}
+            <h5>Session Title: {{ i.title }}</h5>
+            {% for r in i.items %}
+                {% for l in r.items %}
+                    <a href="{{ l.link }}">{{ r.title }}</a>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
     </div>
 </div>

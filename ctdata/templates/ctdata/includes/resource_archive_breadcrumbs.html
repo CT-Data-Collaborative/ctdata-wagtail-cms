@@ -1,0 +1,18 @@
+{% load wagtailcore_tags ctdata_tags %}
+{% if page.get_ancestors|length > 1 %}
+    <ol class="breadcrumbs">
+        {% for page in page.get_ancestors %}
+            {% if page.is_root == False %}
+                <li><a {% if forloop.last %} class="last" {% endif %} href={% pageurl page %}>
+                    {% if forloop.counter == 2 %}
+                        <i class="fa fa-home"></i>
+                    {% else %}
+                        {{ page.title }}
+                    {% endif %}
+                </a><span class="separator"></span></li>
+            {% endif %}
+        {% endfor %}
+        <li><a href="{% pageurl page %}">Data Academy</a></li>
+        <li><a href="#">Event Resources</a></li>
+    </ol>
+{% endif %}

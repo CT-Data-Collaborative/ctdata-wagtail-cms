@@ -1,6 +1,7 @@
 // Fetch latest datasets published to or updated on CKAN
 
 var buildTemplate = function(data) {
+    console.log(data);
     var template = $('#datasetTemplate').html();
     var rendered = Mustache.render(template, data);
     $('#datasetTarget').html(rendered);
@@ -63,7 +64,7 @@ var structureData = function(data, callback) {
 };
 
 (function(){
-    $.ajax("http://data.ctdata.org/api/3/action/recently_changed_packages_activity_list?limit=10").done(function(data) {
+    $.ajax("http://data.ctdata.org/api/3/action/recently_changed_packages_activity_list?limit=20").done(function(data) {
         var results = data.result;
         structureData(results, getMetadata);
     })

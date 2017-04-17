@@ -77,11 +77,12 @@ def event_listing_homepage(context, count=3):
 
 def parse_resource_to_dict(resource):
     r_dict = {'title': resource.title, 'id': resource.id, 'items': []}
+    unique_item = []
     if resource.link:
         r_dict['items'].append({'type': 'link', 'link': resource.link})
     if resource.link_document and (resource.link_document.url != resource.link):
         r_dict['items'].append({'type': 'document', 'link': resource.link_document.url})
-    if resource.link_external:
+    if resource.link_external and (resource.link_external != resource.link):
         r_dict['items'].append({'type': 'external', 'link': resource.link_external})
     return r_dict
 
