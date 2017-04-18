@@ -36,16 +36,16 @@ def fetch_sheet(sheet_name):
     return workbook
 
 
-def parse_sheet(record_list):
+def parse_sheet(worksheet):
     """
     Take a list of worksheet record elements stored as dicts and return a structured node list
-    :param record_list: list of dicts
+    :param worksheet: list of dicts
     :return: list of dicts
     """
     ON_LIST = False
-    content_tree = {'section': '', 'graphic': '', 'items': []}
+    content_tree = {'section': worksheet._title, 'graphic': '', 'items': []}
     current_list = {'type': '', 'list_items': []}
-    for el in record_list.get_all_records():
+    for el in worksheet.get_all_records():
         if is_list(el):
             ON_LIST = True
             if el['Content Type'] == 'Bullet List':
