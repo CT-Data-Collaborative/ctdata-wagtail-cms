@@ -111,3 +111,22 @@ nav {
     left: 0;
     right: 0;
 }
+
+.navbar-hidden {
+  background: #343434;
+  position: fixed;
+  top: -80px;
+  left: 0;
+  right: 0;
+  border-radius: 0 !important;
+}
+
+nav.navbar-hidden.hidden {
+  top: -80px;
+  transition:top .25s linear;
+}
+
+nav.navbar-hidden.reveal {
+  top: 0;
+  transition:top .25s linear;
+}

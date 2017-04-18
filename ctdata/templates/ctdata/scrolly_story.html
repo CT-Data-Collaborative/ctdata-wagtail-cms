@@ -1,35 +1,17 @@
-{% extends "ctdata/__left_sidebar.html" %}
+{% extends "ctdata/__no_sidebar.html" %}
 {% load wagtailcore_tags %}
 {% block title %}{{ self.title }}{% endblock %}
 {% block page_row_class %}blog-page{% endblock %}
-{% block side_col %}
-    <div class="post-meta">
-        <div class="logo-dots">
-            <div class="dot extra-light-blue"></div>
-            <div class="dot light-blue"></div>
-            <div class="dot medium-blue"></div>
-            <div class="dot dark-blue"></div>
-        </div>
-        <p>
-            <span class="post-date">{{ self.date |date:"F d, Y" }}</span>
-            <br>
-            <span class="post-author">{{ self.author }}</span>
-        </p>
-        <p>
-            <span class="tags" itemprop="keywords">
-                {% for tag in self.tags.all %}
-                    <a href="{% pageurl self.blog_index %}?tag={{ tag }}">{{ tag }}</a>
-                {% endfor %}
-            </span>
-        </p>
-    </div>
-{% endblock side_col %}
-{% block main_col %}
+{% block navbar %}
+    {{ block.super }}
+    {% include 'ctdata/includes/hidden_navbar.html' %}
+{% endblock %}
+{% block centered_content %}
     <div class="post-content">
         <div class="body-content">
             <div class="row">
-                <div class="col-lg-8">
-                    <div id="graphics">
+                <div class="col-xs-8 offset-xs-2">
+                    <div id="sections">
                         {% for section in content %}
                             <section class="step">
                                 {% for item in section.items %}
@@ -61,19 +43,43 @@
                             <!-- /.step -->
                         {% endfor %}
                     </div>
-                    <!-- /#graphics -->
+                    <!-- /#sections -->
+                    <div id="scrolly-vis"></div>
+                    <!-- /#scrolly-vis -->
                 </div>
             </div><!-- /.row -->
         </div>
         <hr>
     </div>
     {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
-    {% include 'ctdata/includes/disqus.html' %}
-{% endblock main_col %}
+{% endblock %}
 {% block extra_js %}
 <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
+</script>
+<script>
+$(function() {
+    // Functions to handle the initial positioning of the header, footer and viz box for scrollytelling
+    var header = $(".navbar-hidden");
+    var scrollyvis = $("#scrolly-vis");
+    $(window).scroll(function() {
+        var scroll = $(window).scrollTop();
+        console.log(scroll);
+        if (scroll >= 350) {
+            header.removeClass('hidden').addClass("reveal");
+        } else {
+            header.removeClass("reveal").addClass('hidden');
+        }
+        if (scroll <= 375) {
+            var newtop = 500 - scroll;
+            scrollyvis.css('top', newtop + 'px');
+        } else {
+            scrollyvis.css('top', '120px');
+        }
+    });
+    // Need to add a $(document).height() based watcher that will move scrollyvis up when we hit the footer 
+});
 </script>
 {% endblock %}

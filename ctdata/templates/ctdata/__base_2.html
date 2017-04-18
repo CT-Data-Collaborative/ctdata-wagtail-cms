@@ -25,7 +25,9 @@
 </head>
 <body class="{% block body_class %}{% endblock %}">
 {% wagtailuserbar %}
+{% block navbar %}
 {% include 'ctdata/includes/navbar.html' %}
+{% endblock %}
 {% if custom_image %}
     {% include 'ctdata/includes/alt_hero.html' with custom_image=custom_image %}
 {% else  %}

@@ -1,0 +1,23 @@
+#sections {
+  position: relative;
+  display: inline-block;
+  width: 450px;
+  top: 0px;
+  z-index: 90;
+}
+
+.step {
+  margin-bottom: 200px;
+}
+
+
+#scrolly-vis {
+  display: inline-block;
+  position: fixed;
+  top: 500px;
+  z-index: 1;
+  margin-left: 0;
+  height: 600px;
+  width: 600px;
+  background-color: #ddd;
+}

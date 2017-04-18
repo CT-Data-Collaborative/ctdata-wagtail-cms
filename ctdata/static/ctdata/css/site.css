@@ -265,6 +265,22 @@ nav {
   left: 0;
   right: 0; }
 
+.navbar-hidden {
+  background: #343434;
+  position: fixed;
+  top: -80px;
+  left: 0;
+  right: 0;
+  border-radius: 0 !important; }
+
+nav.navbar-hidden.hidden {
+  top: -80px;
+  transition: top .25s linear; }
+
+nav.navbar-hidden.reveal {
+  top: 0;
+  transition: top .25s linear; }
+
 #footer {
   clear: both;
   background: #333;
@@ -1233,3 +1249,23 @@ ol.breadcrumbs {
     color: #737373; }
   ol.breadcrumbs li:last-of-type:before, ol.breadcrumbs li:last-of-type:after {
     display: none; }
+
+#sections {
+  position: relative;
+  display: inline-block;
+  width: 450px;
+  top: 0px;
+  z-index: 90; }
+
+.step {
+  margin-bottom: 200px; }
+
+#scrolly-vis {
+  display: inline-block;
+  position: fixed;
+  top: 500px;
+  z-index: 1;
+  margin-left: 0;
+  height: 600px;
+  width: 600px;
+  background-color: #ddd; }

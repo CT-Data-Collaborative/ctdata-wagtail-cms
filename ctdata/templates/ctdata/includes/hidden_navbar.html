@@ -1,0 +1,32 @@
+{% load cache static %}
+<nav class="navbar navbar-hidden hidden">
+    <!-- /.overlay -->
+    <div class="navbar-brand .pull-xs-left">
+        <div class="logo">
+            <img src="{% static 'ctdata/images/logo.svg' %}">
+        </div>
+        <!-- /.logo -->
+    </div>
+    <div class="navbar-toggleable-sm collapse" id="collapseableNavbar">
+        <ul class="nav navbar-nav pull-xs-right offset-md-right-2">
+            <li class="nav-item"><a href="/">Home</a></li>
+            <!-- /.nav-item -->
+            <li class="nav-item"><a href="http://data.ctdata.org">Data</a></li>
+            <!-- /.nav-item -->
+            <li class="nav-item"><a href="/academy">Academy</a></li>
+            <!-- /.nav-item -->
+            <li class="nav-item"><a href="/#projects">Projects</a></li>
+            <!-- /.nav-item -->
+            <li class="nav-item"><a href="/services">Services</a></li>
+            <!-- /.nav-item -->
+            <li class="nav-item"><a href="/news/">News</a></li>
+            <!-- /.nav-item -->
+            <li class="nav-item"><a href="/about">About</a></li>
+            <!-- /.nav-item -->
+        </ul>
+    </div>
+    <button class="navbar-toggler hidden-md-up top-right" type="button" data-toggle="collapse" data-target="#collapseableNavbar">
+    menu
+    </button>
+</nav>
+<!-- /.navbar -->
