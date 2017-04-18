@@ -63,9 +63,14 @@
 $(function() {
     // Functions to handle the initial positioning of the header, footer and viz box for scrollytelling
     var header = $(".navbar-hidden");
-    var scrollyvis = $("#scrolly-vis");
+    var scrollyVis = $("#scrolly-vis");
+    var footer = $('#footer');
+    var footer_padding = footer.css('padding-top').substr(0,2);
+    var footerCutoff = footer.height() + 2*Number(footer_padding);
+    var docHeight = $(document).height();
     $(window).scroll(function() {
         var scroll = $(window).scrollTop();
+        var windowHight = $(window).height();
         if (scroll >= 350) {
             header.removeClass('hidden').addClass("reveal");
         } else {
@@ -73,10 +78,13 @@ $(function() {
         }
         if (scroll <= 375) {
             var newtop = 500 - scroll;
-            scrollyvis.css('top', newtop + 'px');
+            scrollyVis.css('top', newtop + 'px');
         } else {
-            scrollyvis.css('top', '120px');
+            scrollyVis.css('top', '120px');
         }
+{#        if ((scroll + windowHight) > (docHeight - footerCutoff/2)) {#}
+{#            console.log(scroll);#}
+{#        }#}
     });
     // Need to add a $(document).height() based watcher that will move scrollyvis up when we hit the footer
 });
