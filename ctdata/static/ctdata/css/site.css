@@ -1250,6 +1250,10 @@ ol.breadcrumbs {
   ol.breadcrumbs li:last-of-type:before, ol.breadcrumbs li:last-of-type:after {
     display: none; }
 
+#scrolly-story {
+  padding-top: 80px;
+  padding-top: 5rem; }
+
 #sections {
   position: relative;
   display: inline-block;

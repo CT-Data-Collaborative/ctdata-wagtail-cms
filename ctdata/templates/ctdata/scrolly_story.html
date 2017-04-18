@@ -1,5 +1,5 @@
 {% extends "ctdata/__no_sidebar.html" %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags static %}
 {% block title %}{{ self.title }}{% endblock %}
 {% block page_row_class %}blog-page{% endblock %}
 {% block navbar %}
@@ -8,7 +8,7 @@
 {% endblock %}
 {% block centered_content %}
     <div class="post-content">
-        <div class="body-content">
+        <div id="scrolly-story">
             <div class="row">
                 <div class="col-xs-8 offset-xs-2">
                     <div id="sections">
@@ -66,7 +66,6 @@ $(function() {
     var scrollyvis = $("#scrolly-vis");
     $(window).scroll(function() {
         var scroll = $(window).scrollTop();
-        console.log(scroll);
         if (scroll >= 350) {
             header.removeClass('hidden').addClass("reveal");
         } else {
@@ -79,7 +78,12 @@ $(function() {
             scrollyvis.css('top', '120px');
         }
     });
-    // Need to add a $(document).height() based watcher that will move scrollyvis up when we hit the footer 
+    // Need to add a $(document).height() based watcher that will move scrollyvis up when we hit the footer
 });
 </script>
+<script src="{% static 'ctdata/js/scroller.js' %}"></script>
+<script src="{% static 'ctdata/js/scrolly_graphics.js' %}"></script>
+{% endblock %}
+{% block external_js %}
+<script src="{% static 'ctdata/js/lib/d3.js' %}"></script>
 {% endblock %}
