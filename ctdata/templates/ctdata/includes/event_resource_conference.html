@@ -5,36 +5,69 @@
     <div class="media-body">
         <h4 class="media-heading">Event Name: <a href="{% pageurl event.item %}">{{ event.title }}</a></h4>
         <p>{{ event.date }}</p>
-        <h4>Sessions:</h4>
-        {% for i in event.resource_items %}
-            <section style="padding-top: 1rem; padding-left:1rem">
-                <h5>{{ i.title }}</h5>
-                    {% for r in i.items %}
-                        <div>
-                            {% if r.description %}
-                                {% for l in r.items %}
-                                     {% if l.type == 'link' %}
-                                        {{ r.title }}, <a href="{{ l.link }}">{{ r.description }} <i class="fa fa-link"></i></a>
-                                    {% elif l.type == 'external' %}
-                                        {{ r.title }}, <a href="{{ l.link }}">{{ r.description }} <i class="fa fa-external-link"></i></a>
-                                    {% elif l.type == 'document' %}
-                                        {{ r.title }}, <a href="{{ l.link }}">{{ r.description }} <i class="fa fa-file"></i></a>
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                {% for l in r.items %}
-                                    {% if l.type == 'link' %}
-                                        <a href="{{ l.link }}">{{ r.title }} <i class="fa fa-link"></i></a>
-                                    {% elif l.type == 'external' %}
-                                        <a href="{{ l.link }}">{{ r.title }} <i class="fa fa-external-link"></i></a>
-                                    {% elif l.type == 'document' %}
-                                        <a href="{{ l.link }}">{{ r.title }} <i class="fa fa-file"></i></a>
-                                    {% endif %}
-                                {% endfor %}
+        {% with resources=event.resource_items.resources %}
+            <h4>Resources:</h4>
+            <ul>
+            {% for resource in resources %}
+                <li>
+                    {{ resource.title }},
+                    {% if resource.description %}
+                        {% for i in resource.items %}
+                            {% if i.type == 'link' %}
+                                {{ resource.title }}, <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-link"></i></a>
+                            {% elif i.type == 'external' %}
+                                {{ resource.title }}, <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-external-link"></i></a>
+                            {% elif i.type == 'document' %}
+                                {{ resource.title }}, <a href="{{ i.link }}">{{ resource.description }} <i class="fa fa-file"></i></a>
                             {% endif %}
-                        </div>
-                    {% endfor %}
-            </section>
-        {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        {% for i in resource.items %}
+                            {% if i.type == 'link' %}
+                                <a href="{{ i.link }}">{{ resource.title }} <i class="fa fa-link"></i></a>
+                            {% elif i.type == 'external' %}
+                                <a href="{{ i.link }}">{{ resource.title }} <i class="fa fa-external-link"></i></a>
+                            {% elif i.type == 'document' %}
+                                <a href="{{ i.link }}">{{ resource.title }} <i class="fa fa-file"></i></a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% endwith %}
+        {% with sessions=event.resource_items.sessions %}
+            <h4>Sessions:</h4>
+            {% for i in sessions %}
+                    <section style="padding-top: 1rem; padding-left:1rem">
+                        <h5>{{ i.title }}</h5>
+                            {% for r in i.items %}
+                                <div>
+                                    {% if r.description %}
+                                        {% for l in r.items %}
+                                             {% if l.type == 'link' %}
+                                                {{ r.title }}, <a href="{{ l.link }}">{{ r.description }} <i class="fa fa-link"></i></a>
+                                            {% elif l.type == 'external' %}
+                                                {{ r.title }}, <a href="{{ l.link }}">{{ r.description }} <i class="fa fa-external-link"></i></a>
+                                            {% elif l.type == 'document' %}
+                                                {{ r.title }}, <a href="{{ l.link }}">{{ r.description }} <i class="fa fa-file"></i></a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for l in r.items %}
+                                            {% if l.type == 'link' %}
+                                                <a href="{{ l.link }}">{{ r.title }} <i class="fa fa-link"></i></a>
+                                            {% elif l.type == 'external' %}
+                                                <a href="{{ l.link }}">{{ r.title }} <i class="fa fa-external-link"></i></a>
+                                            {% elif l.type == 'document' %}
+                                                <a href="{{ l.link }}">{{ r.title }} <i class="fa fa-file"></i></a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                    </section>
+                {% endfor %}
+        {% endwith %}
     </div>
 </div>

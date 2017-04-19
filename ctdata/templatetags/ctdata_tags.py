@@ -113,7 +113,9 @@ def parse_event(event, event_type, get_resources=True):
     }
     if get_resources:
         if event_type == 'Conference':
-            e_dict['resource_items'] = [parse_session_to_dict(s) for s in event.sessions.all()]
+            e_dict['resource_items'] = {}
+            e_dict['resource_items']['sessions'] = [parse_session_to_dict(s) for s in event.sessions.all()]
+            e_dict['resource_items']['resources'] = [parse_resource_to_dict(r) for r in event.related_links.prefetch_related()]
         elif event_type == 'Data Academy Event':
             e_dict['resource_items'] = [parse_academy_resource(r.related_resource) for r in event.related_resources.prefetch_related()]
         else:
@@ -121,7 +123,8 @@ def parse_event(event, event_type, get_resources=True):
     return e_dict
 
 def resources():
-    events = EventPage.objects.live().filter(academy_resources_list_display=True)
+    events = [e for e in EventPage.objects.live().filter(academy_resources_list_display=True) if
+              e.content_type.model != 'conferencepage']
     data_academy_events = DataAcademyAbstractEvent.objects.live().filter(academy_resources_list_display=True)
     conferences = ConferencePage.objects.live().all()
 
