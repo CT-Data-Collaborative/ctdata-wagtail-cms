@@ -14,9 +14,14 @@
                     <div id="sections">
                         {% for section in content %}
                             <section class="step">
+                                {% if section.graphic %}
+                                    <div data-graphic-id="{{ section.graphic }}"></div>
+                                {% endif %}
                                 {% for item in section.items %}
                                     {% if item.type == 'Title' %}
                                         <h2>{{ item.content | safe }}</h2>
+                                    {% elif item.type == 'Graphic' %}
+                                        <div data-graphic-id="{{ item.content }}"></div>
                                     {% elif item.type == 'Heading' %}
                                         <h3>{{ item.content | safe }}</h3>
                                     {% elif item.type == 'Subheading' %}
