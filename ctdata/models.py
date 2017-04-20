@@ -1331,6 +1331,7 @@ class DataAcademyPage(RoutablePageMixin, Page):
     explore_resources_text = RichTextField(blank=True)
     category_list_text = RichTextField(blank=True)
     showcase_text = RichTextField(blank=True)
+    resource_index_text = RichTextField(blank=True)
     resource_index_page_title = models.CharField(max_length=20, blank=False)
 
     @property
@@ -1400,6 +1401,7 @@ DataAcademyPage.content_panels = [
     FieldPanel('explore_resources_text', classname="full"),
     FieldPanel('category_list_text', classname="full"),
     FieldPanel('showcase_text', classname="full"),
+    FieldPanel('resource_index_text', classname="full"),
     ImageChooserPanel('image')
     ]
 
