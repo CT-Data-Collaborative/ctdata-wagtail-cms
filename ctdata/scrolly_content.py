@@ -36,12 +36,13 @@ def fetch_sheet(sheet_name):
     return workbook
 
 
-def parse_sheet(worksheet):
+def parse_sheet(worksheet_name, lookup):
     """
     Take a list of worksheet record elements stored as dicts and return a structured node list
     :param worksheet: list of dicts
     :return: list of dicts
     """
+    worksheet = lookup[worksheet_name]
     ON_LIST = False
     content_tree = {'section': worksheet._title, 'graphic': '', 'items': []}
     current_list = {'type': '', 'list_items': []}
@@ -60,6 +61,12 @@ def parse_sheet(worksheet):
             current_list['list_items'].append(el['Content'])
         elif el['Content Type'] == 'Graphic':
             content_tree['graphic'] = el['Content']
+        elif el['Content Type'] == 'Table':
+            table_name = el['Content']
+            data = lookup[table_name].get_all_records()
+            headers = list(data[0].keys())
+            flat_data = [[d[h] for h in headers] for d in data]
+            content_tree['items'].append({'type': el['Content Type'], 'content': {'header': headers, 'data': flat_data} })
         elif is_list(el) == False:
             if ON_LIST == True:
                 ON_LIST = False
@@ -95,9 +102,10 @@ def build_content_object(workbook):
 
     # Get the index and build a list of the order in which sheets should be parsed
     index = lookup['Index']
+
     section_order = [so['Section Order'] for so in index.get_all_records() if so['Section Order'] in lookup]
 
-    content = [parse_sheet(lookup[s]) for s in section_order]
+    content = [parse_sheet(s, lookup) for s in section_order]
     return content
 
 
