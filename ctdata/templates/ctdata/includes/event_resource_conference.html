@@ -39,6 +39,7 @@
         {% with sessions=event.resource_items.sessions %}
             <h4>Sessions:</h4>
             {% for i in sessions %}
+                {% if i.items %}
                     <section style="padding-top: 1rem; padding-left:1rem">
                         <h5>{{ i.title }}</h5>
                             {% for r in i.items %}
@@ -67,7 +68,8 @@
                                 </div>
                             {% endfor %}
                     </section>
-                {% endfor %}
+                {% endif %}
+            {% endfor %}
         {% endwith %}
     </div>
 </div>
