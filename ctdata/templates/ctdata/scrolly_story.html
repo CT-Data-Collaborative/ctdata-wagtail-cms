@@ -12,7 +12,7 @@
             <div class="row">
                 <div class="col-xs-8 offset-xs-2">
                     <div id="sections">
-                        {% for section in content %}
+                        {% for section in content.content %}
                             <section class="step">
                                 {% if section.graphic %}
                                     <div data-graphic-id="{{ section.graphic }}"></div>
@@ -76,6 +76,9 @@
     {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
 {% endblock %}
 {% block extra_js %}
+<script>
+    var scrolly_data = {{ content.rawdata|safe}};
+</script>
 <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();

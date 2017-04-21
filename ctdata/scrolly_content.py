@@ -1,8 +1,12 @@
+import itertools
+import json
 import datetime
 import re
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from tinydb import TinyDB, Query
+
+
 
 tooltip_regex = re.compile('\(\((.*?)\)\)\[\[(.*?)\]\]')
 
@@ -35,18 +39,16 @@ def fetch_sheet(sheet_name):
 
     return workbook
 
-
-def parse_sheet(worksheet_name, lookup):
+def parse_section(section_name, section_content, lookup):
     """
     Take a list of worksheet record elements stored as dicts and return a structured node list
     :param worksheet: list of dicts
     :return: list of dicts
     """
-    worksheet = lookup[worksheet_name]
     ON_LIST = False
-    content_tree = {'section': worksheet._title, 'graphic': '', 'items': []}
+    content_tree = {'section': section_name, 'graphic': '', 'items': []}
     current_list = {'type': '', 'list_items': []}
-    for el in worksheet.get_all_records():
+    for el in section_content:
         if is_list(el):
             ON_LIST = True
             if el['Content Type'] == 'Bullet List':
@@ -84,9 +86,12 @@ def parse_sheet(worksheet_name, lookup):
             else:
                 el['Content'] = c
             content_tree['items'].append({'type': el['Content Type'], 'content': el['Content']})
+        else:
+            pass
+    if current_list != {'type': '', 'list_items': []}:
+        content_tree['items'].append(current_list)
 
     return content_tree
-
 
 def build_content_object(workbook):
     """
@@ -103,10 +108,18 @@ def build_content_object(workbook):
     # Get the index and build a list of the order in which sheets should be parsed
     index = lookup['Index']
 
-    section_order = [so['Section Order'] for so in index.get_all_records() if so['Section Order'] in lookup]
+    section_order = [so['Section Order'] for so in index.get_all_records()]
 
-    content = [parse_sheet(s, lookup) for s in section_order]
-    return content
+    content_sheet = lookup['Content']
+
+    # TODO add in sorting to use section ordering
+    grouped_content = itertools.groupby(content_sheet.get_all_records(), lambda x: x['Section'])
+
+    data = lookup['Data Index']
+    raw = [{'name': d['Label'], 'data': lookup[d['Label']].get_all_records()} for d in data.get_all_records() if d['Type'] == 'Raw']
+    content = [parse_section(s[0], list(s[1]), lookup) for s in grouped_content]
+
+    return {'content': content, 'rawdata': json.dumps(raw)}
 
 
 def get_content(sheet, cache_duration=900):
