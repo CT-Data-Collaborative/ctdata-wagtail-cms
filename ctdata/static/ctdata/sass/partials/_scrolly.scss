@@ -23,5 +23,25 @@
   margin-left: 0;
   height: 600px;
   width: 600px;
-  background-color: #ddd;
+  //background-color: #ddd;
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .line {
+    fill: none;
+    stroke: steelblue;
+  }
+
+  .ref-line {
+    fill: none;
+    stroke: lightblue;
+    stroke-dasharray: 5;
+    stroke-width: 1px;
+  }
+
 }

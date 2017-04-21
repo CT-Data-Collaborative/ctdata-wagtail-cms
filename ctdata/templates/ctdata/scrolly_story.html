@@ -77,9 +77,6 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-    var scrolly_data = {{ content.rawdata|safe}};
-</script>
-<script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -114,9 +111,12 @@ $(function() {
     // Need to add a $(document).height() based watcher that will move scrollyvis up when we hit the footer
 });
 </script>
+<script src="{% static 'ctdata/js/lib/d3.js' %}"></script>
 <script src="{% static 'ctdata/js/scroller.js' %}"></script>
 <script src="{% static 'ctdata/js/scrolly_graphics.js' %}"></script>
+<script>
+display({{ content.rawdata|safe}});
+</script>
 {% endblock %}
 {% block external_js %}
-<script src="{% static 'ctdata/js/lib/d3.js' %}"></script>
 {% endblock %}

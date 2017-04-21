@@ -1,7 +1,7 @@
 var scrollVis = function () {
     var margin = {top: 40, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 600 - margin.left - margin.right,
+        height = 600 - margin.top - margin.bottom;
 
     var t = d3.transition()
         .duration(500)
@@ -29,10 +29,10 @@ var scrollVis = function () {
     var net_line = d3.line()
         .curve(d3.curveNatural)
         .x(function (d) {
-            return x(d.year);
+            return migrationLineX(d.year);
         })
         .y(function (d) {
-            return y(d.net);
+            return migrationLineY(d.net);
         });
 
     // international migration
@@ -80,15 +80,14 @@ var scrollVis = function () {
 
     var chart = function (selection) {
         selection.each(function (rawData) {
-            console.log(rawData);
-            var migrationData = rawData[0]['data'].forEach(function(d) {
+            rawData.forEach(function(d) {
                 d.year = parseTime(d.Year);
                 d.net = +d['Net Migration'];
                 d.international = +d['International'];
                 d.domestic = +d['Domestic'];
             });
             // create svg and give it a width and height
-            svg = d3.select(this).selectAll('svg').data([migrationData]);
+            svg = d3.select(this).selectAll('svg').data([rawData]);
             var svgE = svg.enter().append('svg');
             // @v4 use merge to combine enter and existing selection
             svg = svg.merge(svgE);
@@ -100,23 +99,23 @@ var scrollVis = function () {
 
             g = svg.select('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-            
 
-            migrationLineX.domain(d3.extent(migrationData, function (d) {
+
+            migrationLineX.domain(d3.extent(rawData, function (d) {
                 return d.year;
             }));
 
-            var migration_max_y = d3.max(migrationData, function (d) {
+            var migration_max_y = d3.max(rawData, function (d) {
                 return Math.max(d.net, d.domestic, d.international);
             });
 
-            var migration_min_y = d3.min(migrationData, function (d) {
+            var migration_min_y = d3.min(rawData, function (d) {
                 return Math.min(d.net, d.domestic, d.international);
             });
 
             migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
 
-            setupVis(migrationData);
+            setupVis(rawData);
 
             setupSections();
         });
@@ -148,6 +147,7 @@ var scrollVis = function () {
         g.append("path")
             .data([migrationData])
             .attr("class", "ref-line")
+            .attr("id", "migrationa-ref-line")
             .style("stroke", "black")
             .style("opacity", 0)
             .attr("d", reference_line);
@@ -202,8 +202,7 @@ var scrollVis = function () {
     };
 
     function ctNetDomesticMigration() {
-        var t = d3.transition().duration(500).ease(d3.easeLinear);
-
+        d3.select("#migrationa-ref-line").style("opacity", 1);
         d3.select("#migration_x_axis").style("opacity", 1);
         d3.select("#migration_y_axis").style("opacity", 1);
         d3.select("#domestic-line").transition(t).style("stroke-width", 5).style("opacity", 1);
@@ -212,39 +211,23 @@ var scrollVis = function () {
     }
 
     function ctNetInternationalMigration() {
-        var t = d3.transition().duration(500).ease(d3.easeLinear);
-
         d3.select("#domestic-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 2).style("opacity", 0);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 1);
     }
 
     function ctNetMigration() {
-        var t = d3.transition().duration(500).ease(d3.easeLinear);
-
         d3.select("#domestic-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#international-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
     }
 
     /**
-     * @param index - index of the activated section
-     */
-    // chart.activate = function (index) {
-    //     activeIndex = index;
-    //     var sign = (activeIndex - lastIndex) < 0 ? -1 : 1;
-    //     var scrolledSections = d3.range(lastIndex + sign, activeIndex + sign, sign);
-    //     scrolledSections.forEach(function (i) {
-    //         activateFunctions[i]();
-    //     });
-    //     lastIndex = activeIndex;
-    // };
-    /**
      * @param graphic_id - identifier for graphic as passed in via data attribute
      */
     chart.activate = function (graphic_id) {
         activateFunctions[graphic_id]();
-    }
+    };
 
     return chart;
 };
@@ -252,7 +235,7 @@ var scrollVis = function () {
 function display(data) {
     var plot = scrollVis();
     d3.select('#scrolly-vis')
-        .datum(data)
+        .datum(data[0]['data'])
         .call(plot);
 
     var scroll = scroller()
@@ -273,12 +256,12 @@ function display(data) {
                 if (i === index) {
                     var gid = d3.select(this).select('div[data-graphic-id]');
                     if (gid.size() > 0) {
-                        console.log(gid.attr('data-graphic-id'));
+                        var dataFunc = gid.attr('data-graphic-id');
+                        console.log(dataFunc);
+                        plot.activate(dataFunc);
                     }
                 }
             });
 
     });
 }
-
-display(scrolly_data);

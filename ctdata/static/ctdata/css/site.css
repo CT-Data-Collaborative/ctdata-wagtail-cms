@@ -1271,5 +1271,17 @@ ol.breadcrumbs {
   z-index: 1;
   margin-left: 0;
   height: 600px;
-  width: 600px;
-  background-color: #ddd; }
+  width: 600px; }
+  #scrolly-vis .axis path,
+  #scrolly-vis .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges; }
+  #scrolly-vis .line {
+    fill: none;
+    stroke: steelblue; }
+  #scrolly-vis .ref-line {
+    fill: none;
+    stroke: lightblue;
+    stroke-dasharray: 5;
+    stroke-width: 1px; }
