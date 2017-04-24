@@ -124,6 +124,7 @@ var scrollVis = function () {
             // create svg and give it a width and height
             svg = d3.select(this).selectAll('svg').data([migrationData]);
             var svgE = svg.enter().append('svg');
+
             // @v4 use merge to combine enter and existing selection
             svg = svg.merge(svgE);
 
@@ -134,6 +135,7 @@ var scrollVis = function () {
 
             g = svg.select('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
 
             var migrationData = getMigrationData(rawData);
             var indexedPopulationData = getIndexedPopulation(rawData);
@@ -153,7 +155,7 @@ var scrollVis = function () {
      */
 
     var setupVis = function (migrationData, indexedPopulationData, flowData) {
-        console.table(flowData);
+
         // Migration Data
         migrationLineX.domain(d3.extent(migrationData, function (d) {
             return d.year;
@@ -273,13 +275,26 @@ var scrollVis = function () {
             .style("opacity", 0)
             .attr("d", neighboringIndexedLine);
 
-        //Sanky Migration Flow Diagram
-
 
         var sankey = d3.sankey()
             .nodeWidth(36)
             .nodePadding(25)
-            .size([width, height]);
+            .size([(width), height]);
+
+
+
+        /* Initialize tooltip */
+        var tipLinks = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10,0])
+            .html(function(d) {
+                return d.source.displayName + " → " +
+                    d.target.name + "\n" + format(d.value);
+            })
+            .style("z-index", 99);
+
+
+        g.call(tipLinks);
 
         var path = sankey.link();
 
@@ -295,7 +310,10 @@ var scrollVis = function () {
             })
             .sort(function (a, b) {
                 return b.dy - a.dy;
-            });
+            })
+            .on('mouseover', tipLinks.show)
+            .on('mouseout', tipLinks.hide);
+
 
         link.append("title")
             .text(function (d) {
@@ -333,6 +351,18 @@ var scrollVis = function () {
             .append("title").text(function (d) {
             return d.displayName + "\n" + d.value;
         });
+
+        node.append("text")
+          .attr("x", -6)
+          .attr("y", function(d) { return d.dy / 2; })
+          .attr("dy", ".35em")
+          .attr("text-anchor", "end")
+          .attr("transform", null)
+          .text(function(d) { return d.displayName; })
+        .filter(function(d) { return d.x < width / 2; })
+          .attr("x", 6 + sankey.nodeWidth())
+          .attr("text-anchor", "start");
+
 
         function dragmove(d) {
             d3.select(this)
@@ -479,7 +509,7 @@ var scrollVis = function () {
         });
 
         graph.nodes.forEach(function(d,i) {
-            var displayName = d.replace("From ", "").replace("To ");
+            var displayName = d.replace("From ", "").replace("To ", "");
             graph.nodes[i] = { "name": d, "node": i, "displayName": displayName};
         });
         return graph;
