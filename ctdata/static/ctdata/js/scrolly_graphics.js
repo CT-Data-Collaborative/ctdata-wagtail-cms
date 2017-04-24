@@ -7,6 +7,10 @@ var scrollVis = function () {
         .duration(500)
         .ease(d3.easeLinear);
 
+    var units = "Filings";
+    var formatNumber = d3.format(",.0f"),    // zero decimal places
+    format = function(d) { return formatNumber(d) + " " + units; },
+    color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var migration_data = null;
     var lastIndex = -1;
@@ -133,8 +137,9 @@ var scrollVis = function () {
 
             var migrationData = getMigrationData(rawData);
             var indexedPopulationData = getIndexedPopulation(rawData);
+            var flowData = getFlowData(rawData);
 
-            setupVis(migrationData, indexedPopulationData);
+            setupVis(migrationData, indexedPopulationData, flowData);
 
             setupSections();
         });
@@ -147,33 +152,33 @@ var scrollVis = function () {
      * @param migrationData - data object for migration series.
      */
 
-    var setupVis = function (migrationData, indexedPopulationData) {
-        console.table(indexedPopulationData)
+    var setupVis = function (migrationData, indexedPopulationData, flowData) {
+        console.table(flowData);
         // Migration Data
         migrationLineX.domain(d3.extent(migrationData, function (d) {
-                return d.year;
-            }));
-
-        var migration_max_y = d3.max(migrationData, function (d) {
-                return Math.max(d.net, d.domestic, d.international);
-            });
-
-        var migration_min_y = d3.min(migrationData, function (d) {
-                return Math.min(d.net, d.domestic, d.international);
-            });
-
-        migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
-
-        indexedPopLineX.domain(d3.extent(indexedPopulationData, function(d) {
             return d.year;
         }));
 
-        var indexedPopMaxY = d3.max(indexedPopulationData, function(d) {
+        var migration_max_y = d3.max(migrationData, function (d) {
+            return Math.max(d.net, d.domestic, d.international);
+        });
+
+        var migration_min_y = d3.min(migrationData, function (d) {
+            return Math.min(d.net, d.domestic, d.international);
+        });
+
+        migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
+
+        indexedPopLineX.domain(d3.extent(indexedPopulationData, function (d) {
+            return d.year;
+        }));
+
+        var indexedPopMaxY = d3.max(indexedPopulationData, function (d) {
             return Math.max(d.connecticut, d.neighboring, d.new_england);
         });
 
 
-        var indexedPopMinY = d3.min(indexedPopulationData, function(d) {
+        var indexedPopMinY = d3.min(indexedPopulationData, function (d) {
             return Math.min(d.connecticut, d.neighboring, d.new_england);
         });
 
@@ -267,7 +272,80 @@ var scrollVis = function () {
             .style("stroke-width", 2)
             .style("opacity", 0)
             .attr("d", neighboringIndexedLine);
-    };
+
+        //Sanky Migration Flow Diagram
+
+
+        var sankey = d3.sankey()
+            .nodeWidth(36)
+            .nodePadding(25)
+            .size([width, height]);
+
+        var path = sankey.link();
+
+        sankey.nodes(flowData.nodes).links(flowData.links).layout(32);
+
+        var link = g.append("g").selectAll(".link")
+            .data(flowData.links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", path)
+            .style("stroke-width", function (d) {
+                return Math.max(1, d.dy);
+            })
+            .sort(function (a, b) {
+                return b.dy - a.dy;
+            });
+
+        link.append("title")
+            .text(function (d) {
+                return d.source.displayName + " → " +
+                    d.target.name + "\n" + format(d.value);
+            });
+
+        var node = g.append("g").selectAll(".node")
+            .data(flowData.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            })
+            .call(d3.drag()
+                .subject(function (d) {
+                    return d;
+                })
+                .on("start", function () {
+                    this.parenNode.appendChild(this);
+                })
+                .on("drag", dragmove));
+
+        node.append("rect")
+            .attr("height", function (d) {
+                return d.dy;
+            })
+            .attr("width", sankey.nodeWidth())
+            .style("fill", function (d) {
+                return d.color = color(d.name.replace(/ .*/, ""));
+            })
+            .style("stroke", function (d) {
+                return d3.rgb(d.color).darker(2);
+            })
+            .append("title").text(function (d) {
+            return d.displayName + "\n" + d.value;
+        });
+
+        function dragmove(d) {
+            d3.select(this)
+                .attr("transform",
+                    "translate("
+                    + d.x + ","
+                    + (d.y = Math.max(
+                            0, Math.min(height - d.dy, d3.event.y))
+                    ) + ")");
+            sankey.relayout();
+            link.attr("d", path);
+        };
+    }
 
     var setupSections = function () {
         // activateFunctions are called each
@@ -381,6 +459,32 @@ var scrollVis = function () {
        return migration;
 
     };
+
+    var getFlowData = function(rawData) {
+        flows = rawData.filter(function(e) { return e.name == 'Influencers';})[0].data;
+        var graph = {"nodes": [], "links": []};
+
+        flows.forEach(function(f) {
+            graph.nodes.push({"name": f.source});
+            graph.nodes.push({"name": f.target});
+            graph.links.push({"source": f.source, "target": f.target, "value": +f.value });
+        });
+
+
+        graph.nodes = d3.nest().key(function(d) { return d.name; }).map(graph.nodes).keys();
+
+        graph.links.forEach(function(d, i) {
+           graph.links[i].source = graph.nodes.indexOf(graph.links[i].source);
+           graph.links[i].target = graph.nodes.indexOf(graph.links[i].target);
+        });
+
+        graph.nodes.forEach(function(d,i) {
+            var displayName = d.replace("From ", "").replace("To ");
+            graph.nodes[i] = { "name": d, "node": i, "displayName": displayName};
+        });
+        return graph;
+    };
+
     /**
      * @param graphic_id - identifier for graphic as passed in via data attribute
      */
