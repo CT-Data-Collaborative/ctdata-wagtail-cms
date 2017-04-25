@@ -7,6 +7,10 @@ var scrollVis = function () {
         .duration(500)
         .ease(d3.easeLinear);
 
+    var t2 = d3.transition()
+        .duration(750)
+        .ease(d3.easeLinear);
+
     var units = "Filings";
     var formatNumber = d3.format(",.0f"),    // zero decimal places
     format = function(d) { return formatNumber(d) + " " + units; },
@@ -291,6 +295,7 @@ var scrollVis = function () {
                 return d.source.displayName + " → " +
                     d.target.name + "\n" + format(d.value);
             })
+            .style("display", "none")
             .style("z-index", 99);
 
 
@@ -303,17 +308,34 @@ var scrollVis = function () {
         var link = g.append("g").selectAll(".link")
             .data(flowData.links)
             .enter().append("path")
-            .attr("class", "link")
+            .attr("class", "link right-link")
             .attr("d", path)
             .style("stroke-width", function (d) {
                 return Math.max(1, d.dy);
             })
+            .style("opacity", 0)
             .sort(function (a, b) {
                 return b.dy - a.dy;
             })
             .on('mouseover', tipLinks.show)
             .on('mouseout', tipLinks.hide);
 
+        link.filter(function(d) {
+            return d.target.name == 'Connecticut';
+        }).attr("class", "link left-link");
+
+        var top_sources = ["New York", "Massachusetts"];
+        var top_targets = ["New York", "Florida", "Massachusetts"];
+
+        link.filter(function(d) {
+            console.log(d);
+            return (d.target.name == 'Connecticut' & top_sources.indexOf(d.source.displayName) >= 0);
+        }).attr("class", "link left-link top-sources");
+
+        link.filter(function(d) {
+            console.log(d);
+            return (d.source.name == 'Connecticut' & top_targets.indexOf(d.target.displayName) >= 0);
+        }).attr("class", "link left-link top-targets");
 
         link.append("title")
             .text(function (d) {
@@ -324,7 +346,8 @@ var scrollVis = function () {
         var node = g.append("g").selectAll(".node")
             .data(flowData.nodes)
             .enter().append("g")
-            .attr("class", "node")
+            .attr("class", "node left-node")
+            .style("opacity", 0)
             .attr("transform", function (d) {
                 return "translate(" + d.x + "," + d.y + ")";
             })
@@ -336,6 +359,9 @@ var scrollVis = function () {
                     this.parenNode.appendChild(this);
                 })
                 .on("drag", dragmove));
+
+        node.filter(function(d) { return d.x > width / 2; })
+            .attr("class", "node right-node");
 
         node.append("rect")
             .attr("height", function (d) {
@@ -380,24 +406,50 @@ var scrollVis = function () {
     var setupSections = function () {
         // activateFunctions are called each
         // time the active section changes
-        activateFunctions['CT Net Domestic Migration'] = ctNetDomesticMigration;
-        activateFunctions['CT Net International Migration'] = ctNetInternationalMigration;
-        activateFunctions['CT Net International / Domestic Migration'] = ctNetMigration;
-        activateFunctions['Indexed Population'] = indexedPopulation;
-        /**
+         /**
          * ACTIVATE FUNCTIONS
          *
          * These will be called when scrolled to
          **/
 
-        /**
-         * ctNetDomesticMigration
-         *
-         * displays the initial migration graphic with axes
-         */
+        activateFunctions['Canva 1'] = canvaOne;
+        activateFunctions['CT Population'] = ctPopulation;
+        activateFunctions['Canva 2'] = canvaTwo;
+        activateFunctions['Births'] = births;
+        activateFunctions['Net Domestic Migration'] = ctNetDomesticMigration;
+        activateFunctions['Net Domestic Migration - Region'] = regionalDomesticMigration;
+        activateFunctions['Alluvial In Migration'] = alluvialInMigration;
+        activateFunctions['Alluvial Out Migration'] = alluvialOutMigration;
+        activateFunctions['Canva 3'] = canvaThree;
+        activateFunctions['CT Population and Migration by Education'] = migrationByEducation;
+        activateFunctions['Migration by Age In'] = migrationByAgeIn;
+        activateFunctions['Migration by Age Out Boomers'] = migrationByAgeOutBoomers;
+        activateFunctions['Migration by Age Out College and Seniors'] = migrationByAgeOutCollege;
+        activateFunctions['Migration by Age Out Post Recession'] = migrationByAgePostRecession;
+        activateFunctions['CT Net International Migration'] = ctNetInternationalMigration;
+        activateFunctions['CT Net International / Domestic Migration'] = ctNetMigration;
+        activateFunctions['Indexed Population'] = indexedPopulation;
+
     };
 
     // Transition Functions
+    function canvaOne() {
+
+    }
+
+    function ctPopulation() {
+
+    }
+
+
+    function canvaTwo() {
+
+    }
+
+    function births() {
+
+    }
+
     function ctNetDomesticMigration() {
         d3.select("#migrationa-ref-line").style("opacity", 1);
         d3.select("#migration_x_axis").style("opacity", 1);
@@ -423,6 +475,49 @@ var scrollVis = function () {
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
     }
 
+    function regionalDomesticMigration() {
+
+    }
+
+    function alluvialInMigration() {
+        hideIndexedPopulation();
+        d3.selectAll(".d3-tip").style("display", "block");
+        d3.selectAll(".left-node").transition(t).style("opacity", 1);
+        d3.selectAll(".left-link").transition(t2).style("opacity", 1);
+        d3.selectAll(".right-link").transition(t).style("opacity", 0);
+        d3.selectAll(".right-node").transition(t).style("opacity", 0);
+    }
+
+    function alluvialOutMigration() {
+        d3.selectAll(".right-link").transition(t).style("opacity", 1);
+        d3.selectAll(".right-node").transition(t2).style("opacity", 1);
+    }
+
+    function canvaThree() {
+
+    }
+
+    function migrationByEducation() {
+
+    }
+
+    function migrationByAgeIn() {
+
+    }
+
+    function migrationByAgeOutBoomers() {
+
+    }
+
+    function migrationByAgeOutCollege() {
+
+    }
+
+    function migrationByAgePostRecession() {
+
+    }
+
+
     function hideMigration() {
         d3.select("#migrationa-ref-line").style("opacity", 0);
         d3.select("#migration_x_axis").style("opacity", 0);
@@ -442,6 +537,7 @@ var scrollVis = function () {
 
     function indexedPopulation() {
         hideMigration();
+        hideIndexedPopulation();
         d3.select("#indexed_pop_x_axis").style("opacity", 1);
         d3.select("#indexed_pop_y_axis").style("opacity", 1);
         d3.select("#ct-indexed-line").transition(t).style("stroke-width", 5).style("opacity", 1);

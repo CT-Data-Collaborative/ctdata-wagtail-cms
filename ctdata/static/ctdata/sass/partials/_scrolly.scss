@@ -59,9 +59,18 @@
     stroke: #000;
     stroke-opacity: .2;
   }
+
   .link:hover {
     stroke-opacity: .5;
   }
 
+  .link.top-sources {
+    stroke: green;
+    stroke-opacity: .5;
+  }
 
+  .link.top-targets {
+    stroke: red;
+    stroke-opacity: .5;
+  }
 }
