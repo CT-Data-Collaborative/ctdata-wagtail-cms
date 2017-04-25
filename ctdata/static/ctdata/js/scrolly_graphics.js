@@ -42,6 +42,19 @@ var scrollVis = function () {
     var xAxisIndexedPop = d3.axisBottom().scale(indexedPopLineX);
     var yAxisIndexedPop = d3.axisLeft().scale(indexedPopLineY);
 
+    // CT Population
+    var populationLineX = d3.scaleTime().range([0, width]);
+    var populationLineY = d3.scaleLinear().range([height, 0]);
+
+    var xAxisPopulation = d3.axisBottom().scale(populationLineX);
+    var yAxisPopulation = d3.axisLeft().scale(populationLineY).tickFormat(d3.formatPrefix(".1", 1e6));
+
+    // Births
+    var birthsLineX = d3.scaleTime().range([0, width]);
+    var birthsLineY = d3.scaleLinear().range([height, 0]);
+
+    var xAxisBirths = d3.axisBottom().scale(birthsLineX);
+    var yAxisBirths = d3.axisLeft().scale(birthsLineY);
 
     // net migration
     var net_line = d3.line()
@@ -108,6 +121,27 @@ var scrollVis = function () {
             return indexedPopLineY(d.neighboring)
         });
 
+    // CT Population Graph
+    var populationCTLine = d3.line()
+        .curve(d3.curveNatural)
+        .x(function(d) {
+            return populationLineX(d.year)
+        })
+        .y(function (d) {
+            return populationLineY(d.population)
+        });
+
+    // Births
+
+    var birthsLine = d3.line()
+        .curve(d3.curveNatural)
+        .x(function(d) {
+            return birthsLineX(d.year)
+        })
+        .y(function (d) {
+            return birthsLineY(d.births)
+        });
+
     // When scrolling to a new section, the scroller will pass
     // back the name of the graphic transition that has been attached.
     // The correction function for that section will be called to initiate
@@ -144,8 +178,10 @@ var scrollVis = function () {
             var migrationData = getMigrationData(rawData);
             var indexedPopulationData = getIndexedPopulation(rawData);
             var flowData = getFlowData(rawData);
+            var birthsData = getBirthsData(rawData);
+            var populationData = getCTPopulation(rawData);
 
-            setupVis(migrationData, indexedPopulationData, flowData);
+            setupVis(migrationData, indexedPopulationData, flowData, birthsData, populationData);
 
             setupSections();
         });
@@ -158,7 +194,10 @@ var scrollVis = function () {
      * @param migrationData - data object for migration series.
      */
 
-    var setupVis = function (migrationData, indexedPopulationData, flowData) {
+    var setupVis = function (migrationData, indexedPopulationData, flowData, birthsData, populationData) {
+
+        console.table(populationData);
+
 
         // Migration Data
         migrationLineX.domain(d3.extent(migrationData, function (d) {
@@ -175,6 +214,8 @@ var scrollVis = function () {
 
         migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
 
+        // IndexedPopulation Data
+
         indexedPopLineX.domain(d3.extent(indexedPopulationData, function (d) {
             return d.year;
         }));
@@ -190,7 +231,63 @@ var scrollVis = function () {
 
         indexedPopLineY.domain([indexedPopMinY - indexedPopMinY * .025, indexedPopMaxY + indexedPopMaxY * .025]);
 
+        // CT Population Data
 
+        var popExtent = d3.extent(populationData, function (d) {
+            return d.population;
+        });
+
+        populationLineY.domain([popExtent[0] - popExtent[0] * .025, popExtent[1] + popExtent[1] * .025]);
+
+        populationLineX.domain(d3.extent(populationData, function (d) {
+            return d.year;
+        }));
+
+
+        // Births Data
+        var birthCountExtent = d3.extent(birthsData, function(d) {
+            return d.births;
+        });
+
+        birthsLineY.domain([birthCountExtent[0] - birthCountExtent[0] * .025, birthCountExtent[1] + birthCountExtent[1] * .025]);
+
+        birthsLineX.domain(d3.extent(birthsData, function(d) {
+            return d.year;
+        }));
+
+        function axisFactory(target, id_base, type, axis) {
+            if (type === 'x') {
+                return target.append('g')
+                    .attr("transform", "translate(0," + height + ")")
+                    .attr("class", type + " axis")
+                    .attr("id", id_base + "_" + type + "_axis")
+                    .style('opacity', 0)
+                    .call(axis);
+            } else {
+                return target.append('g')
+                    .attr("class", type + " axis")
+                    .attr("id", id_base + "_" + type + "_axis")
+                    .style('opacity', 0)
+                    .call(axis);
+            }
+        }
+
+        //Population Axes
+        g.append('g')
+            .attr("transform", "translate(0," + height + ")")
+            .attr("class", "x axis")
+            .attr("id", "population_x_axis")
+            .style('opacity', 0)
+            .call(xAxisPopulation);
+
+        g.append('g')
+            .attr("class", "y axis")
+            .attr("id", "population_y_axis")
+            .style('opacity', 0)
+            .call(yAxisPopulation);
+
+
+        // Migration Axes
         g.append('g')
             .attr("transform", "translate(0," + height + ")")
             .attr("class", "x axis")
@@ -199,24 +296,28 @@ var scrollVis = function () {
             .call(xAxisMigration);
 
         g.append('g')
+            .attr("class", "y axis")
+            .attr("id", "migration_y_axis")
+            .style('opacity', 0)
+            .call(yAxisMigration);
+
+        // Indexed Population Axes
+        g.append('g')
             .attr("transform", "translate(0," + height + ")")
             .attr("class", "x axis")
             .attr("id", "indexed_pop_x_axis")
             .style('opacity', 0)
             .call(xAxisIndexedPop);
 
-
-        g.append('g')
-            .attr("class", "y axis")
-            .attr("id", "migration_y_axis")
-            .style('opacity', 0)
-            .call(yAxisMigration);
-
         g.append('g')
             .attr("class", "y axis")
             .attr("id", "indexed_pop_y_axis")
             .style('opacity', 0)
             .call(yAxisIndexedPop);
+
+        // Births Axes
+        axisFactory(g, "births", "y", yAxisBirths);
+        axisFactory(g, "births", "x", xAxisBirths);
 
 
         // migration lines
@@ -279,6 +380,24 @@ var scrollVis = function () {
             .style("opacity", 0)
             .attr("d", neighboringIndexedLine);
 
+        // CT Population Lines
+
+        g.append("path")
+            .data([populationData])
+            .attr("class", "line")
+            .attr("id", "ct-population-line")
+            .style("stroke-width", 2)
+            .style("opacity", 0)
+            .attr("d", populationCTLine);
+
+        // Births Lines
+        g.append("path")
+            .data([birthsData])
+            .attr("class", "line")
+            .attr("id", "births-line")
+            .style("stroke-width", 2)
+            .style("opacity", 0)
+            .attr("d", birthsLine);
 
         var sankey = d3.sankey()
             .nodeWidth(36)
@@ -328,14 +447,12 @@ var scrollVis = function () {
         var top_targets = ["New York", "Florida", "Massachusetts"];
 
         link.filter(function(d) {
-            console.log(d);
             return (d.target.name == 'Connecticut' & top_sources.indexOf(d.source.displayName) >= 0);
         }).attr("class", "link left-link top-sources");
 
         link.filter(function(d) {
-            console.log(d);
             return (d.source.name == 'Connecticut' & top_targets.indexOf(d.target.displayName) >= 0);
-        }).attr("class", "link left-link top-targets");
+        }).attr("class", "link right-link top-targets");
 
         link.append("title")
             .text(function (d) {
@@ -434,23 +551,41 @@ var scrollVis = function () {
 
     // Transition Functions
     function canvaOne() {
-
+        hideCTPopulation();
     }
 
     function ctPopulation() {
-
+        d3.select("#population_x_axis").style("opacity", 1);
+        d3.select("#population_y_axis").style("opacity", 1);
+        d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 1);
     }
 
-
+    function hideCTPopulation() {
+        d3.select("#population_x_axis").style("opacity", 0);
+        d3.select("#population_y_axis").style("opacity", 0);
+        d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 0);
+    }
     function canvaTwo() {
-
+        hideCTPopulation();
+        hideBirths();
     }
 
     function births() {
+        hideMigration();
+        d3.select("#births_x_axis").style("opacity", 1);
+        d3.select("#births_y_axis").style("opacity", 1);
+        d3.select("#births-line").style("stroke-width", 5).style("opacity", 1);
+    }
 
+    function hideBirths() {
+        d3.select("#births_x_axis").style("opacity", 0);
+        d3.select("#births_y_axis").style("opacity", 0);
+        d3.select("#births-line").style("stroke-width", 5).style("opacity", 0);
     }
 
     function ctNetDomesticMigration() {
+        hideBirths();
+        hideAlluvial();
         d3.select("#migrationa-ref-line").style("opacity", 1);
         d3.select("#migration_x_axis").style("opacity", 1);
         d3.select("#migration_y_axis").style("opacity", 1);
@@ -481,6 +616,7 @@ var scrollVis = function () {
 
     function alluvialInMigration() {
         hideIndexedPopulation();
+        hideMigration()
         d3.selectAll(".d3-tip").style("display", "block");
         d3.selectAll(".left-node").transition(t).style("opacity", 1);
         d3.selectAll(".left-link").transition(t2).style("opacity", 1);
@@ -493,8 +629,16 @@ var scrollVis = function () {
         d3.selectAll(".right-node").transition(t2).style("opacity", 1);
     }
 
-    function canvaThree() {
+    function hideAlluvial() {
+        d3.selectAll(".d3-tip").style("display", "none");
+        d3.selectAll(".left-node").transition(t).style("opacity", 0);
+        d3.selectAll(".left-link").transition(t2).style("opacity", 0);
+        d3.selectAll(".right-link").transition(t).style("opacity", 0);
+        d3.selectAll(".right-node").transition(t).style("opacity", 0);
+    }
 
+    function canvaThree() {
+        hideAlluvial();
     }
 
     function migrationByEducation() {
@@ -611,6 +755,33 @@ var scrollVis = function () {
         return graph;
     };
 
+    var getCTPopulation = function(rawData) {
+        var pop =  rawData.filter(function(e) { return e.name === 'CTPopulation';})[0].data;
+        pop.forEach(function(d) {
+            d.year = parseTime(d.year);
+            d.population = +d.population;
+        })
+        return pop;
+    };
+
+    var getBirthsData = function(rawData) {
+        var births = rawData.filter(function(e) { return e.name === 'Births';})[0].data;
+        births.forEach(function(d) {
+            d.year = parseTime(d.year);
+            d.births = +d.births;
+        });
+        return births;
+    };
+
+    var getMigrationByAgeData = function(rawData) {
+        var migration = rawData.filter(function(e) { return e.name === 'InOutNetDomesticMigByAge';})[0].data;
+        return migration;
+    };
+
+    var getMigrationByEducationData = function(rawData) {
+        var migration = rawData.filter(function(e) { return e.name === 'PopNetMigrationByEd';})[0].data;
+        return migration;
+    };
     /**
      * @param graphic_id - identifier for graphic as passed in via data attribute
      */
