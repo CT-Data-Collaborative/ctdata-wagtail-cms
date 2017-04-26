@@ -18,10 +18,10 @@
 #scrolly-vis {
   display: inline-block;
   position: fixed;
-  top: 500px;
+  top: 600px;
   z-index: 1;
   margin-left: 0;
-  height: 600px;
+  height: 400px;
   width: 600px;
   //background-color: #ddd;
 
@@ -30,8 +30,15 @@
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
+    stroke-width: 2px;
   }
 
+  .tick {
+    text {
+      font-family: "Roboto Condensed", san-serif;
+      font-size: 14px;
+    }
+  }
   .line {
     fill: none;
     stroke: steelblue;
@@ -52,7 +59,6 @@
     pointer-events: none;
     //text-shadow: 0 1px 0 #fff;
   }
-
 
   .link {
     fill: none;

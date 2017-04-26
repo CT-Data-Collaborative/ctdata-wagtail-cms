@@ -1267,16 +1267,20 @@ ol.breadcrumbs {
 #scrolly-vis {
   display: inline-block;
   position: fixed;
-  top: 500px;
+  top: 600px;
   z-index: 1;
   margin-left: 0;
-  height: 600px;
+  height: 400px;
   width: 600px; }
   #scrolly-vis .axis path,
   #scrolly-vis .axis line {
     fill: none;
     stroke: #000;
-    shape-rendering: crispEdges; }
+    shape-rendering: crispEdges;
+    stroke-width: 2px; }
+  #scrolly-vis .tick text {
+    font-family: "Roboto Condensed", san-serif;
+    font-size: 14px; }
   #scrolly-vis .line {
     fill: none;
     stroke: steelblue; }
