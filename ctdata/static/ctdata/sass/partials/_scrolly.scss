@@ -24,6 +24,7 @@
   height: 400px;
   width: 600px;
   //background-color: #ddd;
+  --accent-color: #E8336D;
 
   .axis path,
   .axis line {
@@ -79,4 +80,27 @@
     stroke: red;
     stroke-opacity: .5;
   }
+
+  .annotation path {
+      stroke: var(--accent-color);
+      fill: none;
+    }
+
+  .annotation path.connector-arrow,
+  .title text, .annotation text,
+  .annotation.callout.circle .annotation-subject path{
+    fill: var(--accent-color);
+  }
+  .annotation-note-bg {
+    fill: rgba(255, 255, 255, 0);
+  }
+
+  .annotation-note-title {
+    font-weight: bold;
+  }
+
+  .annotation.xythreshold {
+    cursor: move;
+  }
+
 }

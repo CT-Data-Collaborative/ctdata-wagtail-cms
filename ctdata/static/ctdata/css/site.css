@@ -1271,7 +1271,8 @@ ol.breadcrumbs {
   z-index: 1;
   margin-left: 0;
   height: 400px;
-  width: 600px; }
+  width: 600px;
+  --accent-color: #E8336D; }
   #scrolly-vis .axis path,
   #scrolly-vis .axis line {
     fill: none;
@@ -1307,3 +1308,16 @@ ol.breadcrumbs {
   #scrolly-vis .link.top-targets {
     stroke: red;
     stroke-opacity: .5; }
+  #scrolly-vis .annotation path {
+    stroke: var(--accent-color);
+    fill: none; }
+  #scrolly-vis .annotation path.connector-arrow,
+  #scrolly-vis .title text, #scrolly-vis .annotation text,
+  #scrolly-vis .annotation.callout.circle .annotation-subject path {
+    fill: var(--accent-color); }
+  #scrolly-vis .annotation-note-bg {
+    fill: rgba(255, 255, 255, 0); }
+  #scrolly-vis .annotation-note-title {
+    font-weight: bold; }
+  #scrolly-vis .annotation.xythreshold {
+    cursor: move; }
