@@ -516,16 +516,16 @@ var scrollVis = function () {
             {
                 data: { year: '2016', population: regionalNetDomesticData[regionalNetDomesticData.length-1]['New England'] },
                 dx: -25,
-                dy: -75,
+                dy: -55,
                 id: "net-migration-ne-annotation",
                 note: { title:  "New England" }
             },
             {
                 data: { year: '2016', population: regionalNetDomesticData[regionalNetDomesticData.length-1]['Neighboring States'] },
                 dx: -5,
-                dy: -95,
+                dy: -45,
                 id: "net-migration-neigh-annotation",
-                note: { title:  "Neighboring States" }
+                note: { title:  "Neighbors" }
             }
         ];
 
@@ -545,8 +545,6 @@ var scrollVis = function () {
                     population: function population(d) { return regionalMigrationLineY.invert(d.y)}
                 });
         };
-
-
 
 
         // Regional State Migration
@@ -570,7 +568,61 @@ var scrollVis = function () {
             return d.year;
         }));
 
-        console.log(regionalStateMigrationLineY.domain())
+
+        var regionalStateMigrationLabels = [
+            {
+                data: { year: '2016', population: regionalStateNetDomesticData[regionalStateNetDomesticData.length-1]['Connecticut'] },
+                dx: -35,
+                dy: 25,
+                id: "net-migration-ct-st-annotation",
+                note: { title: "Connecticut" }
+            },
+            {
+                data: { year: '2016', population: regionalStateNetDomesticData[regionalStateNetDomesticData.length-1]['New York'] },
+                dx: -25,
+                dy: 25,
+                id: "net-migration-ny-st-annotation",
+                note: { title:  "New York" }
+            },
+            {
+                data: { year: '2016', population: regionalStateNetDomesticData[regionalStateNetDomesticData.length-1]['New Jersey'] },
+                dx: -25,
+                dy: -55,
+                id: "net-migration-ny-st-annotation",
+                note: { title:  "New Jersey" }
+            },
+            {
+                data: { year: '2016', population: regionalStateNetDomesticData[regionalStateNetDomesticData.length-1]['Rhode Island'] },
+                dx: -25,
+                dy: -55,
+                id: "net-migration-ri-st-annotation",
+                note: { title:  "Rhode Island" }
+            },
+            {
+                data: { year: '2016', population: regionalStateNetDomesticData[regionalStateNetDomesticData.length-1]['Massachusetts'] },
+                dx: -5,
+                dy: -45,
+                id: "net-migration-ma-st-annotation",
+                note: { title:  "Massachusetts" }
+            }
+        ];
+
+         // Factory function for generating annotations within a label series with custom classes.
+        // Useful for scrolling when adding labels incrementally
+        var regionalStateMigrationAnnotationFactory = function(id) {
+            var labels = regionalStateMigrationLabels.filter(function(l) { return l.id === id});
+            return d3.annotation()
+                .annotations(labels)
+                .type(d3.annotationCallout).accessors({
+                    x: function x(d) {
+                        return regionalStateMigrationLineX(parseTime(d.year)); },
+                    y: function y(d) { return regionalStateMigrationLineY(d.population); }
+                }).accessorsInverse({
+                    year: function year(d) { return parseTime(regionalStateMigrationLineX.invert(d.x))},
+                    population: function population(d) { return regionalStateMigrationLineY.invert(d.y)}
+                });
+        };
+
 
         function drawAxis(target, id_base, type, axis) {
             if (type === 'x') {
@@ -790,7 +842,13 @@ var scrollVis = function () {
         drawLine(g, regionalStateNetDomesticData, "regional-state-ma", "black", "line", regionalStateMAMigrationLine);
         drawLine(g, regionalStateNetDomesticData, "regional-state-ny", "black", "line", regionalStateNYMigrationLine);
         drawLine(g, regionalStateNetDomesticData, "regional-state-nj", "black", "line", regionalStateNJMigrationLine);
-        drawLine(g, regionalStateNetDomesticData, "regional-state-ri", "black", "line", regionalStateNJMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ri", "black", "line", regionalStateRIMigrationLine);
+        annotate(g, "net-migration-ct-st-annotation", regionalStateMigrationAnnotationFactory("net-migration-ct-st-annotation"));
+        annotate(g, "net-migration-ma-st-annotation", regionalStateMigrationAnnotationFactory("net-migration-ma-st-annotation"));
+        annotate(g, "net-migration-ri-st-annotation", regionalStateMigrationAnnotationFactory("net-migration-ri-st-annotation"));
+        annotate(g, "net-migration-ny-st-annotation", regionalStateMigrationAnnotationFactory("net-migration-ny-st-annotation"));
+        annotate(g, "net-migration-nj-st-annotation", regionalStateMigrationAnnotationFactory("net-migration-nj-st-annotation"));
+
 
 
         var sankey = d3.sankey()
@@ -1088,6 +1146,11 @@ var scrollVis = function () {
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "block");
+        d3.selectAll(".net-migration-ct-st-annotation").style("display", "block");
+        d3.selectAll(".net-migration-ma-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-ri-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-ny-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-nj-st-annotation").style("display", "none");
     }
 
     function stateDomesticMigrationAll() {
@@ -1100,6 +1163,11 @@ var scrollVis = function () {
         d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#regional-state-ri").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#regional-net-migration-title").style("display", "block");
+        d3.selectAll(".net-migration-ct-st-annotation").style("display", "block");
+        d3.selectAll(".net-migration-ma-st-annotation").style("display", "block");
+        d3.selectAll(".net-migration-ri-st-annotation").style("display", "block");
+        d3.selectAll(".net-migration-ny-st-annotation").style("display", "block");
+        d3.selectAll(".net-migration-nj-st-annotation").style("display", "block");
     }
 
     function hideStateDomesticMigration() {
@@ -1111,6 +1179,11 @@ var scrollVis = function () {
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "none");
+        d3.selectAll(".net-migration-ct-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-ma-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-ri-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-ny-st-annotation").style("display", "none");
+        d3.selectAll(".net-migration-nj-st-annotation").style("display", "none");
     }
 
     function alluvialInMigration() {
