@@ -1,7 +1,7 @@
 var scrollVis = function () {
-    var margin = {top: 40, right: 20, bottom: 30, left: 100},
+    var margin = {top: 75, right: 20, bottom: 30, left: 100},
         width = 700 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 500 - margin.top - margin.bottom;
 
     var t = d3.transition()
         .duration(500)
@@ -294,10 +294,7 @@ var scrollVis = function () {
 
     var setupVis = function (migrationData, indexedPopulationData, flowData, birthsData, populationData, regionalNetDomesticData, regionalStateNetDomesticData) {
 
-        console.table(regionalStateNetDomesticData);
-
-
-        // Migration Data
+        // Migration Data - Set X and Y domain
         migrationLineX.domain(d3.extent(migrationData, function (d) {
             return d.year;
         }));
@@ -312,25 +309,84 @@ var scrollVis = function () {
 
         migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
 
+
+        // Set up labels for the Net Migration Graph
+        var netMigrationAnnotationLabels = [
+            {
+                data: { year: '2016', population: migrationData[migrationData.length-1]['net'] },
+                dx: -35,
+                dy: -110,
+                id: "net-migration-annotation",
+                note: { title: "Net Migration" }
+            },
+            {
+                data: { year: '2016', population: migrationData[migrationData.length-1]['international'] },
+                dx: -50,
+                dy: 25,
+                id: "international-migration-annotation",
+                note: { title:  "International Migration" }
+            },
+            {
+                data: { year: '2016', population: migrationData[migrationData.length-1]['domestic'] },
+                dx: -25,
+                dy: -75,
+                id: "domestic-migration-annotation",
+                note: { title:  "Domestic Migration" }
+            }
+        ];
+
+        // Annotaion Function for Net Migration
+        var makeNetMigrationAnnotations = d3.annotation()
+            .annotations(netMigrationAnnotationLabels)
+            .type(d3.annotationCallout).accessors({
+                x: function x(d) {
+                    return migrationLineX(parseTime(d.year)); },
+                y: function y(d) {
+                    console.log(migrationLineY(d.population));
+                    return migrationLineY(d.population); }
+            }).accessorsInverse({
+                year: function year(d) { return parseTime(migrationLineX.invert(d.x))},
+                population: function population(d) { return migrationLineY.invert(d.y)}
+            });
+
+        //
+        // // Factory function for generating annotations within a label series with custom classes.
+        // // Useful for scrolling when adding labels incrementally
+        // var netMigrationAnnotationFactory = function(id) {
+        //     var labels = netMigrationAnnotationLabels.filter(function(l) { return l.id === id});
+        //     return d3.annotation()
+        //         .annotations(labels)
+        //         .type(d3.annotationCallout).accessors({
+        //             x: function x(d) {
+        //                 return populationLineX(parseTime(d.year)); },
+        //             y: function y(d) { return populationLineY(d.population); }
+        //         }).accessorsInverse({
+        //             year: function year(d) { return parseTime(populationLineX.invert(d.x))},
+        //             population: function population(d) { return populationLineY.invert(d.y)}
+        //         });
+        // };
+
+
+
         // IndexedPopulation Data
+        //
+        // indexedPopLineX.domain(d3.extent(indexedPopulationData, function (d) {
+        //     return d.year;
+        // }));
+        //
+        // var indexedPopMaxY = d3.max(indexedPopulationData, function (d) {
+        //     return Math.max(d.connecticut, d.neighboring, d.new_england);
+        // });
+        //
+        //
+        // var indexedPopMinY = d3.min(indexedPopulationData, function (d) {
+        //     return Math.min(d.connecticut, d.neighboring, d.new_england);
+        // });
+        //
+        // indexedPopLineY.domain([indexedPopMinY - indexedPopMinY * .025, indexedPopMaxY + indexedPopMaxY * .025]);
 
-        indexedPopLineX.domain(d3.extent(indexedPopulationData, function (d) {
-            return d.year;
-        }));
 
-        var indexedPopMaxY = d3.max(indexedPopulationData, function (d) {
-            return Math.max(d.connecticut, d.neighboring, d.new_england);
-        });
-
-
-        var indexedPopMinY = d3.min(indexedPopulationData, function (d) {
-            return Math.min(d.connecticut, d.neighboring, d.new_england);
-        });
-
-        indexedPopLineY.domain([indexedPopMinY - indexedPopMinY * .025, indexedPopMaxY + indexedPopMaxY * .025]);
-
-        // CT Population Data
-
+        // Set Domain for CT Population Graph
         var popExtent = d3.extent(populationData, function (d) {
             return d.population;
         });
@@ -341,22 +397,29 @@ var scrollVis = function () {
             return d.year;
         }));
 
-
+        // Annotation Labels for Population Graph
         var populationAnnotationLabels = [
             {
                 data: { year: '2013', population: 3596003 },
                 dx: -50,
                 dy: -25,
-                note: { title: "2013 Population: 3,596,003"},
+                note: { title: "2013: 3,596,003"},
+                subject: { radius: 4 }
+            },
+            {
+                data: { year: '2016', population: 3576452 },
+                dx: -45,
+                dy: 45,
+                note: { title: "2016: 3,576,452"},
                 subject: { radius: 4 }
             }
         ];
 
+        // Annotation Function for Population Graph
         var makePopulationAnnotations = d3.annotation()
             .annotations(populationAnnotationLabels)
             .type(d3.annotationCalloutCircle).accessors({
                 x: function x(d) {
-                    console.log(d);
                     return populationLineX(parseTime(d.year)); },
                 y: function y(d) { return populationLineY(d.population); }
             }).accessorsInverse({
@@ -365,16 +428,61 @@ var scrollVis = function () {
             });
 
 
-        // Births Data
+        // Set domain for birth graph
         var birthCountExtent = d3.extent(birthsData, function(d) {
             return d.births;
         });
 
         birthsLineY.domain([birthCountExtent[0] - birthCountExtent[0] * .025, birthCountExtent[1] + birthCountExtent[1] * .025]);
-
         birthsLineX.domain(d3.extent(birthsData, function(d) {
             return d.year;
         }));
+
+        // Annotations for Birth Graph per and post recession shading boxes
+        var recessionShadingLabels = [
+            {
+                data: { year: '2004', births: birthsLineY.domain()[1] },
+                dx: 0,
+                dy: 3,
+                note: { title: "Pre-recession" },
+                subject: {
+                    height: height,
+                    width: birthsLineX(parseTime("2007")) - birthsLineX(parseTime("2004"))
+                }
+            },
+            {
+                data: { year: '2013', births: birthsLineY.domain()[1] },
+                dx: 0,
+                dy: 3,
+                note: { title: "Post-recession" },
+                subject: {
+                    height: height,
+                    width: birthsLineX(parseTime("2016")) - birthsLineX(parseTime("2013"))
+                }
+            }
+        ];
+
+
+        const shadingAnnotation = d3.annotationCustomType(
+          d3.annotationCalloutRect,
+          {"className": "shading",
+            "connector":{"type":"line"},
+            "note":{"lineType":"vertical",
+            "align":"left"}});
+
+
+        var makeRecessionShadingAnnotations = d3.annotation()
+            .annotations(recessionShadingLabels)
+            .type(shadingAnnotation).accessors({
+                x: function x(d) {
+                    return birthsLineX(parseTime(d.year)); },
+                y: function y(d) {
+                    return birthsLineY(d.births); }
+            }).accessorsInverse({
+                year: function year(d) { return parseTime(birthsLineX.invert(d.x))},
+                births: function births(d) { return birthsLineY.invert(d.y)}
+            });
+
 
         // Regional Migration
         var regionalMigrationMaxY = d3.max(regionalNetDomesticData, function (d) {
@@ -385,36 +493,86 @@ var scrollVis = function () {
             return Math.min(d['Connecticut'], d['New England'], d['Neighboring States']);
         });
 
-        regionalMigrationLineY.domain(
-            [
-                regionalMigrationMinY - Math.abs(regionalMigrationMinY * .05),
-                regionalMigrationMaxY + Math.abs(regionalMigrationMaxY * .05)
-            ]
-        );
+        // regionalMigrationLineY.domain(
+        //     [
+        //         regionalMigrationMinY - Math.abs(regionalMigrationMinY * .05),
+        //         regionalMigrationMaxY + Math.abs(regionalMigrationMaxY * .05)
+        //     ]
+        // );
+
+         regionalMigrationLineY.domain([-0.015, .002]);
 
         regionalMigrationLineX.domain(d3.extent(regionalNetDomesticData, function (d) { return d.year; }));
 
+         // Annotations for Birth Graph per and post recession shading boxes
+        var regionalMigrationLabels = [
+            {
+                data: { year: '2016', population: regionalNetDomesticData[regionalNetDomesticData.length-1]['Connecticut'] },
+                dx: -35,
+                dy: 25,
+                id: "net-migration-ct-annotation",
+                note: { title: "Connecticut" }
+            },
+            {
+                data: { year: '2016', population: regionalNetDomesticData[regionalNetDomesticData.length-1]['New England'] },
+                dx: -25,
+                dy: -75,
+                id: "net-migration-ne-annotation",
+                note: { title:  "New England" }
+            },
+            {
+                data: { year: '2016', population: regionalNetDomesticData[regionalNetDomesticData.length-1]['Neighboring States'] },
+                dx: -5,
+                dy: -95,
+                id: "net-migration-neigh-annotation",
+                note: { title:  "Neighboring States" }
+            }
+        ];
+
+
+        // Factory function for generating annotations within a label series with custom classes.
+        // Useful for scrolling when adding labels incrementally
+        var regionalMigrationAnnotationFactory = function(id) {
+            var labels = regionalMigrationLabels.filter(function(l) { return l.id === id});
+            return d3.annotation()
+                .annotations(labels)
+                .type(d3.annotationCallout).accessors({
+                    x: function x(d) {
+                        return regionalMigrationLineX(parseTime(d.year)); },
+                    y: function y(d) { return regionalMigrationLineY(d.population); }
+                }).accessorsInverse({
+                    year: function year(d) { return parseTime(regionalMigrationLineX.invert(d.x))},
+                    population: function population(d) { return regionalMigrationLineY.invert(d.y)}
+                });
+        };
+
+
+
+
         // Regional State Migration
-        var regionalStateMigrationMaxY = d3.max(regionalStateNetDomesticData, function (d) {
-            return Math.max(d.Connecticut, d.Massachusetts, d['Rhode Island'],
-                d['New York'], d['New Jersey']);
-        });
+        // var regionalStateMigrationMaxY = d3.max(regionalStateNetDomesticData, function (d) {
+        //     return Math.max(d.Connecticut, d.Massachusetts, d['Rhode Island'],
+        //         d['New York'], d['New Jersey']);
+        // });
+        //
+        // var regionalStateMigrationMinY = d3.min(regionalStateNetDomesticData, function (d) {
+        //     return Math.min(d.Connecticut, d.Massachusetts, d['Rhode Island'],
+        //         d['New York'], d['New Jersey']);
+        // });
 
-        var regionalStateMigrationMinY = d3.min(regionalStateNetDomesticData, function (d) {
-            return Math.min(d.Connecticut, d.Massachusetts, d['Rhode Island'],
-                d['New York'], d['New Jersey']);
-        });
-
-        regionalStateMigrationLineY.domain([
-            regionalStateMigrationMinY - Math.abs(regionalStateMigrationMinY * .05),
-            regionalStateMigrationMaxY + Math.abs(regionalStateMigrationMaxY * .05),
-        ]);
+        // regionalStateMigrationLineY.domain([
+        //     regionalStateMigrationMinY - Math.abs(regionalStateMigrationMinY * .05),
+        //     regionalStateMigrationMaxY + Math.abs(regionalStateMigrationMaxY * .05),
+        // ]);
+        regionalStateMigrationLineY.domain([-0.015, .002]);
 
         regionalStateMigrationLineX.domain(d3.extent(regionalStateNetDomesticData, function (d) {
             return d.year;
         }));
 
-        function axisFactory(target, id_base, type, axis) {
+        console.log(regionalStateMigrationLineY.domain())
+
+        function drawAxis(target, id_base, type, axis) {
             if (type === 'x') {
                 return target.append('g')
                     .attr("transform", "translate(0," + height + ")")
@@ -431,7 +589,52 @@ var scrollVis = function () {
             }
         }
 
-        // Canva One Image
+        function drawLine(target, data, id, color, lineClass, callable) {
+            target.append("path")
+                .data([data])
+                .attr("class", lineClass)
+                .attr("id", id)
+                .style("stroke", color)
+                .style("opacity", 0)
+                .attr("d", callable);
+        }
+
+        function drawTitle(target, id, title) {
+            target.append("text")
+                .attr("x", (width / 2) + margin.left)
+                .attr("y", (margin.top / 1.5))
+                .attr("text-anchor", "middle")
+                .attr("id", id)
+                .style("font-size", "20px")
+                .style("font-weight", "600")
+                .style("text-decoration", "underline")
+                .style("display", "none")
+                .text(title);
+        }
+
+
+        function annotate(target, annotationClass, callable) {
+            target.append('g')
+                .append("g")
+                .attr("class", annotationClass)
+                .style("display", "none")
+                .call(callable);
+        }
+
+        function drawShadeBox(target, id, startX, endX, xFunction, fill) {
+            target.append("rect").attr("id", id)
+                .attr("x", xFunction(startX))
+                .attr("y", 0)
+                .attr("width", function () {
+                    return xFunction(endX) - xFunction(startX);
+                })
+                .attr("height", height)
+                .attr("opacity", 0)
+                .attr("fill", fill);
+        }
+
+
+        // Canva Images
         g.append('svg:image')
             .attr("xlink:href", "/static/ctdata/images/migration_one.png")
             .attr("x", 0)
@@ -440,6 +643,33 @@ var scrollVis = function () {
             .attr("width", width)
             .attr("id", "canva_one")
             .style('opacity', 1);
+
+        g.append('svg:image')
+            .attr("xlink:href", "/static/ctdata/images/migration_two.png")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", height)
+            .attr("width", width)
+            .attr("id", "canva_two")
+            .style('opacity', 0);
+
+        g.append('svg:image')
+            .attr("xlink:href", "/static/ctdata/images/migration_three.png")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", height)
+            .attr("width", width)
+            .attr("id", "canva_three")
+            .style('opacity', 0);
+
+        g.append('svg:image')
+            .attr("xlink:href", "/static/ctdata/images/migration_four.png")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", height)
+            .attr("width", width)
+            .attr("id", "canva_four")
+            .style('opacity', 0);
 
         //Population Axes
         g.append('g')
@@ -484,199 +714,89 @@ var scrollVis = function () {
             .call(yAxisIndexedPop);
 
         // Births Axes
-        axisFactory(g, "births", "y", yAxisBirths);
-        axisFactory(g, "births", "x", xAxisBirths);
+        drawAxis(g, "births", "y", yAxisBirths);
+        drawAxis(g, "births", "x", xAxisBirths);
 
         // Regional Migration Axis
-        axisFactory(g, "regional_net", "y", yAxisRegionalMigration);
-        axisFactory(g, "regional_net", "x", xAxisRegionalMigration);
+        drawAxis(g, "regional_net", "y", yAxisRegionalMigration);
+        drawAxis(g, "regional_net", "x", xAxisRegionalMigration);
 
         // Regional State Migration Axis
-        axisFactory(g, "regional_state_net", "y", yAxisRegionalStateMigration);
-        axisFactory(g, "regional_state_net", "x", xAxisRegionalStateMigration);
-
-
-        // migration lines
-        g.append("path")
-            .data([migrationData])
-            .attr("class", "ref-line")
-            .attr("id", "migration-ref-line")
-            .style("stroke", "black")
-            .style("opacity", 0)
-            .attr("d", reference_line);
-
-        g.append("path")
-            .data([migrationData])
-            .attr("class", "line")
-            .attr("id", "domestic-line")
-            .style("stroke", "red")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", domestic_line);
-
-        g.append("path")
-            .data([migrationData])
-            .attr("class", "line")
-            .attr("id", "international-line")
-            .style("stroke", "black")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", international_line);
-
-        g.append("path")
-            .data([migrationData])
-            .attr("class", "line")
-            .attr("id", "net-line")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", net_line);
-
-        // Indexed Population Lines
-        g.append("path")
-            .data([indexedPopulationData])
-            .attr("class", "line")
-            .attr("id", "ct-indexed-line")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", ctIndexedLine);
-
-        g.append("path")
-            .data([indexedPopulationData])
-            .attr("class", "line")
-            .attr("id", "ne-indexed-line")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", neIndexedLine);
-
-        g.append("path")
-            .data([indexedPopulationData])
-            .attr("class", "line")
-            .attr("id", "neighboring-indexed-line")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", neighboringIndexedLine);
+        drawAxis(g, "regional_state_net", "y", yAxisRegionalStateMigration);
+        drawAxis(g, "regional_state_net", "x", xAxisRegionalStateMigration);
 
         // CT Population Lines
+        drawLine(g, populationData, "ct-population-line", "steelblue", "line", populationCTLine);
+        annotate(g, "annotation-population", makePopulationAnnotations);
+        drawTitle(svg, "population-title", "Population: 2001-2016");
 
-        g.append("path")
-            .data([populationData])
-            .attr("class", "line")
-            .attr("id", "ct-population-line")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", populationCTLine);
+        // migration lines
+        drawLine(g, migrationData, "migration-ref-line", "black", "ref-line", reference_line);
+        drawLine(g, migrationData, "domestic-line", "steelblue", "line", domestic_line);
+        drawLine(g, migrationData, "international-line", "black", "line", international_line);
+        drawLine(g, migrationData, "net-line", "black", "line", net_line);
+        drawTitle(svg, "net-migration-title", "Net Migrations");
+        annotate(g, "net-migration-annotation", makeNetMigrationAnnotations);
 
-        g.append('g')
-            .append("g")
-            .attr("class", "annotation-population")
-            .style("display", "none")
-            .call(makePopulationAnnotations);
+        // annotate(g, "international-migration-annotation", netMigrationAnnotationFactory("international-migration-annotation"));
+        // annotate(g, "domestic-migration-annotation", netMigrationAnnotationFactory("domestic-migration-annotation"));
+        // annotate(g, "net-migration-annotation", netMigrationAnnotationFactory("net-migration-annotation"));
+
+        // // Indexed Population Lines
+        // g.append("path")
+        //     .data([indexedPopulationData])
+        //     .attr("class", "line")
+        //     .attr("id", "ct-indexed-line")
+        //     .style("stroke-width", 2)
+        //     .style("opacity", 0)
+        //     .attr("d", ctIndexedLine);
+        //
+        // g.append("path")
+        //     .data([indexedPopulationData])
+        //     .attr("class", "line")
+        //     .attr("id", "ne-indexed-line")
+        //     .style("stroke-width", 2)
+        //     .style("opacity", 0)
+        //     .attr("d", neIndexedLine);
+        //
+        // g.append("path")
+        //     .data([indexedPopulationData])
+        //     .attr("class", "line")
+        //     .attr("id", "neighboring-indexed-line")
+        //     .style("stroke-width", 2)
+        //     .style("opacity", 0)
+        //     .attr("d", neighboringIndexedLine);
+
 
         // Births Lines
-
-        g.append("rect").attr("id", "prerecession-shading")
-            .attr("x", populationLineX(parseTime("2001")))
-            .attr("y", 0)
-            .attr("width", function () {
-                return populationLineX(parseTime("2008")) - populationLineX(parseTime("2001"));
-            })
-            .attr("height", height)
-            .attr("opacity", 0)
-            .attr("fill", "lightgrey");
-
-        g.append("rect").attr("id", "prerecession-shading")
-            .attr("x", populationLineX(parseTime("200   1")))
-            .attr("y", 0)
-            .attr("width", function () {
-                return populationLineX(parseTime("2008")) - populationLineX(parseTime("2001"));
-            })
-            .attr("height", height)
-            .attr("opacity", 0.2)
-            .attr("fill", "lightgrey");
-
-        g.append("path")
-            .data([birthsData])
-            .attr("class", "line")
-            .attr("id", "births-line")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("d", birthsLine);
+        drawShadeBox(g, "prerecession-shading", parseTime("2004"), parseTime("2007"), populationLineX, "lightgrey");
+        drawShadeBox(g, "postrecession-shading", parseTime("2013"), parseTime("2016"), populationLineX, "lightgrey");
+        annotate(g, "annotation-recession", makeRecessionShadingAnnotations);
+        drawLine(g, birthsData, "births-line", "steelblue", "line", birthsLine);
+        drawTitle(svg, "births-title", "Pre and Post Recession Births");
 
         // Regional Net
+        drawLine(g, regionalNetDomesticData, "regional-net-ct", "steelblue", "line", regionalMigrationCTLine);
+        drawLine(g, regionalNetDomesticData, "regional-net-ne", "black", "line", regionalMigrationNELine);
+        drawLine(g, regionalNetDomesticData, "regional-net-neigh", "black", "line", regionalMigrationNeighboringLine);
+        drawTitle(svg, "regional-net-migration-title", "Migrations as Percent of Total Population");
+        annotate(g, "net-migration-ct-annotation", regionalMigrationAnnotationFactory("net-migration-ct-annotation"));
+        annotate(g, "net-migration-ne-annotation", regionalMigrationAnnotationFactory("net-migration-ne-annotation"));
+        annotate(g, "net-migration-neigh-annotation", regionalMigrationAnnotationFactory("net-migration-neigh-annotation"));
 
-        g.append("path")
-            .data([regionalNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-net-ct")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalMigrationCTLine);
-
-        g.append("path")
-            .data([regionalNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-net-ne")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalMigrationNELine);
-
-        g.append("path")
-            .data([regionalNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-net-neigh")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalMigrationNeighboringLine);
 
         // Regional State
-        g.append("path")
-            .data([regionalStateNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-state-ct")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalStateCTMigrationLine);
-
-        g.append("path")
-            .data([regionalStateNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-state-ma")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalStateMAMigrationLine);
-
-        g.append("path")
-            .data([regionalStateNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-state-ny")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalStateNYMigrationLine);
-
-        g.append("path")
-            .data([regionalStateNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-state-nj")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalStateNJMigrationLine);
-
-        g.append("path")
-            .data([regionalStateNetDomesticData])
-            .attr("class", "line")
-            .attr("id", "regional-state-ri")
-            .style("stroke-width", 5)
-            .style("opacity", 0)
-            .attr("d", regionalStateRIMigrationLine);
-
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ct", "steelblue", "line", regionalStateCTMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ma", "black", "line", regionalStateMAMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ny", "black", "line", regionalStateNYMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-nj", "black", "line", regionalStateNJMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ri", "black", "line", regionalStateNJMigrationLine);
 
 
         var sankey = d3.sankey()
             .nodeWidth(36)
             .nodePadding(25)
             .size([(width), height]);
-
-
 
         /* Initialize tooltip */
         var tipLinks = d3.tip()
@@ -726,11 +846,11 @@ var scrollVis = function () {
             return (d.source.name == 'Connecticut' & top_targets.indexOf(d.target.displayName) >= 0);
         }).attr("class", "link right-link top-targets");
 
-        link.append("title")
-            .text(function (d) {
-                return d.source.displayName + " → " +
-                    d.target.name + "\n" + format(d.value);
-            });
+        // link.append("title")
+        //     .text(function (d) {
+        //         return d.source.displayName + " → " +
+        //             d.target.name + "\n" + format(d.value);
+        //     });
 
         var node = g.append("g").selectAll(".node")
             .data(flowData.nodes)
@@ -836,10 +956,12 @@ var scrollVis = function () {
 
     function ctPopulation() {
         hideCanvaOne();
+        hideCanvaTwo();
         d3.select("#population_x_axis").style("opacity", 1);
         d3.select("#population_y_axis").style("opacity", 1);
         d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 1);
         d3.select(".annotation-population").style("display", "block");
+        d3.select("#population-title").style("display", "block");
     }
 
     function hideCTPopulation() {
@@ -847,18 +969,28 @@ var scrollVis = function () {
         d3.select("#population_y_axis").style("opacity", 0);
         d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 0);
         d3.select(".annotation-population").style("display", "none");
+        d3.select("#population-title").style("display", "none");
     }
     function canvaTwo() {
         hideCTPopulation();
         hideBirths();
+        d3.select("#canva_two").style("opacity", 1);
+    }
+
+    function hideCanvaTwo() {
+        d3.select("#canva_two").style("opacity", 0);
     }
 
     function births() {
         hideMigration();
+        hideCanvaTwo();
         d3.select("#births_x_axis").style("opacity", 1);
         d3.select("#births_y_axis").style("opacity", 1);
         d3.select("#births-line").style("stroke-width", 5).style("opacity", 1);
         d3.select("#prerecession-shading").style("opacity", 0.4);
+        d3.select("#postrecession-shading").style("opacity", 0.4);
+        d3.select(".annotation-recession").style("display", "block");
+        d3.select("#births-title").style("display", "block");
     }
 
     function hideBirths() {
@@ -866,6 +998,9 @@ var scrollVis = function () {
         d3.select("#births_y_axis").style("opacity", 0);
         d3.select("#births-line").style("stroke-width", 5).style("opacity", 0);
         d3.select("#prerecession-shading").style("opacity", 0);
+        d3.select("#postrecession-shading").style("opacity", 0);
+        d3.select(".annotation-recession").style("display", "none");
+        d3.select("#births-title").style("display", "none");
     }
 
     function ctNetDomesticMigration() {
@@ -878,14 +1013,16 @@ var scrollVis = function () {
         d3.select("#domestic-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", .75);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", .75);
-
+        d3.select("#net-migration-title").style("display", "block");
+        d3.selectAll(".net-migration-annotation").style("display", "block");
     }
 
     function ctNetInternationalMigration() {
-        hideRegionalNetMigration()
+        hideRegionalNetMigration();
         d3.select("#domestic-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 2).style("opacity", 0);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#net-migration-title").style("display", "block");
     }
 
     function ctNetMigration() {
@@ -897,25 +1034,47 @@ var scrollVis = function () {
         d3.select("#domestic-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#international-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#net-migration-title").style("display", "block");
     }
+
+    function hideMigration() {
+        d3.select("#migration-ref-line").style("opacity", 0);
+        d3.select("#migration_x_axis").style("opacity", 0);
+        d3.select("#migration_y_axis").style("opacity", 0);
+        d3.select("#domestic-line").style("opacity", 0);
+        d3.select("#net-line").style("opacity", 0);
+        d3.select("#international-line").style("opacity", 0);
+        d3.select("#net-migration-title").style("display", "none");
+        d3.selectAll(".net-migration-annotation").style("display", "none");
+    }
+
 
     function regionalDomesticMigrationCT() {
         hideIndexedPopulation();
         hideMigration();
         d3.select("#regional_net_x_axis").style("opacity", 1);
         d3.select("#regional_net_y_axis").style("opacity", 1);
-        d3.select("#regional-net-ct").transition(t).style("opacity", 1);
+        d3.select("#regional-net-ct").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#regional-net-ne").transition(t).style("opacity", 0);
         d3.select("#regional-net-neigh").transition(t).style("opacity", 0);
+        d3.select("#regional-net-migration-title").style("display", "block");
+        d3.selectAll(".net-migration-ct-annotation").style("display", "block");
+        d3.selectAll(".net-migration-ne-annotation").style("display", "none");
+        d3.selectAll(".net-migration-neigh-annotation").style("display", "none");
+
     }
 
     function regionalDomesticMigrationAll() {
         hideStateDomesticMigration();
         d3.select("#regional_net_x_axis").style("opacity", 1);
         d3.select("#regional_net_y_axis").style("opacity", 1);
-        d3.select("#regional-net-ct").transition(t).style("opacity", 1);
-        d3.select("#regional-net-ne").transition(t).style("opacity", 1);
-        d3.select("#regional-net-neigh").transition(t).style("opacity", 1);
+        d3.select("#regional-net-ct").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-net-ne").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-net-neigh").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-net-migration-title").style("display", "block");
+        d3.selectAll(".net-migration-ct-annotation").style("display", "block");
+        d3.selectAll(".net-migration-ne-annotation").style("display", "block");
+        d3.selectAll(".net-migration-neigh-annotation").style("display", "block");
     }
 
     function stateDomesticMigrationCT() {
@@ -923,22 +1082,24 @@ var scrollVis = function () {
         hideAlluvial();
         d3.select("#regional_state_net_x_axis").style("opacity", 1);
         d3.select("#regional_state_net_y_axis").style("opacity", 1);
-        d3.select("#regional-state-ct").transition(t).style("opacity", 1);
+        d3.select("#regional-state-ct").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#regional-state-ma").transition(t).style("opacity", 0);
         d3.select("#regional-state-ny").transition(t).style("opacity", 0);
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
+        d3.select("#regional-net-migration-title").style("display", "block");
     }
 
     function stateDomesticMigrationAll() {
         hideAlluvial();
         d3.select("#regional_state_net_x_axis").style("opacity", 1);
         d3.select("#regional_state_net_y_axis").style("opacity", 1);
-        d3.select("#regional-state-ct").transition(t).style("opacity", 1);
-        d3.select("#regional-state-ma").transition(t).style("opacity", 1);
-        d3.select("#regional-state-ny").transition(t).style("opacity", 1);
-        d3.select("#regional-state-nj").transition(t).style("opacity", 1);
-        d3.select("#regional-state-ri").transition(t).style("opacity", 1);
+        d3.select("#regional-state-ct").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-state-ma").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-state-ny").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-state-ri").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#regional-net-migration-title").style("display", "block");
     }
 
     function hideStateDomesticMigration() {
@@ -949,12 +1110,14 @@ var scrollVis = function () {
         d3.select("#regional-state-ny").transition(t).style("opacity", 0);
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
+        d3.select("#regional-net-migration-title").style("display", "none");
     }
 
     function alluvialInMigration() {
         hideIndexedPopulation();
         hideStateDomesticMigration();
         hideMigration();
+        hideCanvaThree();
         d3.selectAll(".d3-tip").style("display", "block");
         d3.selectAll(".left-node").transition(t).style("opacity", 1);
         d3.selectAll(".left-link").transition(t2).style("opacity", 1);
@@ -963,6 +1126,7 @@ var scrollVis = function () {
     }
 
     function alluvialOutMigration() {
+        hideCanvaThree();
         d3.selectAll(".left-node").transition(t).style("opacity", 1);
         d3.selectAll(".left-link").transition(t2).style("opacity", 1);
         d3.selectAll(".right-link").transition(t).style("opacity", 1);
@@ -979,10 +1143,15 @@ var scrollVis = function () {
 
     function canvaThree() {
         hideAlluvial();
+        d3.select("#canva_three").style("opacity", 1);
+    }
+
+    function hideCanvaThree() {
+        d3.select("#canva_three").style("opacity", 0);
     }
 
     function migrationByEducation() {
-
+        hideCanvaThree();
     }
 
     function migrationByAgeIn() {
@@ -1002,14 +1171,6 @@ var scrollVis = function () {
     }
 
 
-    function hideMigration() {
-        d3.select("#migration-ref-line").style("opacity", 0);
-        d3.select("#migration_x_axis").style("opacity", 0);
-        d3.select("#migration_y_axis").style("opacity", 0);
-        d3.select("#domestic-line").style("opacity", 0);
-        d3.select("#net-line").style("opacity", 0);
-        d3.select("#international-line").style("opacity", 0);
-    }
 
     function hideIndexedPopulation() {
         d3.select("#indexed_pop_x_axis").style("opacity", 0);
@@ -1025,6 +1186,10 @@ var scrollVis = function () {
         d3.select("#regional-net-ct").style("opacity", 0);
         d3.select("#regional-net-ne").style("opacity", 0);
         d3.select("#regional-net-neigh").style("opacity", 0);
+        d3.select("#regional-net-migration-title").style("display", "none");
+        d3.selectAll(".net-migration-ct-annotation").style("display", "none");
+        d3.selectAll(".net-migration-ne-annotation").style("display", "none");
+        d3.selectAll(".net-migration-neigh-annotation").style("display", "none");
     }
 
     function indexedPopulation() {
@@ -1037,17 +1202,17 @@ var scrollVis = function () {
         d3.select("#neighboring-indexed-line").transition(t).style("stroke-width", 3).style("opacity", .5);
     }
 
-    function neIndexedPopulation() {
-        d3.select("#ct-indexed-line").transition(t).style("stroke-width", 2).style("opacity", .25);
-        d3.select("#ne-indexed_line").transition(t).style("stroke-width", 5).style("opacity", 1);
-        d3.select("#neighboring-indexed_line").transition(t).style("stroke-width", 2).style("opacity", 0);
-    }
-
-    function neighboringIndexedPopulation() {
-        d3.select("#ct-indexed-line").transition(t).style("stroke-width", 2).style("opacity", .25);
-        d3.select("#ne-indexed_line").transition(t).style("stroke-width", 2).style("opacity", .25);
-        d3.select("#neighboring-indexed_line").transition(t).style("stroke-width", 5).style("opacity", 1);
-    }
+    // function neIndexedPopulation() {
+    //     d3.select("#ct-indexed-line").transition(t).style("stroke-width", 2).style("opacity", .25);
+    //     d3.select("#ne-indexed_line").transition(t).style("stroke-width", 5).style("opacity", 1);
+    //     d3.select("#neighboring-indexed_line").transition(t).style("stroke-width", 2).style("opacity", 0);
+    // }
+    //
+    // function neighboringIndexedPopulation() {
+    //     d3.select("#ct-indexed-line").transition(t).style("stroke-width", 2).style("opacity", .25);
+    //     d3.select("#ne-indexed_line").transition(t).style("stroke-width", 2).style("opacity", .25);
+    //     d3.select("#neighboring-indexed_line").transition(t).style("stroke-width", 5).style("opacity", 1);
+    // }
 
     // Dataloading Functions
     var getIndexedPopulation = function(rawData) {
