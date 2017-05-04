@@ -271,14 +271,15 @@ var scrollVis = function () {
             var populationData = getCTPopulation(rawData);
             var regionalNetDomestic = getRegionalNetDomestic(rawData);
             var regionalStateNetDomestic = getRegionalStateNetDomestic(rawData);
-
+            var educationFlow = getMigrationByEducationData(rawData);
             setupVis(migrationData,
                 indexedPopulationData,
                 flowData,
                 birthsData,
                 populationData,
                 regionalNetDomestic,
-                regionalStateNetDomestic
+                regionalStateNetDomestic,
+                educationFlow
             );
 
             setupSections();
@@ -292,8 +293,10 @@ var scrollVis = function () {
      * @param migrationData - data object for migration series.
      */
 
-    var setupVis = function (migrationData, indexedPopulationData, flowData, birthsData, populationData, regionalNetDomesticData, regionalStateNetDomesticData) {
+    var setupVis = function (migrationData, indexedPopulationData, flowData, birthsData, populationData,
+                             regionalNetDomesticData, regionalStateNetDomesticData, educationFlow) {
 
+        console.log(educationFlow);
         // Migration Data - Set X and Y domain
         migrationLineX.domain(d3.extent(migrationData, function (d) {
             return d.year;
@@ -1381,7 +1384,7 @@ var scrollVis = function () {
     };
 
     var getMigrationByEducationData = function(rawData) {
-        var migration = rawData.filter(function(e) { return e.name === 'PopNetMigrationByEd';})[0].data;
+        var migration = rawData.filter(function(e) { return e.name === 'EducationFlow';})[0].data;
         return migration;
     };
     /**
