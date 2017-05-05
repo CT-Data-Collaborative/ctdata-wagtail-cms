@@ -94,7 +94,8 @@ gulp.task('libs', function() {
             paths.node_modules + '/d3/build/d3.js',
             paths.node_modules + '/d3-sankey/build/d3-sankey.js',
             paths.node_modules + '/d3-tip/index.js',
-            paths.node_modules + '/d3-svg-annotation/d3-annotation.min.js'
+            paths.node_modules + '/d3-svg-annotation/d3-annotation.min.js',
+            paths.node_modules + '/d3-svg-legend/d3-legend.min.js'
 
 		])
 		.pipe(gulp.dest(paths.wagtail_js + '/lib'))
