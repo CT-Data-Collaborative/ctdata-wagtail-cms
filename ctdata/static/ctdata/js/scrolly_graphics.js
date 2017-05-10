@@ -20,6 +20,10 @@ var scrollVis = function () {
     var svg = null;
     var g = null;
 
+    var legendHorz = (width + margin.left)/3;
+    var legendVert = (height + margin.bottom *.8);
+
+
     // parse the date / time
     var parseTime = d3.timeParse("%Y");
 
@@ -155,6 +159,14 @@ var scrollVis = function () {
             return birthsLineY(d.births)
         });
 
+    var deathsLine = d3.line()
+        .curve(d3.curveNatural)
+        .x(function(d) {
+            return birthsLineX(d.year)
+        })
+        .y(function (d) {
+            return birthsLineY(d.deaths)
+        });
 
     var regionalMigrationCTLine = d3.line()
         .curve(d3.curveNatural)
@@ -441,10 +453,16 @@ var scrollVis = function () {
             return d.births;
         });
 
-        birthsLineY.domain([birthCountExtent[0] - birthCountExtent[0] * .025, birthCountExtent[1] + birthCountExtent[1] * .025]);
+        // birthsLineY.domain([birthCountExtent[0] - birthCountExtent[0] * .025, birthCountExtent[1] + birthCountExtent[1] * .025]);
+        birthsLineY.domain([25000,45000]);
         birthsLineX.domain(d3.extent(birthsData, function(d) {
             return d.year;
         }));
+
+        var naturalIncreaseLegendScale = d3.scaleOrdinal()
+            .domain(['Births', 'Deaths'])
+            .range(['Steelblue', '#BD392F']);
+
 
         // Annotations for Birth Graph per and post recession shading boxes
         var recessionShadingLabels = [
@@ -834,7 +852,22 @@ var scrollVis = function () {
         drawShadeBox(g, "postrecession-shading", parseTime("2013"), parseTime("2016"), populationLineX, "lightgrey");
         annotate(g, "annotation-recession", makeRecessionShadingAnnotations);
         drawLine(g, birthsData, "births-line", "steelblue", "solid", "line", birthsLine);
-        drawTitle(svg, "births-title", "Pre and Post Recession Births");
+        drawLine(g, birthsData, "deaths-line", "#BD392F", "solid", "line", deathsLine);
+        drawTitle(svg, "births-title", "Pre and Post Recession Births and Deaths");
+
+        svg.append("g")
+            .attr("class", "birthsLegend")
+            .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
+            .style("display", "none");
+
+        var naturalIncreaseOrdinalLegend = d3.legendColor()
+            .shapeWidth(20)
+            .orient("horizontal")
+            .shapePadding(120)
+            .scale(naturalIncreaseLegendScale);
+
+        svg.selectAll(".birthsLegend").call(naturalIncreaseOrdinalLegend);
+
 
         // Regional Net
         drawLine(g, regionalNetDomesticData, "regional-net-ct", "steelblue", "solid", "line", regionalMigrationCTLine);
@@ -844,9 +877,6 @@ var scrollVis = function () {
         // annotate(g, "net-migration-ct-annotation", regionalMigrationAnnotationFactory("net-migration-ct-annotation"));
         // annotate(g, "net-migration-ne-annotation", regionalMigrationAnnotationFactory("net-migration-ne-annotation"));
         // annotate(g, "net-migration-neigh-annotation", regionalMigrationAnnotationFactory("net-migration-neigh-annotation"));
-
-        var legendHorz = (width + margin.left)/3;
-        var legendVert = (height + margin.bottom *.8);
 
         svg.append("g")
             .attr("class", "regionalMigrationLegend")
@@ -1071,10 +1101,12 @@ var scrollVis = function () {
         d3.select("#births_x_axis").style("opacity", 1);
         d3.select("#births_y_axis").style("opacity", 1);
         d3.select("#births-line").style("stroke-width", 5).style("opacity", 1);
+        d3.select("#deaths-line").style("stroke-width", 5).style("opacity", 1);
         d3.select("#prerecession-shading").style("opacity", 0.4);
         d3.select("#postrecession-shading").style("opacity", 0.4);
         d3.select(".annotation-recession").style("display", "block");
         d3.select("#births-title").style("display", "block");
+        d3.selectAll(".birthsLegend").style("display", "block");
     }
 
     function ctNetDomesticMigration() {
@@ -1089,7 +1121,6 @@ var scrollVis = function () {
             d3.select("#net-migration-title").style("display", "block");
             d3.selectAll(".net-migration-annotation").style("display", "block");
         } catch (err) {
-            console.log("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
         }
 
     }
@@ -1285,10 +1316,12 @@ var scrollVis = function () {
         d3.select("#births_x_axis").style("opacity", 0);
         d3.select("#births_y_axis").style("opacity", 0);
         d3.select("#births-line").style("stroke-width", 5).style("opacity", 0);
+        d3.select("#deaths-line").style("stroke-width", 5).style("opacity", 0);
         d3.select("#prerecession-shading").style("opacity", 0);
         d3.select("#postrecession-shading").style("opacity", 0);
         d3.select(".annotation-recession").style("display", "none");
         d3.select("#births-title").style("display", "none");
+        d3.selectAll(".birthsLegend").style("display", "none");
     }
 
     function hideMigration() {
@@ -1430,10 +1463,12 @@ var scrollVis = function () {
     };
 
     var getBirthsData = function(rawData) {
-        var births = rawData.filter(function(e) { return e.name === 'Births';})[0].data;
+        var births = rawData.filter(function(e) { return e.name === 'NaturalIncrease';})[0].data;
         births.forEach(function(d) {
-            d.year = parseTime(d.year);
-            d.births = +d.births;
+            d.year = parseTime(d.Year);
+            d.births = +d.Births;
+            d.deaths = +d.Deaths;
+            d.natural = +d['Natural Increase']
         });
         return births;
     };
