@@ -320,7 +320,55 @@ var scrollVis = function () {
             return Math.min(d.net, d.domestic, d.international);
         });
 
-        migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
+        // migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
+        migrationLineY.domain([-31000,22000]);
+
+
+          // Annotations for Birth Graph per and post recession shading boxes
+        var migrationRecessionShadingLabels = [
+            {
+                data: { year: '2004', births: migrationLineY.domain()[1] },
+                dx: 0,
+                dy: 3,
+                note: { title: "Pre-recession" },
+                subject: {
+                    height: height,
+                    width: migrationLineX(parseTime("2007")) - migrationLineX(parseTime("2004"))
+                }
+            },
+            {
+                data: { year: '2013', births: migrationLineY.domain()[1] },
+                dx: 0,
+                dy: 3,
+                note: { title: "Post-recession" },
+                subject: {
+                    height: height,
+                    width: migrationLineX(parseTime("2016")) - migrationLineX(parseTime("2013"))
+                }
+            }
+        ];
+
+
+        const migrationShadingAnnotation = d3.annotationCustomType(
+          d3.annotationCalloutRect,
+          {"className": "migration-recession-shading",
+            "connector":{"type":"line"},
+            "note":{"lineType":"vertical",
+            "align":"left"}});
+
+
+        var makeMigrationRecessionShadingAnnotations = d3.annotation()
+            .annotations(migrationRecessionShadingLabels)
+            .type(migrationShadingAnnotation).accessors({
+                x: function x(d) {
+                    return migrationLineX(parseTime(d.year)); },
+                y: function y(d) {
+                    return migrationLineY(d.births); }
+            }).accessorsInverse({
+                year: function year(d) { return parseTime(migrationLineX.invert(d.x))},
+                births: function births(d) { return migrationLineY.invert(d.y)}
+            });
+
 
 
         // Set up labels for the Net Migration Graph
@@ -362,6 +410,9 @@ var scrollVis = function () {
                 population: function population(d) { return migrationLineY.invert(d.y)}
             });
 
+        var netMigrationLegendScale = d3.scaleOrdinal()
+            .domain(['Net Domestic', 'Net International'])
+            .range(['Steelblue', 'Orange']);
         //
         // // Factory function for generating annotations within a label series with custom classes.
         // // Useful for scrolling when adding labels incrementally
@@ -454,6 +505,7 @@ var scrollVis = function () {
         });
 
         // birthsLineY.domain([birthCountExtent[0] - birthCountExtent[0] * .025, birthCountExtent[1] + birthCountExtent[1] * .025]);
+
         birthsLineY.domain([25000,45000]);
         birthsLineX.domain(d3.extent(birthsData, function(d) {
             return d.year;
@@ -545,6 +597,7 @@ var scrollVis = function () {
         ];
 
 
+
         // Factory function for generating annotations within a label series with custom classes.
         // Useful for scrolling when adding labels incrementally
         var regionalMigrationAnnotationFactory = function(id) {
@@ -577,6 +630,7 @@ var scrollVis = function () {
         //     regionalStateMigrationMinY - Math.abs(regionalStateMigrationMinY * .05),
         //     regionalStateMigrationMaxY + Math.abs(regionalStateMigrationMaxY * .05),
         // ]);
+
         regionalStateMigrationLineY.domain([-0.015, .002]);
 
         regionalStateMigrationLineX.domain(d3.extent(regionalStateNetDomesticData, function (d) {
@@ -809,12 +863,29 @@ var scrollVis = function () {
         drawTitle(svg, "population-title", "CT Population: 2001-2016");
 
         // migration lines
+        drawShadeBox(g, "migration-prerecession-shading", parseTime("2004"), parseTime("2007"), populationLineX, "lightgrey");
+        drawShadeBox(g, "migration-postrecession-shading", parseTime("2013"), parseTime("2016"), populationLineX, "lightgrey");
         drawLine(g, migrationData, "migration-ref-line", "black", "solid", "ref-line", reference_line);
         drawLine(g, migrationData, "domestic-line", "steelblue", "solid", "line", domestic_line);
         drawLine(g, migrationData, "international-line", "steelblue", ("1, 1"), "line", international_line);
         drawLine(g, migrationData, "net-line", "steelblues", ("4, 4"), "line", net_line);
         drawTitle(svg, "net-migration-title", "Net Migrations");
         annotate(g, "net-migration-annotation", makeNetMigrationAnnotations);
+        annotate(g, "migration-recession-annotation", makeMigrationRecessionShadingAnnotations);
+
+        svg.append("g")
+            .attr("class", "netMigrationLegend")
+            .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
+            .style("display", "none");
+
+        var netMigrationLegendOrdinal = d3.legendColor()
+            .shapeWidth(20)
+            // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
+            .orient("horizontal")
+            .shapePadding(120)
+            .scale(netMigrationLegendScale);
+
+        svg.select(".netMigrationLegend").call(netMigrationLegendOrdinal);
 
 
         // annotate(g, "international-migration-annotation", netMigrationAnnotationFactory("international-migration-annotation"));
@@ -877,6 +948,7 @@ var scrollVis = function () {
         // annotate(g, "net-migration-ct-annotation", regionalMigrationAnnotationFactory("net-migration-ct-annotation"));
         // annotate(g, "net-migration-ne-annotation", regionalMigrationAnnotationFactory("net-migration-ne-annotation"));
         // annotate(g, "net-migration-neigh-annotation", regionalMigrationAnnotationFactory("net-migration-neigh-annotation"));
+
 
         svg.append("g")
             .attr("class", "regionalMigrationLegend")
@@ -1056,6 +1128,7 @@ var scrollVis = function () {
         activateFunctions['Canva 2'] = canvaTwo;
         activateFunctions['Births'] = births;
         activateFunctions['Net Domestic Migration'] = ctNetDomesticMigration;
+        activateFunctions['Net International Migration'] = ctNetInternationalMigration;
         activateFunctions['Net Domestic Migration Regional CT'] = regionalDomesticMigrationCT;
         activateFunctions['Net Domestic Migration Regional All'] = regionalDomesticMigrationAll;
         activateFunctions['Net Domestic Migration State CT'] = stateDomesticMigrationCT;
@@ -1116,10 +1189,14 @@ var scrollVis = function () {
             d3.select("#migration_x_axis").style("opacity", 1);
             d3.select("#migration_y_axis").style("opacity", 1);
             d3.select("#domestic-line").transition(t).style("stroke-width", 5).style("opacity", 1);
-            d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", .75);
-            d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", .75);
+            d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 0);
+            d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 0);
             d3.select("#net-migration-title").style("display", "block");
-            d3.selectAll(".net-migration-annotation").style("display", "block");
+            // d3.selectAll(".net-migration-annotation").style("display", "block");
+            d3.selectAll(".migration-recession-annotation").style("display", "block");
+            d3.select("#migration-prerecession-shading").style("opacity", 0.4);
+            d3.select("#migration-postrecession-shading").style("opacity", 0.4);
+            d3.selectAll(".netMigrationLegend").style("display", "block");
         } catch (err) {
         }
 
@@ -1128,10 +1205,18 @@ var scrollVis = function () {
     function ctNetInternationalMigration() {
         hiderDispatch('hideMigration');
         // hideRegionalNetMigration();
+        d3.select("#migration-ref-line").style("opacity", 1);
+        d3.select("#migration_x_axis").style("opacity", 1);
+        d3.select("#migration_y_axis").style("opacity", 1);
         d3.select("#domestic-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 2).style("opacity", 0);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
+        d3.select("#net-migration-title").style("display", "block");
+        d3.selectAll(".migration-recession-annotation").style("display", "block");
+        d3.select("#migration-prerecession-shading").style("opacity", 0.4);
+        d3.select("#migration-postrecession-shading").style("opacity", 0.4);
+        d3.selectAll(".netMigrationLegend").style("display", "block");
     }
 
     function ctNetMigration() {
@@ -1143,6 +1228,7 @@ var scrollVis = function () {
         d3.select("#international-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
+        d3.select(".net-migration-annotation").style("display", "block");
     }
 
     function regionalDomesticMigrationCT() {
@@ -1332,7 +1418,12 @@ var scrollVis = function () {
         d3.select("#net-line").style("opacity", 0);
         d3.select("#international-line").style("opacity", 0);
         d3.select("#net-migration-title").style("display", "none");
-        d3.selectAll(".net-migration-annotation").style("display", "none");
+        // d3.selectAll(".net-migration-annotation").style("display", "none");
+        // d3.select(".net-migration-annotation").style("display", "none");
+        d3.select("#migration-prerecession-shading").style("opacity", 0);
+        d3.select("#migration-postrecession-shading").style("opacity", 0);
+        d3.selectAll(".migration-recession-annotation").style("display", "none");
+        d3.selectAll(".netMigrationLegend").style("display", "none");
     }
 
 
