@@ -400,6 +400,13 @@ var scrollVis = function () {
 
         // Annotation Labels for Population Graph
         var populationAnnotationLabels = [
+             {
+                data: { year: '2010', population: 3579899 },
+                dx: -50,
+                dy: 0,
+                note: { title: "2010: 3,579,889"},
+                subject: { radius: 4 }
+            },
             {
                 data: { year: '2013', population: 3596003 },
                 dx: -50,
