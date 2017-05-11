@@ -68,8 +68,12 @@ var scrollVis = function () {
         {'raw': '5000+', 'final': '$5m+', 'conversion': toNumber},
     ];
 
+    // var migrationByAgeFieldMapping = [
+    //     {'raw': 'count', 'final': 'count', 'conversion': toNumber}
+    // ];
+
     var agiFlowsFieldMapping = [
-          {'raw': 'count', 'final': 'count', 'conversion': toNumber}
+        {'raw': 'count', 'final': 'count', 'conversion': toNumber}
     ];
 
     // set the ranges
@@ -110,6 +114,22 @@ var scrollVis = function () {
     var xAxisRegionalStateMigration = d3.axisBottom().scale(regionalStateMigrationLineX);
     var yAxisRegionalStateMigration = d3.axisLeft().scale(regionalStateMigrationLineY).tickFormat(d3.format(".2%"));
 
+     // Migration by Age
+
+    var migrationByAgeY = d3.scaleBand().rangeRound([0, height]).paddingInner(0.05).align(0.1);
+    var migrationByAgeX = d3.scaleLinear().range([0, width]);
+
+    var xAxisMigrationByAge = d3.axisBottom().scale(migrationByAgeX);
+    var yAxisMigrationByAge = d3.axisLeft().scale(migrationByAgeY);
+
+    // Flows by AGI
+
+    var agiFlowsY = d3.scaleBand().rangeRound([0, height]).paddingInner(0.05).align(0.1);
+    var agiFlowsX = d3.scaleLinear().range([0, width]);
+
+    var xAxisAGIFlows = d3.axisBottom().scale(agiFlowsX);
+    var yAxisAGIFlows = d3.axisLeft().scale(agiFlowsY);
+
     // DRS Out
     var drsOutLineX = d3.scaleTime().range([0, width]);
     var drsOutLineY = d3.scaleLinear().range([height, 0]);
@@ -117,21 +137,6 @@ var scrollVis = function () {
     var xAxisDRSOut = d3.axisBottom().scale(drsOutLineX);
     var yAxisDRSOut = d3.axisLeft().scale(drsOutLineY).tickFormat(formatPercent);
 
-    // Flows by AGI
-
-    var agiFlowsX = d3.scaleOrdinal().range([0, width]);
-    var agiFlowsY = d3.scaleLinear().range([height, 0]);
-
-    var xAxisAGIFlows = d3.axisBottom().scale(agiFlowsX);
-    var yAxisAGIFlows = d3.axisLeft().scale(agiFlowsY);
-
-    // Migration by Age
-
-    var migrationByAgeX = d3.scaleOrdinal().range([0, width]);
-    var migrationByAgeY = d3.scaleLinear().range([height, 0]);
-
-    var xAxisMigrationByAge = d3.axisBottom().scale(migrationByAgeX);
-    var yAxisMigrationByAge = d3.axisLeft().scale(migrationByAgeY);
 
     var lineFactory = function(xScale, yScale, xVar, yVar) {
         return d3.line()
@@ -233,6 +238,7 @@ var scrollVis = function () {
             var flowData = getFlowData(rawData);
             var drsData = dataLoader(rawData, 'DRSOut', drsFieldMapping);
             var agiFlowsData = dataLoader(rawData, 'FlowsByAGI', agiFlowsFieldMapping);
+            var migrationAgeData = dataLoader(rawData, 'MigrationByAge', []);
 
             setupVis(migrationData,
                 flowData,
@@ -242,7 +248,8 @@ var scrollVis = function () {
                 regionalStateNetDomestic,
                 educationFlow,
                 drsData,
-                agiFlowsData
+                agiFlowsData,
+                migrationAgeData
             );
 
             setupSections();
@@ -258,21 +265,14 @@ var scrollVis = function () {
 
     var setupVis = function (migrationData, flowData, birthsData, populationData,
                              regionalNetDomesticData, regionalStateNetDomesticData, educationFlow,
-                             drsData, agiFlowsData) {
+                             drsData, agiFlowsData, migrationAgeData) {
 
-        console.log(drsData);
+        console.log(agiFlowsData);
         // Migration Data - Set X and Y domain
         migrationLineX.domain(d3.extent(migrationData, function (d) {
             return d.year;
         }));
 
-        var migration_max_y = d3.max(migrationData, function (d) {
-            return Math.max(d.net, d.domestic, d.international);
-        });
-
-        var migration_min_y = d3.min(migrationData, function (d) {
-            return Math.min(d.net, d.domestic, d.international);
-        });
 
         // migrationLineY.domain([migration_min_y + migration_min_y * .1, migration_max_y + migration_max_y * .1]);
         migrationLineY.domain([-31000,22000]);
@@ -509,6 +509,13 @@ var scrollVis = function () {
         var drsLegendScale = d3.scaleOrdinal(d3.schemeCategory20)
             .domain(['$15k-$50k', '$50k-$100k', '$100k-$200k', '$200k-$500k', '$500k-$1m', '$1m-$5m', '$5m+']);
 
+        // AGI Flow Bar Charts
+        agiFlowsY.domain(agiFlowsData.map(function(d) { return d.agi; }));
+        agiFlowsX.domain([-30000,30000]);
+
+        // Migration By Age Bar Chars
+        migrationByAgeY.domain(migrationAgeData.map(function(d) { return d.age; }));
+        migrationByAgeX.domain([-50000, 50000]);
 
         function drawAxis(target, id_base, type, axis) {
             if (type === 'x') {
@@ -657,6 +664,14 @@ var scrollVis = function () {
         drawAxis(g, "regional_state_net", "y", yAxisRegionalStateMigration);
         drawAxis(g, "regional_state_net", "x", xAxisRegionalStateMigration);
 
+        // Migration By Age Axis
+        drawAxis(g, "migration_age", "x", xAxisMigrationByAge);
+        drawAxis(g, "migration_age", "y", yAxisMigrationByAge);
+
+        // AGI Flow Axis
+        drawAxis(g, 'agi_flows', 'x', xAxisAGIFlows);
+        drawAxis(g, 'agi_flows', 'y', yAxisAGIFlows);
+
         // DRS Axes
         drawAxis(g, "drs", "y", yAxisDRSOut);
         drawAxis(g, "drs", "x", xAxisDRSOut);
@@ -757,6 +772,78 @@ var scrollVis = function () {
             .scale(stateMigrationLegendScale);
 
         svg.select(".stateMigrationLegend").call(stateMigrationLegendOrdinal);
+
+        g.selectAll('.migration-by-age-bar')
+            .data(migrationAgeData.filter(function(d) { return d.type != 'net' }))
+            .enter().append('rect')
+            .attr("class", function(d) {
+                return "migration-by-age-bar migration-by-age-bar--" + (d.count < 0 ? "negative" : "positive"); })
+            .attr("id", function(d) {
+                return d.age.slice(0,3) + d.type;
+            })
+            .attr("x", function(d) {
+                return migrationByAgeX(Math.min(0, d.count)) })
+            .attr("y", function(d) {
+                return migrationByAgeY(d.age);
+            })
+            .attr("height", migrationByAgeY.bandwidth())
+            .attr("width", function(d) {
+                return Math.abs(migrationByAgeX(d.count) - migrationByAgeX(0));
+            })
+            .style("fill", function(d) {
+                return d.count < 0 ? '#91B2E5' : '#C2D898';
+            })
+            .style("opacity", 0)
+
+        g.selectAll('circle.migration-by-age-net-circle')
+            .data(migrationAgeData.filter(function(d) { return d.type == 'net'}))
+            .enter().append('circle')
+            .attr('class', 'migration-by-age-net-circle')
+            .attr('cx', function(d) {
+                return migrationByAgeX(d.count)
+            })
+            .attr('cy', function(d) {
+                return migrationByAgeY(d.age) + migrationByAgeY.bandwidth()/2
+            })
+            .attr('r', 7.5)
+            .style('fill', 'black')
+            .style('opacity', 0);
+
+        // AGI Flows
+
+        g.selectAll('.agi-flow-bar')
+            .data(agiFlowsData.filter(function(d) { return d.type != 'Net Returns' }))
+            .enter().append('rect')
+            .attr("class", function(d) {
+                return "agi-flow-bar agi-flow-bar--" + (d.count < 0 ? "negative" : "positive"); })
+            .attr("x", function(d) {
+                return agiFlowsX(Math.min(0, d.count)) })
+            .attr("y", function(d) {
+                return agiFlowsY(d.agi);
+            })
+            .attr("height", agiFlowsY.bandwidth())
+            .attr("width", function(d) {
+                return Math.abs(agiFlowsX(d.count) - agiFlowsX(0));
+            })
+            .style("fill", function(d) {
+                return d.count < 0 ? '#91B2E5' : '#C2D898';
+            })
+            .style("opacity", 0);
+
+        g.selectAll('circle.agi-flow-circle')
+            .data(agiFlowsData.filter(function(d) { return d.type == 'Net Returns'}))
+            .enter().append('circle')
+            .attr('class', 'agi-flow-circle')
+            .attr('cx', function(d) {
+                return agiFlowsX(d.count)
+            })
+            .attr('cy', function(d) {
+                return agiFlowsY(d.agi) + agiFlowsY.bandwidth()/2
+            })
+            .attr('r', 7.5)
+            .style('fill', 'black')
+            .style('opacity', 0);
+
 
 
         // DRS Drawing
@@ -1131,11 +1218,19 @@ var scrollVis = function () {
     }
 
     function migrationByAge() {
-
+        hiderDispatch('hideMigrationByAge');
+        d3.select('#migration_age_x_axis').style('opacity', 1);
+        d3.select('#migration_age_y_axis').style('opacity', 1);
+        d3.selectAll(".migration-by-age-bar").transition(t).style("opacity", 1);
+        d3.selectAll('.migration-by-age-net-circle').transition(t).style('opacity', 1);
     }
 
     function flowsByAGI() {
-
+        hiderDispatch('hideAGIFlows');
+        d3.select('#agi_flows_x_axis').style('opacity', 1);
+        d3.select('#agi_flows_y_axis').style('opacity', 1);
+        d3.selectAll(".agi-flow-bar").transition(t).style("opacity", 1);
+        d3.selectAll('.agi-flow-circle').transition(t).style('opacity', 1);
     }
 
     function migrationByAgeIn() {
@@ -1167,7 +1262,9 @@ var scrollVis = function () {
         {'name': 'hidePopulation', 'hider': hideCTPopulation },
         {'name': 'hideMigration', 'hider': hideMigration },
         {'name': 'hideStateDomesticMigration', 'hider': hideStateDomesticMigration },
-        {'name': 'hideDRS', 'hider': hideDRS}
+        {'name': 'hideDRS', 'hider': hideDRS},
+        {'name': 'hideMigrationByAge', 'hider': hideMigrationByAge},
+        {'name': 'hideAGIFlows', 'hider': hideAGIFlows}
     ];
 
     var hiderDispatch = function(toExclude) {
@@ -1270,6 +1367,20 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select(".drsLegend").transition(t).style("display", "none");
         d3.select("#drs-title").style("display", "none");
+    }
+
+    function hideMigrationByAge() {
+        d3.selectAll('.migration-by-age-bar').style('opacity', 0);
+        d3.select('#migration_age_x_axis').style('opacity', 0);
+        d3.select('#migration_age_y_axis').style('opacity', 0);
+        d3.selectAll('.migration-by-age-net-circle').style('opacity', 0);
+    }
+
+    function hideAGIFlows() {
+        d3.select('#agi_flows_x_axis').style('opacity', 0);
+        d3.select('#agi_flows_y_axis').style('opacity', 0);
+        d3.selectAll(".agi-flow-bar").style("opacity", 0);
+        d3.selectAll('.agi-flow-circle').style('opacity', 0);
     }
 
     // Dataloading Functions
