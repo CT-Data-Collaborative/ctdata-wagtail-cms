@@ -1253,6 +1253,18 @@ ol.breadcrumbs {
 #scrolly-story {
   padding-top: 80px;
   padding-top: 5rem; }
+  #scrolly-story table {
+    font-size: 14.4px;
+    font-size: .9rem; }
+    #scrolly-story table th, #scrolly-story table td {
+      text-align: right;
+      max-width: 150px;
+      padding-left: 16px;
+      padding-left: 1rem; }
+    #scrolly-story table thead tr th:first-of-type {
+      text-align: left; }
+    #scrolly-story table tbody tr td:first-of-type {
+      text-align: left; }
 
 #sections {
   position: relative;
@@ -1267,11 +1279,11 @@ ol.breadcrumbs {
 #scrolly-vis {
   display: inline-block;
   position: fixed;
-  top: 600px;
+  top: 500px;
   z-index: 1;
   margin-left: 0;
   height: 400px;
-  width: 600px;
+  width: 700px;
   --accent-color: #E8336D; }
   #scrolly-vis .axis path,
   #scrolly-vis .axis line {

@@ -1,5 +1,28 @@
 #scrolly-story {
   padding-top: 5rem;
+
+  table {
+    font-size: .9rem;
+    th, td {
+        text-align: right;
+        max-width: 150px;
+        padding-left: 1rem;
+    }
+    thead {
+      tr {
+        th:first-of-type {
+          text-align: left;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td:first-of-type {
+          text-align: left;
+        }
+      }
+    }
+  }
 }
 
 #sections {
@@ -18,11 +41,11 @@
 #scrolly-vis {
   display: inline-block;
   position: fixed;
-  top: 600px;
+  top: 500px;
   z-index: 1;
   margin-left: 0;
   height: 400px;
-  width: 600px;
+  width: 700px;
   //background-color: #ddd;
   --accent-color: #E8336D;
 

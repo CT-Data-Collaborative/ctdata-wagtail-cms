@@ -1241,8 +1241,8 @@ var scrollVis = function () {
         hiderDispatch('hideDRS');
         d3.select("#drs_x_axis").style("opacity", 1);
         d3.select("#drs_y_axis").style("opacity", 1);
-        d3.select("#drs15k").transition(t).style("opacity", 1).style("stroke-width", 5);
-        d3.select("#drs50k").transition(t).style("opacity", 1).style("stroke-width", 5);
+        d3.select("#drs15k").transition(t).style("opacity", .5).style("stroke-width", 3);
+        d3.select("#drs50k").transition(t).style("opacity", .5).style("stroke-width", 3);
         d3.select("#drs100k").transition(t).style("opacity", 1).style("stroke-width", 5);
         d3.select("#drs200k").transition(t).style("opacity", 1).style("stroke-width", 5);
         d3.select("#drs500k").transition(t).style("opacity", 1).style("stroke-width", 5);

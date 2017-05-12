@@ -722,6 +722,7 @@ class ScrollyStory(RoutablePageMixin, Page):
         blank=True,
         help_text="""Enter how long (in minutes) the google sheets content 
     should be cached for. Leave blank to disable checking. Enter zero to disable caching.""")
+    conclusion = StreamField(CTDataStreamBlock())
     parent_page_types = ['ctdata.BlogIndexPage']
 
 
@@ -752,7 +753,8 @@ ScrollyStory.content_panels = [
     FieldPanel('author'),
     FieldPanel('date'),
     FieldPanel('google_sheet_name'),
-    FieldPanel('polling_interval')
+    FieldPanel('polling_interval'),
+    StreamFieldPanel('conclusion')
 ]
 
 
