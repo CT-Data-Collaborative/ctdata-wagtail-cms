@@ -5,7 +5,7 @@
 wheel==0.29.0
 
 # Bleeding edge Django
-django==1.10
+django==1.11
 
 # Configuration
 django-environ==0.4.0
@@ -49,7 +49,7 @@ celery==3.1.23
 # Your custom requirements go here
 # Wagtail
 
-wagtail==1.9
+wagtail==1.10
 django-compressor>=1.4
 django-fontawesome==0.3.1
 
