@@ -55,6 +55,12 @@ def blog_listing_homepage(context, count=3):
         'request': context['request'],
     }
 
+def _check_if_conference(event):
+    try:
+        if event.conferencepage:
+            return True
+    except Exception as e:
+        return False
 
 # Events feed for home page
 @register.inclusion_tag(
@@ -67,6 +73,13 @@ def event_listing_homepage(context, count=3):
         filter(display_in_event_index=True).\
         filter(date_from__gte=date.today())
     all_events = sorted(list(chain(events, data_academy_events)), key=lambda x: x.date_from)
+
+    try:
+        first_conference = next(e for e in all_events if _check_if_conference(e) )
+        if first_conference not in all_events[:count]:
+            all_events[count-1] = first_conference
+    except StopIteration:
+        pass
 
     return {
         'events': all_events[:count],
