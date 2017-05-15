@@ -1,7 +1,6 @@
 // Fetch latest datasets published to or updated on CKAN
 
 var buildTemplate = function(data) {
-    console.log(data);
     var template = $('#datasetTemplate').html();
     var rendered = Mustache.render(template, data);
     $('#datasetTarget').html(rendered);
@@ -55,17 +54,15 @@ var structureData = function(data, callback) {
     });
 
     // call getMetadata
-    var uniqData = _.chain(recentlyUpdated)
-        .uniqBy(function(d) { return d.name; })
-        .value();
+    var uniqData = _.chain(recentlyUpdated).uniqBy(function(d) { return d.name; }).value();
 
     // call getMetadata
     callback(uniqData, buildTemplate);
 };
 
 (function(){
-    $.ajax("http://data.ctdata.org/api/3/action/recently_changed_packages_activity_list?limit=20").done(function(data) {
-        var results = data.result;
+    $.ajax("http://data.ctdata.org/api/3/action/recently_changed_packages_activity_list?limit=50").done(function(data) {
+        var results = data.result.filter(function(d) { return d.activity_type != 'deleted package' });
         structureData(results, getMetadata);
     })
 })();
