@@ -2,67 +2,78 @@
 
 var buildTemplate = function(data) {
     var template = $('#datasetTemplate').html();
-    var rendered = Mustache.render(template, data);
+    var rendered = Mustache.render(template, {datasets: data});
     $('#datasetTarget').html(rendered);
 };
 
-var extractMetadata = function(meta, base) {
-    var extras = meta.extras;
-    var shortDescription = _.find(extras, function(o) { return o.key === "Description"}).value;
-    base.desc = shortDescription;
-    return base;
+var fetchMetadata = function(dataset) {
+    var metadataGetter = {
+        retrieve: function() {
+            return $.ajax("http://data.ctdata.org/api/3/action/package_show?id="+ dataset.id).then(function(d) {
+                return d.result;
+            });
+        },
+        process: function() {
+            return this.retrieve().then(function(d) {
+                dataset['desc'] = _.find(d.extras, function(o) { return o.key === "Description"}).value;
+                return dataset;
+            });
+        }
+    };
+    return metadataGetter;
 };
 
-// todo update url to be dynamic from site.ckan variable
-var getMetadata = function(data, callback) {
-    var dataWithMetadata = { datasets: [] };
-    data.forEach(function(d, index) {
-        $.ajax("http://data.ctdata.org/api/3/action/package_show?id="+ d.id).done(function(meta) {
-            var metadata = extractMetadata(meta.result, d);
-            var created = meta.result.resources[0].created;
-            var last_modified = meta.result.resources[0].last_modified;
-            var timestamp = moment(d.timestamp);
-            var cutoff = 201600145;
-            var check = last_modified ? moment(last_modified) : moment(created);
-            var resource_updated = timestamp - check < cutoff ? true : false;
-            if (resource_updated) {
-                dataWithMetadata.datasets.push(metadata);
-            } else {
-
-            }
-            if (index === (data.length-1)) {
-                // call buildTemplate
-                callback(dataWithMetadata);
-            }
-        });
+var getMetadata = function(data) {
+    return data.map(function (d) {
+        return fetchMetadata(d).process();
     });
 };
 
-var structureData = function(data, callback) {
-    var recentlyUpdated = [];
+function restructureData(data) {
     var options = {year: "numeric", month: "long",day: "numeric"};
-    data.forEach(function(d) {
+    return data.map(function(d) {
         dateObj = new Date(d.timestamp);
-        var dataset = {
+        return {
             'name': d.data.package.title,
             'id': d.data.package.name,
             'url': 'http://data.ctdata.org/visualization/' + d.data.package.name,
             'timestamp': d.timestamp,
             'date': dateObj.toLocaleDateString('en', options)
         };
-        recentlyUpdated.push(dataset);
-    });
-
-    // call getMetadata
-    var uniqData = _.chain(recentlyUpdated).uniqBy(function(d) { return d.name; }).value();
-
-    // call getMetadata
-    callback(uniqData, buildTemplate);
+    })
 };
 
+
 (function(){
-    $.ajax("http://data.ctdata.org/api/3/action/recently_changed_packages_activity_list?limit=50").done(function(data) {
-        var results = data.result.filter(function(d) { return d.activity_type != 'deleted package' });
-        structureData(results, getMetadata);
-    })
+    var recentDatasets = {
+        json: function() {
+            return $.getJSON("http://data.ctdata.org/api/3/action/recently_changed_packages_activity_list?limit=50").then(function(data) {
+                return data;
+            });
+        },
+        filtered: function() {
+            return this.json().then(function(data) {
+                return data.result.filter(function(d) { return d.activity_type != 'deleted package' });
+            });
+        },
+        structured: function() {
+            return this.filtered().then(function(filtered) {
+                return _.chain(restructureData(filtered)).uniqBy(function(d) { return d.name; }).sortBy(-'date').value();
+            });
+        },
+        metadata: function() {
+            return this.structured().then(function(structured) {
+                return getMetadata(structured.slice(0,3));
+            });
+        },
+        publish: function() {
+            this.metadata().then(function(metadata) {
+                console.log(metadata);
+                $.when(metadata[0], metadata[1], metadata[2]).done(function(a,b,c) {
+                    buildTemplate([a,b,c])
+                })
+            });
+        }
+    };
+    recentDatasets.publish();
 })();
