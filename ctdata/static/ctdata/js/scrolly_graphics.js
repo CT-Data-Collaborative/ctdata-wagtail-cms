@@ -364,8 +364,8 @@ var scrollVis = function () {
             });
 
         var netMigrationLegendScale = d3.scaleOrdinal()
-            .domain(['Net Domestic', 'Net International'])
-            .range(['Steelblue', 'Orange']);
+            .domain(['Domestic', 'International', 'Net'])
+            .range(['Steelblue', 'Orange', 'Black']);
 
 
         // Set Domain for CT Population Graph
@@ -691,8 +691,8 @@ var scrollVis = function () {
         drawShadeBox(g, "migration-postrecession-shading", parseTime("2013"), parseTime("2016"), populationLineX, "lightgrey");
         drawLine(g, migrationData, "migration-ref-line", "black", "solid", "ref-line", reference_line);
         drawLine(g, migrationData, "domestic-line", "steelblue", "solid", "line", domestic_line);
-        drawLine(g, migrationData, "international-line", "steelblue", ("1, 1"), "line", international_line);
-        drawLine(g, migrationData, "net-line", "steelblues", ("4, 4"), "line", net_line);
+        drawLine(g, migrationData, "international-line", "orange", "solid", "line", international_line);
+        drawLine(g, migrationData, "net-line", "black", "solid"gss, "line", net_line);
         drawTitle(svg, "net-migration-title", "Net Migrations");
         annotate(g, "net-migration-annotation", makeNetMigrationAnnotations);
         annotate(g, "migration-recession-annotation", makeMigrationRecessionShadingAnnotations);
@@ -1106,7 +1106,6 @@ var scrollVis = function () {
             d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 0);
             d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 0);
             d3.select("#net-migration-title").style("display", "block");
-            // d3.selectAll(".net-migration-annotation").style("display", "block");
             d3.selectAll(".migration-recession-annotation").style("display", "block");
             d3.select("#migration-prerecession-shading").style("opacity", 0.4);
             d3.select("#migration-postrecession-shading").style("opacity", 0.4);
@@ -1122,8 +1121,8 @@ var scrollVis = function () {
         d3.select("#migration-ref-line").style("opacity", 1);
         d3.select("#migration_x_axis").style("opacity", 1);
         d3.select("#migration_y_axis").style("opacity", 1);
-        d3.select("#domestic-line").transition(t).style("stroke-width", 2).style("opacity", .25);
-        d3.select("#net-line").transition(t).style("stroke-width", 2).style("opacity", 0);
+        d3.select("#domestic-line").transition(t).style("stroke-width", 5).style("opacity", 1);
+        d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
         d3.select("#net-migration-title").style("display", "block");
