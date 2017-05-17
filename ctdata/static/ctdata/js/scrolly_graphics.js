@@ -20,9 +20,10 @@ var scrollVis = function () {
     var svg = null;
     var g = null;
 
-    var legendHorz = (width + margin.left)/3;
-    var legendVert = (height + margin.bottom *.8);
-
+    // var legendHorz = (width + margin.left)/3;
+    // var legendVert = (height + margin.bottom *.8);
+    var legendHorz = margin.left;
+    var legendVert = margin.top;
 
     // parse the date / time
     var parseTime = d3.timeParse("%Y");
@@ -225,7 +226,7 @@ var scrollVis = function () {
             svg.append('g');
 
             g = svg.select('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                .attr('transform', 'translate(' + margin.left + ',' + (margin.top+50) + ')');
 
 
             // var migrationData = getMigrationData(rawData);
@@ -556,11 +557,18 @@ var scrollVis = function () {
                 .attr("d", callable);
         }
 
-        function drawTitle(target, id, title) {
+        function drawTitle(target, id, title, legend) {
             target.append("text")
-                .attr("x", (width / 2) + margin.left)
-                .attr("y", (margin.top / 1.5))
-                .attr("text-anchor", "middle")
+                // .attr("x", (width / 2) + margin.left)
+                .attr("x", margin.left)
+                .attr("y", function() {
+                    if (legend) {
+                        return margin.top / 1.5
+                    } else {
+                        return margin.top * 1.5
+                    }
+                })
+                .attr("text-anchor", "left")
                 .attr("id", id)
                 .style("font-size", "20px")
                 .style("font-weight", "600")
@@ -590,6 +598,17 @@ var scrollVis = function () {
                 .attr("fill", fill);
         }
 
+        function drawSource(target, id, source) {
+            target.append("text")
+                .attr("x", 240)
+                .attr("y", height + margin.top + margin.bottom/2 + 25)
+                .attr("text-anchor", "middle")
+                .attr("id", id)
+                .style("font-size", "16px")
+                .style("font-weight", "400")
+                .style("display", "none")
+                .text(source);
+        }
 
         // Canva Images
         g.append('svg:image')
@@ -684,7 +703,8 @@ var scrollVis = function () {
         // CT Population Lines
         drawLine(g, populationData, "ct-population-line", "steelblue", "solid","line", populationCTLine);
         annotate(g, "annotation-population", makePopulationAnnotations);
-        drawTitle(svg, "population-title", "CT Population: 2001-2016");
+        drawTitle(svg, "population-title", "CT Population: 2001-2016", false);
+        drawSource(svg, "population-source", "Source: ​Census Population Estimates");
 
         // migration lines
         drawShadeBox(g, "migration-prerecession-shading", parseTime("2004"), parseTime("2007"), populationLineX, "lightgrey");
@@ -693,9 +713,10 @@ var scrollVis = function () {
         drawLine(g, migrationData, "domestic-line", "steelblue", "solid", "line", domestic_line);
         drawLine(g, migrationData, "international-line", "orange", "solid", "line", international_line);
         drawLine(g, migrationData, "net-line", "black", "solid", "line", net_line);
-        drawTitle(svg, "net-migration-title", "Net Migrations");
+        drawTitle(svg, "net-migration-title", "Net Migrations", true);
         annotate(g, "net-migration-annotation", makeNetMigrationAnnotations);
         annotate(g, "migration-recession-annotation", makeMigrationRecessionShadingAnnotations);
+        drawSource(svg, "migration-source", "Source: ​Census Population Estimates");
 
         svg.append("g")
             .attr("class", "netMigrationLegend")
@@ -703,23 +724,29 @@ var scrollVis = function () {
             .style("display", "none");
 
         var netMigrationLegendOrdinal = d3.legendColor()
-            .shapeWidth(20)
-            // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
+            .shapeWidth(15)
             .orient("horizontal")
             .shapePadding(120)
             .scale(netMigrationLegendScale);
 
         svg.select(".netMigrationLegend").call(netMigrationLegendOrdinal);
 
+        var legendReflow = function(selector) {
+            var x = 0;
+            var currentLegend = svg.select(selector);
+            var cells  = currentLegend.select('.legendCells');
+            cells.selectAll('.cell').each(function() {console.log(this)});
+        };
 
-
+        legendReflow(".netMigrationLegend");
         // Births Lines
         drawShadeBox(g, "prerecession-shading", parseTime("2004"), parseTime("2007"), populationLineX, "lightgrey");
         drawShadeBox(g, "postrecession-shading", parseTime("2013"), parseTime("2016"), populationLineX, "lightgrey");
         annotate(g, "annotation-recession", makeRecessionShadingAnnotations);
         drawLine(g, birthsData, "births-line", "steelblue", "solid", "line", birthsLine);
         drawLine(g, birthsData, "deaths-line", "#BD392F", "solid", "line", deathsLine);
-        drawTitle(svg, "births-title", "Pre and Post Recession Births and Deaths");
+        drawTitle(svg, "births-title", "Pre and Post Recession Births and Deaths", true);
+        drawSource(svg, "births-source", "Source: ​Census Population Estimates");
 
         svg.append("g")
             .attr("class", "birthsLegend")
@@ -739,8 +766,8 @@ var scrollVis = function () {
         drawLine(g, regionalNetDomesticData, "regional-net-ct", "steelblue", "solid", "line", regionalMigrationCTLine);
         drawLine(g, regionalNetDomesticData, "regional-net-ne", "#BD392F", "solid", "line", regionalMigrationNELine);
         drawLine(g, regionalNetDomesticData, "regional-net-neigh", "#3AC2A6", "solid", "line", regionalMigrationNeighboringLine);
-        drawTitle(svg, "regional-net-migration-title", "Migrations as Percent of Total Population");
-
+        drawTitle(svg, "regional-net-migration-title", "Migration as Percent of Total Population", true);
+        drawSource(svg, "regional-source", "Source: ​Census Population Estimates");
 
         svg.append("g")
             .attr("class", "regionalMigrationLegend")
@@ -762,7 +789,7 @@ var scrollVis = function () {
         // drawLine(g, regionalStateNetDomesticData, "regional-state-ma", "black", "line", regionalStateMAMigrationLine);
         drawLine(g, regionalStateNetDomesticData, "regional-state-ny", "orange", "solid", "line", regionalStateNYMigrationLine);
         drawLine(g, regionalStateNetDomesticData, "regional-state-nj", "purple", "solid", "line", regionalStateNJMigrationLine);
-
+        drawSource(svg, "regional-state-source", "Source: ​Census Population Estimates");
 
         svg.append("g")
             .attr("class", "stateMigrationLegend")
@@ -821,7 +848,8 @@ var scrollVis = function () {
             .style('fill', 'black')
             .style('opacity', 0);
 
-        drawTitle(svg, 'migration-by-age-title', 'Migration by Age');
+        drawTitle(svg, 'migration-by-age-title', 'Migration by Age', true);
+        drawSource(svg, 'migration-by-age-source', 'Source: US Census American Community Survey');
 
         var migrationByAgeOrdinal = d3.legendColor()
             .shapeWidth(20)
@@ -873,7 +901,8 @@ var scrollVis = function () {
             .style('fill', 'black')
             .style('opacity', 0);
 
-        drawTitle(svg, 'agi-flows-title', 'Migration by Adjusted Gross Income');
+        drawTitle(svg, 'agi-flows-title', 'Migration by Adjusted Gross Income', true);
+        drawSource(svg, 'migration-by-agi-source', 'Source: IRS Gross Migration Files');
 
         var agiFlowOrdinal = d3.legendColor()
             .shapeWidth(20)
@@ -897,7 +926,8 @@ var scrollVis = function () {
         drsDrawer('drs500k', '$500k-$1m', agi500Line);
         drsDrawer('drs1m', '$1m-$5m', agi1000Line);
         drsDrawer('drs5m', '$5m+', agi5000Line);
-        drawTitle(svg, "drs-title", "Out Migration by Adjusted Gross Income");
+        drawTitle(svg, "drs-title", "Out Migration by Adjusted Gross Income", true);
+        drawSource(svg, 'migration-by-drs-source', 'Source: IRS Gross Migration Files');
 
         svg.append("g")
             .attr("class", "drsLegend")
@@ -1026,7 +1056,8 @@ var scrollVis = function () {
             link.attr("d", path);
         };
 
-        drawTitle(svg, 'sankey-title', 'In and out-migration by State');
+        drawTitle(svg, 'sankey-title', 'In and Out-migration by State', false);
+        drawSource(svg, 'sankey-source', 'Source: IRS State-to-State In and Out Flow Files');
 
     }
 
@@ -1075,6 +1106,7 @@ var scrollVis = function () {
         d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 1);
         d3.select(".annotation-population").style("display", "block");
         d3.select("#population-title").style("display", "block");
+        d3.select("#population-source").style("display", "block");
     }
 
 
@@ -1094,6 +1126,7 @@ var scrollVis = function () {
         d3.select(".annotation-recession").style("display", "block");
         d3.select("#births-title").style("display", "block");
         d3.selectAll(".birthsLegend").style("display", "block");
+        d3.select("#births-source").style("display", "block");
     }
 
     function ctNetDomesticMigration() {
@@ -1110,6 +1143,7 @@ var scrollVis = function () {
             d3.select("#migration-prerecession-shading").style("opacity", 0.4);
             d3.select("#migration-postrecession-shading").style("opacity", 0.4);
             d3.selectAll(".netMigrationLegend").style("display", "block");
+            d3.select("#migration-source").style("display", "block");
         } catch (err) {
         }
 
@@ -1125,11 +1159,11 @@ var scrollVis = function () {
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
-        d3.select("#net-migration-title").style("display", "block");
         d3.selectAll(".migration-recession-annotation").style("display", "block");
         d3.select("#migration-prerecession-shading").style("opacity", 0.4);
         d3.select("#migration-postrecession-shading").style("opacity", 0.4);
         d3.selectAll(".netMigrationLegend").style("display", "block");
+        d3.select("#migration-source").style("display", "block");
     }
 
     function ctNetMigration() {
@@ -1142,6 +1176,7 @@ var scrollVis = function () {
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
         d3.select(".net-migration-annotation").style("display", "block");
+        d3.select("#migration-source").style("display", "block");
     }
 
     function regionalDomesticMigrationCT() {
@@ -1153,6 +1188,7 @@ var scrollVis = function () {
         d3.select("#regional-net-neigh").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "block");
         d3.selectAll(".regionalMigrationLegend").style("display", "block");
+        d3.select("#regional-source").style("display", "block");
     }
 
     function regionalDomesticMigrationAll() {
@@ -1164,6 +1200,7 @@ var scrollVis = function () {
         d3.select("#regional-net-neigh").transition(t).style("stroke-width", 5).style("opacity", .5);
         d3.select("#regional-net-migration-title").style("display", "block");
         d3.selectAll(".regionalMigrationLegend").style("display", "block");
+        d3.select("#regional-source").style("display", "block");
     }
 
     function stateDomesticMigrationCT() {
@@ -1175,8 +1212,7 @@ var scrollVis = function () {
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "block");
         d3.selectAll(".stateMigrationLegend").style("display", "block");
-
-
+        d3.select("#regional-state-source").style("display", "block");
     }
 
     function stateDomesticMigrationAll() {
@@ -1189,10 +1225,10 @@ var scrollVis = function () {
             d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", .5);
             d3.select("#regional-net-migration-title").style("display", "block");
             d3.selectAll(".stateMigrationLegend").style("display", "block");
+            d3.select("#regional-state-source").style("display", "block");
         }
         catch(err) {
-            console.log(err)
-            console.log("cooking with gas!")
+            console.log(err);
         }
 
     }
@@ -1206,6 +1242,7 @@ var scrollVis = function () {
         d3.selectAll(".right-link").transition(t).style("opacity", 0);
         d3.selectAll(".right-node").transition(t).style("opacity", 0);
         d3.select("#sankey-title").style("display", "block");
+        d3.select("#sankey-source").style("display", "block");
     }
 
     function alluvialOutMigration() {
@@ -1215,6 +1252,7 @@ var scrollVis = function () {
         d3.selectAll(".right-link").transition(t).style("opacity", 1);
         d3.selectAll(".right-node").transition(t2).style("opacity", 1);
         d3.select("#sankey-title").style("display", "block");
+        d3.select("#sankey-source").style("display", "block");
     }
 
     function canvaThree() {
@@ -1239,6 +1277,7 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select(".drsLegend").transition(t).style("display", "block");
         d3.select("#drs-title").style("display", "block");
+        d3.select("#drs-source").style("display", "block");
     }
 
     function drsOutRest() {
@@ -1254,6 +1293,7 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 1).style("stroke-width", 5);
         d3.select(".drsLegend").transition(t).style("display", "block");
         d3.select("#drs-title").style("display", "block");
+        d3.select("#drs-source").style("display", "block");
     }
 
     function migrationByAge() {
@@ -1264,6 +1304,7 @@ var scrollVis = function () {
         d3.selectAll('.migration-by-age-net-circle').transition(t).style('opacity', 1);
         d3.select('#migration-by-age-title').style('display', 'block');
         d3.select(".migrationByAgeLegend").transition(t).style("display", "block");
+        d3.select("#migration-by-age-source").style("display", "block");
 
     }
 
@@ -1275,6 +1316,7 @@ var scrollVis = function () {
         d3.selectAll('.agi-flow-circle').transition(t).style('opacity', 1);
         d3.select('#agi-flows-title').style('display', 'block');
         d3.select(".agiFlowsLegend").transition(t).style("display", "block");
+        d3.select("#migration-by-agi-source").style("display", "block");
     }
 
     // Hide Functions
@@ -1312,6 +1354,7 @@ var scrollVis = function () {
         d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 0);
         d3.select(".annotation-population").style("display", "none");
         d3.select("#population-title").style("display", "none");
+        d3.select("#population-source").style("display", "none");
     }
 
 
@@ -1330,6 +1373,7 @@ var scrollVis = function () {
         d3.select(".annotation-recession").style("display", "none");
         d3.select("#births-title").style("display", "none");
         d3.selectAll(".birthsLegend").style("display", "none");
+        d3.select("#births-source").style("display", "none");
     }
 
     function hideMigration() {
@@ -1344,6 +1388,7 @@ var scrollVis = function () {
         d3.select("#migration-postrecession-shading").style("opacity", 0);
         d3.selectAll(".migration-recession-annotation").style("display", "none");
         d3.selectAll(".netMigrationLegend").style("display", "none");
+        d3.select("#migration-source").style("display", "none");
     }
 
 
@@ -1354,6 +1399,7 @@ var scrollVis = function () {
         d3.selectAll(".right-link").transition(t).style("opacity", 0);
         d3.selectAll(".right-node").transition(t).style("opacity", 0);
         d3.select("#sankey-title").style("display", "none");
+        d3.select("#sankey-source").style("display", "none");
     }
 
     function hideCanvaThree() {
@@ -1369,6 +1415,7 @@ var scrollVis = function () {
         d3.select("#regional-net-neigh").style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "none");
         d3.selectAll(".regionalMigrationLegend").style("display", "none");
+        d3.select("#regional-source").style("display", "none");
     }
 
      function hideStateDomesticMigration() {
@@ -1381,6 +1428,7 @@ var scrollVis = function () {
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "none");
         d3.selectAll(".stateMigrationLegend").style("display", "none");
+        d3.select("#regional-state-source").style("display", "none");
     }
 
     function hideDRS() {
@@ -1395,6 +1443,7 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select(".drsLegend").transition(t).style("display", "none");
         d3.select("#drs-title").style("display", "none");
+        d3.select("#drs-source").style("display", "none");
     }
 
     function hideMigrationByAge() {
@@ -1404,6 +1453,7 @@ var scrollVis = function () {
         d3.selectAll('.migration-by-age-net-circle').style('opacity', 0);
         d3.select('#migration-by-age-title').style('display', 'none');
         d3.select(".migrationByAgeLegend").transition(t).style("display", "none");
+        d3.select("#migration-by-age-source").style("display", "none");
     }
 
     function hideAGIFlows() {
@@ -1413,6 +1463,7 @@ var scrollVis = function () {
         d3.selectAll('.agi-flow-circle').style('opacity', 0);
         d3.select('#agi-flows-title').style('display', 'none');
         d3.select(".agiFlowsLegend").transition(t).style("display", "none");
+        d3.select("#migration-by-agi-source").style("display", "none");
     }
 
     // Dataloading Functions
