@@ -692,7 +692,7 @@ var scrollVis = function () {
         drawLine(g, migrationData, "migration-ref-line", "black", "solid", "ref-line", reference_line);
         drawLine(g, migrationData, "domestic-line", "steelblue", "solid", "line", domestic_line);
         drawLine(g, migrationData, "international-line", "orange", "solid", "line", international_line);
-        drawLine(g, migrationData, "net-line", "black", "solid"gss, "line", net_line);
+        drawLine(g, migrationData, "net-line", "black", "solid", "line", net_line);
         drawTitle(svg, "net-migration-title", "Net Migrations");
         annotate(g, "net-migration-annotation", makeNetMigrationAnnotations);
         annotate(g, "migration-recession-annotation", makeMigrationRecessionShadingAnnotations);

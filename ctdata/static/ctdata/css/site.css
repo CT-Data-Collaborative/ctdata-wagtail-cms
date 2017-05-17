@@ -1294,7 +1294,7 @@ ol.breadcrumbs {
     shape-rendering: crispEdges;
     stroke-width: 2px; }
   #scrolly-vis .tick text {
-    font-family: "Roboto Condensed", san-serif;
+    font-family: "Roboto", san-serif;
     font-size: 14px; }
   #scrolly-vis .line {
     fill: none;
