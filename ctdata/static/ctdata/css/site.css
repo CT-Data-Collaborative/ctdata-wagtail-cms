@@ -1265,6 +1265,8 @@ ol.breadcrumbs {
       text-align: left; }
     #scrolly-story table tbody tr td:first-of-type {
       text-align: left; }
+  #scrolly-story #conclusion {
+    margin-top: -100px; }
 
 #sections {
   position: relative;

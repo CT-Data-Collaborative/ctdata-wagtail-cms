@@ -8,73 +8,87 @@
 {% endblock %}
 {% block centered_content %}
     <div class="post-content">
+        <div id="introduction">
+            <div class="row">
+                <div class="col-xs-6 offset-xs-2">
+                    <div class="row">
+                        {% include "ctdata/includes/streamfield.html" with content=page.introduction %}
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
         <div id="scrolly-story">
             <div class="row">
                 <div class="col-xs-8 offset-xs-2">
                     <div class="row">
                         <div id="sections">
-                        {% for section in content.content %}
-                            <section class="step">
-                                {% if section.graphic %}
-                                    <div data-graphic-id="{{ section.graphic }}"></div>
-                                {% endif %}
-                                {% for item in section.items %}
-                                    {% if item.type == 'Title' %}
-                                        <h2>{{ item.content | safe }}</h2>
-                                    {% elif item.type == 'Graphic' %}
-                                        <div data-graphic-id="{{ item.content }}"></div>
-                                    {% elif item.type == 'Heading' %}
-                                        <h3>{{ item.content | safe }}</h3>
-                                    {% elif item.type == 'Subheading' %}
-                                        <h4>{{ item.content | safe }}</h4>
-                                    {% elif item.type == 'Paragraph' %}
-                                        <p>{{ item.content | safe }}</p>
-                                    {% elif item.type == 'Ordered List' %}
-                                        <p>{{ item.content | safe }}</p>
-                                        <ol>
-                                            {% for list_item in item.list_items %}
-                                                <li>{{ list_item | safe }}</li>
-                                            {% endfor %}
-                                        </ol>
-                                    {% elif item.type == 'Unordered List' %}
-                                        <p>{{ item.content | safe }}</p>
-                                        <ul>
-                                            {% for list_item in item.list_items %}
-                                                <li>{{ list_item | safe }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% elif item.type == 'Table' %}
-                                        <table>
-                                            <thead>
+                            {% for section in content.content %}
+                                <section class="step">
+                                    {% if section.graphic %}
+                                        <div data-graphic-id="{{ section.graphic }}"></div>
+                                    {% endif %}
+                                    {% for item in section.items %}
+                                        {% if item.type == 'Title' %}
+                                            <h2>{{ item.content | safe }}</h2>
+                                        {% elif item.type == 'Graphic' %}
+                                            <div data-graphic-id="{{ item.content }}"></div>
+                                        {% elif item.type == 'Heading' %}
+                                            <h3>{{ item.content | safe }}</h3>
+                                        {% elif item.type == 'Subheading' %}
+                                            <h4>{{ item.content | safe }}</h4>
+                                        {% elif item.type == 'Paragraph' %}
+                                            <p>{{ item.content | safe }}</p>
+                                        {% elif item.type == 'Ordered List' %}
+                                            <p>{{ item.content | safe }}</p>
+                                            <ol>
+                                                {% for list_item in item.list_items %}
+                                                    <li>{{ list_item | safe }}</li>
+                                                {% endfor %}
+                                            </ol>
+                                        {% elif item.type == 'Unordered List' %}
+                                            <p>{{ item.content | safe }}</p>
+                                            <ul>
+                                                {% for list_item in item.list_items %}
+                                                    <li>{{ list_item | safe }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% elif item.type == 'Table' %}
+                                            <table>
+                                                <thead>
                                                 <tr>
                                                     {% for cell in item.content.header %}
                                                         <th>{{ cell }}</th>
                                                     {% endfor %}
                                                 </tr>
-                                            </thead>
-                                            <tbody>
+                                                </thead>
+                                                <tbody>
                                                 {% for row in item.content.data %}
                                                     <tr>
                                                         {% for cell in row %}<td>{{ cell }}</td>{% endfor %}
                                                     </tr>
                                                 {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    {% endif %}
-                                {% endfor %}
-                            </section>
-                            <!-- /.step -->
-                        {% endfor %}
-                    </div>
+                                                </tbody>
+                                            </table>
+                                        {% endif %}
+                                    {% endfor %}
+                                </section>
+                                <!-- /.step -->
+                            {% endfor %}
+                        </div>
                         <!-- /#sections -->
                         <div id="scrolly-vis"></div>
                         <!-- /#scrolly-vis -->
                     </div>
                     <!-- /.row -->
                     <div class="row">
-                        <div id="conclusion">
-                            {% include "ctdata/includes/streamfield.html" with content=page.conclusion %}
+                        <div class="col-sm-10">
+                            <div id="conclusion">
+                                {% include "ctdata/includes/streamfield.html" with content=page.conclusion %}
+                            </div>
                         </div>
+                        <!-- /.col-sm-8 -->
                     </div>
                     <!-- /.row -->
                 </div>
@@ -85,57 +99,67 @@
     {% include "ctdata/includes/related_links.html" with related_links=self.related_links.all only %}
 {% endblock %}
 {% block extra_js %}
-<script>
-    $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
-<script>
-$(function() {
-    // Functions to handle the initial positioning of the header, footer and viz box for scrollytelling
-    var header = $(".navbar-hidden");
-    var scrollyVis = $("#scrolly-vis");
-    var conclusion = $("#conclusion");
-    var footer = $('#footer');
-    var footerPadding = footer.css('padding-top').substr(0,2);
-    var footerTracking = 0;
-    var current = 0;
-    var previous = 0;
-    $(window).scroll(function() {
-        var scroll = $(window).scrollTop();
-        previous = current;
-        current = scroll;
-        if (scroll >= 350) {
-            header.removeClass('hidden').addClass("reveal");
-        } else {
-            header.removeClass("reveal").addClass('hidden');
-        }
-        if (scroll <= 375) {
-            var newtop = 500 - scroll;
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <script>
+        $(function() {
+            // Functions to handle the initial positioning of the header, footer and viz box for scrollytelling
+            var header = $(".navbar-hidden");
+            var introduction = $("#introduction");
+            var scrollyVis = $("#scrolly-vis");
+            var conclusion = $("#conclusion");
+            var footer = $('#footer');
+            var footerPadding = footer.css('padding-top').substr(0,2);
+            var footerTracking = 0;
+            var current = 0;
+            var previous = 0;
+
+            // Set positions correct on load before scrolling starts
+            var scroll = $(window).scrollTop();
+            var newtop = 500 + introduction.height() - scroll;
             scrollyVis.css('top', newtop + 'px');
-        } else {
-            scrollyVis.css('top', '120px');
-        }
-        if (scroll + 300 + conclusion.height() >= $("#scrolly-story").height()) {
-            footerTracking += current - previous;
-            var footertop = 120 - footerTracking;
-            scrollyVis.css('top', footertop + 'px');
-        } else {
-            footerTracking = 0;
-        }
-    });
-});
-</script>
-<script src="{% static 'ctdata/js/lib/d3.js' %}"></script>
-<script src="{% static 'ctdata/js/lib/index.js' %}"></script>
-<script src="{% static 'ctdata/js/lib/d3-sankey.js' %}"></script>
-<script src="{% static 'ctdata/js/lib/d3-annotation.min.js' %}"></script>
-<script src="{% static 'ctdata/js/lib/d3-legend.min.js' %}"></script>
-<script src="{% static 'ctdata/js/scroller.js' %}"></script>
-<script src="{% static 'ctdata/js/scrolly_graphics.js' %}"></script>
-<script>
-display({{ content.rawdata|safe}});
-</script>
+            $(window).scroll(function() {
+                var scroll = $(window).scrollTop();
+                var positionOffsetBase = 350;
+                var contentOffset = positionOffsetBase + introduction.height();
+
+                previous = current;
+                current = scroll;
+                if (scroll >= positionOffsetBase) {
+                    header.removeClass('hidden').addClass("reveal");
+                } else {
+                    header.removeClass("reveal").addClass('hidden');
+                }
+                if (scroll <= contentOffset) {
+                    var newtop = 500 + introduction.height() - scroll;
+                    scrollyVis.css('top', newtop + 'px');
+                } else {
+                    scrollyVis.css('top', '120px');
+                }
+                // Allow for outer page to start scrolling once we reach the conclusion
+                if (scroll + 300 + conclusion.height() >= ($("#scrolly-story").height() + introduction.height())) {
+                    footerTracking += current - previous;
+                    var footertop = 120 - footerTracking;
+                    scrollyVis.css('top', footertop + 'px');
+                } else {
+                    footerTracking = 0;
+                }
+            });
+        });
+    </script>
+    <script src="{% static 'ctdata/js/lib/d3.js' %}"></script>
+    <script src="{% static 'ctdata/js/lib/index.js' %}"></script>
+    <script src="{% static 'ctdata/js/lib/d3-sankey.js' %}"></script>
+    <script src="{% static 'ctdata/js/lib/d3-annotation.min.js' %}"></script>
+    <script src="{% static 'ctdata/js/lib/d3-legend.min.js' %}"></script>
+    <script src="{% static 'ctdata/js/scroller.js' %}"></script>
+    <script src="{% static 'ctdata/js/scrolly_graphics.js' %}"></script>
+    <script>
+        display({{ content.rawdata|safe}});
+    </script>
 {% endblock %}
 {% block external_js %}
 {% endblock %}
