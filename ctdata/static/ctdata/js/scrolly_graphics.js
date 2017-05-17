@@ -873,7 +873,7 @@ var scrollVis = function () {
             .style('fill', 'black')
             .style('opacity', 0);
 
-        drawTitle(svg, 'agi-flows-title', 'Migration by AGI');
+        drawTitle(svg, 'agi-flows-title', 'Migration by Adjusted Gross Income');
 
         var agiFlowOrdinal = d3.legendColor()
             .shapeWidth(20)
