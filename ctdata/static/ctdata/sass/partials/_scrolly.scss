@@ -130,4 +130,9 @@
     cursor: move;
   }
 
+  g.legendCells {
+    .label-left {
+      text-anchor: left !important;
+    }
+  }
 }

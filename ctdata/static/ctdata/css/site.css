@@ -1335,3 +1335,5 @@ ol.breadcrumbs {
     font-weight: bold; }
   #scrolly-vis .annotation.xythreshold {
     cursor: move; }
+  #scrolly-vis g.legendCells .label-left {
+    text-anchor: left !important; }

@@ -1,3 +1,29 @@
+function measureText(pText, pFontSize, pStyle) {
+    var lDiv = document.createElement('div');
+
+    document.body.appendChild(lDiv);
+
+    if (pStyle != null) {
+        lDiv.style = pStyle;
+    }
+    lDiv.style.fontSize = "" + pFontSize + "px";
+    lDiv.style.position = "absolute";
+    lDiv.style.left = -1000;
+    lDiv.style.top = -1000;
+
+    lDiv.innerHTML = pText;
+
+    var lResult = {
+        width: lDiv.clientWidth,
+        height: lDiv.clientHeight
+    };
+
+    document.body.removeChild(lDiv);
+    lDiv = null;
+
+    return lResult;
+}
+
 var scrollVis = function () {
     var margin = {top: 75, right: 20, bottom: 150, left: 100},
         width = 700 - margin.left - margin.right,
@@ -733,9 +759,24 @@ var scrollVis = function () {
 
         var legendReflow = function(selector) {
             var x = 0;
+            var i = 0;
             var currentLegend = svg.select(selector);
             var cells  = currentLegend.select('.legendCells');
-            cells.selectAll('.cell').each(function() {console.log(this)});
+            cells.selectAll('.cell').each(function(d,i) {
+                var text = d3.select(this).select('text.label');
+                var textSize = measureText(text.text(), 16, 'Roboto');
+                text.attr("transform", "translate(17,15)").attr("style", "text-anchor: left;");
+                d3.select(this).attr("transform", function() {
+                    if (i == 0) {
+                        x = textSize.width + 40;
+                        return "translate(0,0)";
+                    } else {
+                        var oldX = x;
+                        x += textSize.width + 40;
+                        return "translate(" + oldX + ",0)";
+                    }
+                })
+            });
         };
 
         legendReflow(".netMigrationLegend");
@@ -754,13 +795,13 @@ var scrollVis = function () {
             .style("display", "none");
 
         var naturalIncreaseOrdinalLegend = d3.legendColor()
-            .shapeWidth(20)
+            .shapeWidth(15)
             .orient("horizontal")
             .shapePadding(120)
             .scale(naturalIncreaseLegendScale);
 
         svg.selectAll(".birthsLegend").call(naturalIncreaseOrdinalLegend);
-
+        legendReflow(".birthsLegend");
 
         // Regional Net
         drawLine(g, regionalNetDomesticData, "regional-net-ct", "steelblue", "solid", "line", regionalMigrationCTLine);
@@ -775,14 +816,14 @@ var scrollVis = function () {
             .style("display", "none");
 
         var migrationLegendOrdinal = d3.legendColor()
-            .shapeWidth(20)
+            .shapeWidth(15)
             // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
             .orient("horizontal")
             .shapePadding(120)
             .scale(regionalMigrationLegendScale);
 
         svg.select(".regionalMigrationLegend").call(migrationLegendOrdinal);
-
+        legendReflow(".regionalMigrationLegend");
 
         // Regional State
         drawLine(g, regionalStateNetDomesticData, "regional-state-ct", "steelblue", "solid", "line", regionalStateCTMigrationLine);
@@ -797,14 +838,14 @@ var scrollVis = function () {
             .style("display", "none");
 
         var stateMigrationLegendOrdinal = d3.legendColor()
-            .shapeWidth(20)
+            .shapeWidth(15)
             // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
             .orient("horizontal")
             .shapePadding(120)
             .scale(stateMigrationLegendScale);
 
         svg.select(".stateMigrationLegend").call(stateMigrationLegendOrdinal);
-
+        legendReflow(".stateMigrationLegend");
         // Migration By Age
 
         svg.append("g")
@@ -852,14 +893,14 @@ var scrollVis = function () {
         drawSource(svg, 'migration-by-age-source', 'Source: US Census American Community Survey');
 
         var migrationByAgeOrdinal = d3.legendColor()
-            .shapeWidth(20)
+            .shapeWidth(15)
             // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
             .orient("horizontal")
             .shapePadding(120)
             .scale(outInNetScale);
 
         svg.select(".migrationByAgeLegend").call(migrationByAgeOrdinal);
-
+        legendReflow(".migrationByAgeLegend");
 
 
         // AGI Flows
@@ -905,14 +946,14 @@ var scrollVis = function () {
         drawSource(svg, 'migration-by-agi-source', 'Source: IRS Gross Migration Files');
 
         var agiFlowOrdinal = d3.legendColor()
-            .shapeWidth(20)
+            .shapeWidth(15)
             // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
             .orient("horizontal")
             .shapePadding(120)
             .scale(outInNetScale);
 
         svg.select(".agiFlowsLegend").call(agiFlowOrdinal);
-
+        legendReflow(".agiFlowsLegend");
 
         // DRS Drawing
         var drsDrawer = function(id, key, line) {
@@ -936,12 +977,13 @@ var scrollVis = function () {
 
 
         var drsLegendOrdinal = d3.legendColor()
-            .shapeWidth(20)
+            .shapeWidth(15)
             .orient("horizontal")
             .shapePadding(85)
             .scale(drsLegendScale);
 
         svg.select(".drsLegend").call(drsLegendOrdinal);
+        // legendReflow(".drsLegend");
 
         var sankey = d3.sankey()
             .nodeWidth(36)
