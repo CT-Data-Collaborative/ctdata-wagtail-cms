@@ -140,7 +140,7 @@
                     scrollyVis.css('top', '120px');
                 }
                 // Allow for outer page to start scrolling once we reach the conclusion
-                if (scroll + 300 + conclusion.height() >= ($("#scrolly-story").height() + introduction.height())) {
+                if (scroll + 300 + conclusion.height() >= ($("#scrolly-story").height() + 50 + introduction.height())) {
                     footerTracking += current - previous;
                     var footertop = 120 - footerTracking;
                     scrollyVis.css('top', footertop + 'px');
