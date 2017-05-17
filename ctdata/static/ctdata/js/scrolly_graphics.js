@@ -1025,6 +1025,9 @@ var scrollVis = function () {
             sankey.relayout();
             link.attr("d", path);
         };
+
+        drawTitle(svg, 'sankey-title', 'In and out-migration by State');
+
     }
 
     var setupSections = function () {
@@ -1203,6 +1206,7 @@ var scrollVis = function () {
         d3.selectAll(".left-link").transition(t2).style("opacity", 1);
         d3.selectAll(".right-link").transition(t).style("opacity", 0);
         d3.selectAll(".right-node").transition(t).style("opacity", 0);
+        d3.select("#sankey-title").style("display", "block");
     }
 
     function alluvialOutMigration() {
@@ -1211,6 +1215,7 @@ var scrollVis = function () {
         d3.selectAll(".left-link").transition(t2).style("opacity", 1);
         d3.selectAll(".right-link").transition(t).style("opacity", 1);
         d3.selectAll(".right-node").transition(t2).style("opacity", 1);
+        d3.select("#sankey-title").style("display", "block");
     }
 
     function canvaThree() {
@@ -1349,6 +1354,7 @@ var scrollVis = function () {
         d3.selectAll(".left-link").transition(t2).style("opacity", 0);
         d3.selectAll(".right-link").transition(t).style("opacity", 0);
         d3.selectAll(".right-node").transition(t).style("opacity", 0);
+        d3.select("#sankey-title").style("display", "none");
     }
 
     function hideCanvaThree() {
