@@ -626,9 +626,9 @@ var scrollVis = function () {
 
         function drawSource(target, id, source) {
             target.append("text")
-                .attr("x", 240)
+                .attr("x", margin.left)
                 .attr("y", height + margin.top + margin.bottom/2 + 25)
-                .attr("text-anchor", "middle")
+                .attr("text-anchor", "left")
                 .attr("id", id)
                 .style("font-size", "16px")
                 .style("font-weight", "400")
