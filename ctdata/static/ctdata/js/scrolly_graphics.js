@@ -25,7 +25,7 @@ function measureText(pText, pFontSize, pStyle) {
 }
 
 var scrollVis = function () {
-    var margin = {top: 75, right: 20, bottom: 150, left: 100},
+    var margin = {top: 75, right: 50, bottom: 150, left: 100},
         width = 700 - margin.left - margin.right,
         height = 650 - margin.top - margin.bottom;
 
@@ -656,6 +656,15 @@ var scrollVis = function () {
             .style('opacity', 0);
 
         g.append('svg:image')
+            .attr("xlink:href", "/static/ctdata/images/migration_four.png")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", height)
+            .attr("width", width)
+            .attr("id", "canva_four")
+            .style('opacity', 0);
+
+        g.append('svg:image')
             .attr("xlink:href", "/static/ctdata/images/migration_three.png")
             .attr("x", 0)
             .attr("y", 0)
@@ -665,12 +674,12 @@ var scrollVis = function () {
             .style('opacity', 0);
 
         g.append('svg:image')
-            .attr("xlink:href", "/static/ctdata/images/migration_four.png")
+            .attr("xlink:href", "/static/ctdata/images/migration_five.png")
             .attr("x", 0)
             .attr("y", 0)
             .attr("height", height)
             .attr("width", width)
-            .attr("id", "canva_four")
+            .attr("id", "canva_five")
             .style('opacity', 0);
 
         //Population Axes
@@ -1125,6 +1134,7 @@ var scrollVis = function () {
         activateFunctions['Alluvial In Migration'] = alluvialInMigration;
         activateFunctions['Alluvial Out Migration'] = alluvialOutMigration;
         activateFunctions['Canva 3'] = canvaThree;
+        activateFunctions['Canva 5'] = canvaFive;
         activateFunctions['CT Population and Migration by Education'] = migrationByEducation;
         activateFunctions['CT Net International Migration'] = ctNetInternationalMigration;
         activateFunctions['CT Net International / Domestic Migration'] = ctNetMigration;
@@ -1302,6 +1312,10 @@ var scrollVis = function () {
         d3.select("#canva_three").style("opacity", 1);
     }
 
+    function canvaFive() {
+        hiderDispatch('hideCanvaFive');
+        d3.select("#canva_five").style("opacity", 1);
+    }
     function migrationByEducation() {
         hideCanvaThree();
     }
@@ -1367,6 +1381,7 @@ var scrollVis = function () {
         {'name': 'hideCanvaOne', 'hider': hideCanvaOne },
         {'name': 'hideCanvaTwo', 'hider': hideCanvaTwo },
         {'name': 'hideCanvaThree', 'hider': hideCanvaThree },
+        {'name': 'hideCanvaFive', 'hider': hideCanvaFive },
         {'name': 'hideBirths', 'hider': hideBirths },
         {'name': 'hideAlluvial', 'hider': hideAlluvial },
         {'name': 'hideRegionalNetMigration', 'hider': hideRegionalNetMigration },
@@ -1448,6 +1463,9 @@ var scrollVis = function () {
         d3.select("#canva_three").style("opacity", 0);
     }
 
+    function hideCanvaFive() {
+        d3.select("#canva_five").style("opacity", 0);
+    }
 
     function hideRegionalNetMigration() {
         d3.select("#regional_net_x_axis").style("opacity", 0);

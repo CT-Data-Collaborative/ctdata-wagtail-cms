@@ -1251,8 +1251,7 @@ ol.breadcrumbs {
     display: none; }
 
 #scrolly-story {
-  padding-top: 80px;
-  padding-top: 5rem; }
+  margin-top: -80px; }
   #scrolly-story table {
     font-size: 14.4px;
     font-size: .9rem; }
@@ -1267,6 +1266,11 @@ ol.breadcrumbs {
       text-align: left; }
   #scrolly-story #conclusion {
     margin-top: -100px; }
+
+@media (min-width: 1600px) {
+  #scrolly-story {
+    width: 90%;
+    margin-left: 10%; } }
 
 #sections {
   position: relative;

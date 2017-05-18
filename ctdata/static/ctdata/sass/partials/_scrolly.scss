@@ -1,5 +1,5 @@
 #scrolly-story {
-  padding-top: 5rem;
+  margin-top: -80px;
 
   table {
     font-size: .9rem;
@@ -29,6 +29,12 @@
   }
 }
 
+@media (min-width: 1600px) {
+  #scrolly-story {
+    width: 90%;
+    margin-left: 10%;
+  }
+}
 #sections {
   position: relative;
   display: inline-block;
