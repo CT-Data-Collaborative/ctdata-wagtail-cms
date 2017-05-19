@@ -1333,7 +1333,7 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select(".drsLegend").transition(t).style("display", "block");
         d3.select("#drs-title").style("display", "block");
-        d3.select("#drs-source").style("display", "block");
+        d3.select("#migration-by-drs-source").style("display", "block");
     }
 
     function drsOutRest() {
@@ -1349,7 +1349,7 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 1).style("stroke-width", 5);
         d3.select(".drsLegend").transition(t).style("display", "block");
         d3.select("#drs-title").style("display", "block");
-        d3.select("#drs-source").style("display", "block");
+        d3.select("#migration-by-drs-source").style("display", "block");
     }
 
     function migrationByAge() {
@@ -1503,7 +1503,7 @@ var scrollVis = function () {
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select(".drsLegend").transition(t).style("display", "none");
         d3.select("#drs-title").style("display", "none");
-        d3.select("#drs-source").style("display", "none");
+        d3.select("#migration-by-drs-source").style("display", "none");
     }
 
     function hideMigrationByAge() {
