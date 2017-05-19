@@ -531,7 +531,7 @@ var scrollVis = function () {
         // DRS Domain and Legend
 
         drsOutLineX.domain(d3.extent(drsData, function(d) { return d.year; }));
-        drsOutLineY.domain([-.15, .1]);
+        drsOutLineY.domain([-.15, 0]);
 
         var drsLegendScale = d3.scaleOrdinal(d3.schemeCategory20)
             .domain(['$15k-$50k', '$50k-$100k', '$100k-$200k', '$200k-$500k', '$500k-$1m', '$1m-$5m', '$5m+']);
@@ -748,7 +748,7 @@ var scrollVis = function () {
         drawLine(g, migrationData, "domestic-line", "steelblue", "solid", "line", domestic_line);
         drawLine(g, migrationData, "international-line", "orange", "solid", "line", international_line);
         drawLine(g, migrationData, "net-line", "black", "solid", "line", net_line);
-        drawTitle(svg, "net-migration-title", "Net Migrations", true);
+        drawTitle(svg, "net-migration-title", "Net Migration", true);
         annotate(g, "net-migration-annotation", makeNetMigrationAnnotations);
         annotate(g, "migration-recession-annotation", makeMigrationRecessionShadingAnnotations);
         drawSource(svg, "migration-source", "Source: ​Census Population Estimates");
@@ -816,7 +816,7 @@ var scrollVis = function () {
         drawLine(g, regionalNetDomesticData, "regional-net-ct", "steelblue", "solid", "line", regionalMigrationCTLine);
         drawLine(g, regionalNetDomesticData, "regional-net-ne", "#BD392F", "solid", "line", regionalMigrationNELine);
         drawLine(g, regionalNetDomesticData, "regional-net-neigh", "#3AC2A6", "solid", "line", regionalMigrationNeighboringLine);
-        drawTitle(svg, "regional-net-migration-title", "Migration as Percent of Total Population", true);
+        drawTitle(svg, "regional-net-migration-title", "Domestic Migration as Percent of Total Population", true);
         drawSource(svg, "regional-source", "Source: ​Census Population Estimates");
 
         svg.append("g")
@@ -977,7 +977,7 @@ var scrollVis = function () {
         drsDrawer('drs1m', '$1m-$5m', agi1000Line);
         drsDrawer('drs5m', '$5m+', agi5000Line);
         drawTitle(svg, "drs-title", "Out Migration by Adjusted Gross Income", true);
-        drawSource(svg, 'migration-by-drs-source', 'Source: IRS Gross Migration Files');
+        drawSource(svg, 'migration-by-drs-source', 'Source: CT Department of Revenue Services');
 
         svg.append("g")
             .attr("class", "drsLegend")
