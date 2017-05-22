@@ -1157,7 +1157,6 @@ class ConferenceSponsorLink(Orderable, SponsorLink):
     page = ParentalKey('ctdata.ConferencePage', related_name='sponsors')
 
 
-
 class ConferencePage(EventPage):
     subpage_types = ['ctdata.ConferenceSession']
 
@@ -1165,7 +1164,6 @@ class ConferencePage(EventPage):
     def sessions(self):
         # Get list of live event pages that are descendants of this page
         sessions = ConferenceSession.objects.live().descendant_of(self)
-
         return sessions
 
     def serve(self, request):
