@@ -524,11 +524,11 @@ var scrollVis = function () {
         }));
 
         var stateMigrationLegendScale1 = d3.scaleOrdinal()
-            .domain(['CT', 'MA', 'RI'])
+            .domain(['Connecticut', 'Massachusetts', 'Rhode Island'])
             .range(['Steelblue', 'Grey', 'Green']);
 
          var stateMigrationLegendScale2 = d3.scaleOrdinal()
-            .domain(['CT', 'NY', 'NJ'])
+            .domain(['Connecticut', 'New York', 'New Jersey'])
             .range(['Steelblue', 'Orange', 'Purple']);
 
 
