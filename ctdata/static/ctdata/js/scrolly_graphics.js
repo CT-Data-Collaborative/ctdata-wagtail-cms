@@ -524,8 +524,8 @@ var scrollVis = function () {
         }));
 
         var stateMigrationLegendScale = d3.scaleOrdinal()
-            .domain(['Connecticut', 'New York', 'New Jersey'])
-            .range(['Steelblue', 'Orange', 'Purple']);
+            .domain(['CT', 'NY', 'NJ', 'MA', 'RI'])
+            .range(['Steelblue', 'Orange', 'Purple', 'Grey', 'Green']);
 
 
         // DRS Domain and Legend
@@ -836,8 +836,8 @@ var scrollVis = function () {
 
         // Regional State
         drawLine(g, regionalStateNetDomesticData, "regional-state-ct", "steelblue", "solid", "line", regionalStateCTMigrationLine);
-        drawLine(g, regionalStateNetDomesticData, "regional-state-ma", "black", "solid", "line", regionalStateMAMigrationLine);
-        drawLine(g, regionalStateNetDomesticData, "regional-state-ri", "black", "solid", "line", regionalStateRIMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ma", "grey", "solid", "line", regionalStateMAMigrationLine);
+        drawLine(g, regionalStateNetDomesticData, "regional-state-ri", "green", "solid", "line", regionalStateRIMigrationLine);
         drawLine(g, regionalStateNetDomesticData, "regional-state-ny", "orange", "solid", "line", regionalStateNYMigrationLine);
         drawLine(g, regionalStateNetDomesticData, "regional-state-nj", "purple", "solid", "line", regionalStateNJMigrationLine);
         drawSource(svg, "regional-state-source", "Source: ​Census Population Estimates");
@@ -1276,10 +1276,10 @@ var scrollVis = function () {
             d3.select("#regional_state_net_x_axis").style("opacity", 1);
             d3.select("#regional_state_net_y_axis").style("opacity", 1);
             d3.select("#regional-state-ct").transition(t).style("stroke-width", 5).style("opacity", 1);
-            d3.select("#regional-state-ma").transition(t).style("stroke-width", 5).style("opacity", 1);
-            d3.select("#regional-state-ri").transition(t).style("stroke-width", 5).style("opacity", 1);
-            d3.select("#regional-state-ny").transition(t).style("stroke-width", 5).style("opacity", .5);
-            d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", .5);
+            d3.select("#regional-state-ma").transition(t).style("stroke-width", 5).style("opacity", 0);
+            d3.select("#regional-state-ri").transition(t).style("stroke-width", 5).style("opacity", 0);
+            d3.select("#regional-state-ny").transition(t).style("stroke-width", 5).style("opacity", 1);
+            d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", 1);
             d3.select("#regional-net-migration-title").style("display", "block");
             d3.selectAll(".stateMigrationLegend").style("display", "block");
             d3.select("#regional-state-source").style("display", "block");
