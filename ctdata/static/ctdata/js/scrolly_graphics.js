@@ -523,9 +523,13 @@ var scrollVis = function () {
             return d.year;
         }));
 
-        var stateMigrationLegendScale = d3.scaleOrdinal()
-            .domain(['CT', 'NY', 'NJ', 'MA', 'RI'])
-            .range(['Steelblue', 'Orange', 'Purple', 'Grey', 'Green']);
+        var stateMigrationLegendScale1 = d3.scaleOrdinal()
+            .domain(['CT', 'MA', 'RI'])
+            .range(['Steelblue', 'Grey', 'Green']);
+
+         var stateMigrationLegendScale2 = d3.scaleOrdinal()
+            .domain(['CT', 'NY', 'NJ'])
+            .range(['Steelblue', 'Orange', 'Purple']);
 
 
         // DRS Domain and Legend
@@ -843,19 +847,33 @@ var scrollVis = function () {
         drawSource(svg, "regional-state-source", "Source: ​Census Population Estimates");
 
         svg.append("g")
-            .attr("class", "stateMigrationLegend")
+            .attr("class", "stateMigrationLegend1")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
             .style("display", "none");
 
-        var stateMigrationLegendOrdinal = d3.legendColor()
+        svg.append("g")
+            .attr("class", "stateMigrationLegend2")
+            .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
+            .style("display", "none");
+
+        var stateMigrationLegendOrdinal1 = d3.legendColor()
             .shapeWidth(15)
             // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
             .orient("horizontal")
             .shapePadding(120)
-            .scale(stateMigrationLegendScale);
+            .scale(stateMigrationLegendScale1);
 
-        svg.select(".stateMigrationLegend").call(stateMigrationLegendOrdinal);
-        legendReflow(".stateMigrationLegend");
+        var stateMigrationLegendOrdinal3 = d3.legendColor()
+            .shapeWidth(15)
+            // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
+            .orient("horizontal")
+            .shapePadding(120)
+            .scale(stateMigrationLegendScale2);
+
+        svg.select(".stateMigrationLegend1").call(stateMigrationLegendOrdinal1);
+        legendReflow(".stateMigrationLegend1");
+        svg.select(".stateMigrationLegend2").call(stateMigrationLegendOrdinal2);
+        legendReflow(".stateMigrationLegend2");
         // Migration By Age
 
         svg.append("g")
@@ -1266,7 +1284,8 @@ var scrollVis = function () {
         d3.select("#regional-state-ny").transition(t).style("opacity", 0);
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "block");
-        d3.selectAll(".stateMigrationLegend").style("display", "block");
+        d3.selectAll(".stateMigrationLegend1").style("display", "block");
+        d3.selectAll(".stateMigrationLegend2").style("display", "none");
         d3.select("#regional-state-source").style("display", "block");
     }
 
@@ -1281,7 +1300,8 @@ var scrollVis = function () {
             d3.select("#regional-state-ny").transition(t).style("stroke-width", 5).style("opacity", 1);
             d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", 1);
             d3.select("#regional-net-migration-title").style("display", "block");
-            d3.selectAll(".stateMigrationLegend").style("display", "block");
+            d3.selectAll(".stateMigrationLegend1").style("display", "none");
+            d3.selectAll(".stateMigrationLegend2").style("display", "block");
             d3.select("#regional-state-source").style("display", "block");
         }
         catch(err) {
@@ -1492,7 +1512,8 @@ var scrollVis = function () {
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "none");
-        d3.selectAll(".stateMigrationLegend").style("display", "none");
+        d3.selectAll(".stateMigrationLegend1").style("display", "none");
+        d3.selectAll(".stateMigrationLegend2").style("display", "none");
         d3.select("#regional-state-source").style("display", "none");
     }
 
