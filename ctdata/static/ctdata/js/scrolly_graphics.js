@@ -863,7 +863,7 @@ var scrollVis = function () {
             .shapePadding(120)
             .scale(stateMigrationLegendScale1);
 
-        var stateMigrationLegendOrdinal3 = d3.legendColor()
+        var stateMigrationLegendOrdinal2 = d3.legendColor()
             .shapeWidth(15)
             // .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
             .orient("horizontal")
