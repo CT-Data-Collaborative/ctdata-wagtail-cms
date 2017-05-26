@@ -388,12 +388,10 @@ class HomePage(Page):
     @property
     def blogs(self):
         # Get list of live blog pages that are descendants of this page
-        blogs = BlogPage.objects.live().descendant_of(self)
-
+        news = Page.objects.live().descendant_of(self).type((BlogPage, ScrollyStory))
         # Order by most recent date first
-        blogs = blogs.order_by('-date')
-
-        return blogs
+        news = sorted([b.specific for b in news], key=lambda x:x.date, reverse=True)
+        return news
 
 
 HomePage.content_panels = [
