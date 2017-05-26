@@ -607,28 +607,38 @@ class BlogIndexPage(Page):
 
         return blogs
 
+    def get_items(self, tag=None):
+        blogs = BlogPage.objects.live().descendant_of(self)
+        scrolly = ScrollyStory.objects.live().descendant_of(self)
+        if tag:
+            blogs = blogs.filter(tags__name=tag)
+            scrolly = scrolly.filter(tags__name=tag)
+        items = [b.specific for b in blogs] + [s.specific for s in scrolly]
+        return sorted(items, key=lambda x:x.date, reverse=True)
+
     def get_context(self, request):
         # Get blogs
-        blogs = self.blogs
+        # blogs = self.blogs
 
         # Filter by tag
         tag = request.GET.get('tag')
-        if tag:
-            blogs = blogs.filter(tags__name=tag)
+        items = self.get_items(tag)
+        # if tag:
+            # blogs = blogs.filter(tags__name=tag)
 
         # Pagination
         page = request.GET.get('page')
-        paginator = Paginator(blogs, 10)  # Show 10 blogs per page
+        paginator = Paginator(items, 10)  # Show 10 blogs per page
         try:
-            blogs = paginator.page(page)
+            items = paginator.page(page)
         except PageNotAnInteger:
-            blogs = paginator.page(1)
+            items = paginator.page(1)
         except EmptyPage:
-            blogs = paginator.page(paginator.num_pages)
+            items = paginator.page(paginator.num_pages)
 
         # Update template context
         context = super(BlogIndexPage, self).get_context(request)
-        context['blogs'] = blogs
+        context['blogs'] = items
         return context
 
 BlogIndexPage.content_panels = [
@@ -710,8 +720,11 @@ BlogPage.promote_panels = Page.promote_panels + [
 ########
 ################################################################################################
 
+class ScrollyPageTag(TaggedItemBase):
+    content_object = ParentalKey('ctdata.ScrollyStory', related_name='tagged_items')
+
 class ScrollyStory(RoutablePageMixin, Page):
-    tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
+    tags = ClusterTaggableManager(through=ScrollyPageTag, blank=True)
     author = models.CharField(max_length=255)
     date = models.DateField("Post date")
     google_sheet_name = models.CharField(max_length=255)
@@ -757,6 +770,9 @@ ScrollyStory.content_panels = [
     StreamFieldPanel('conclusion')
 ]
 
+ScrollyStory.promote_panels = Page.promote_panels + [
+    FieldPanel('tags'),
+]
 
 ################################################################################################
 ########
