@@ -9,7 +9,11 @@
     </div>
     <div class="post-snippet">
         <div class="abstract">
-            {% include "ctdata/includes/streamfield_truncated.html" with content=blog.body %}
+            {% if blog.introduction %}
+                {% include "ctdata/includes/streamfield_truncated.html" with content=blog.introduction %}
+            {% else %}
+                {% include "ctdata/includes/streamfield_truncated.html" with content=blog.body %}
+            {% endif %}
         </div>
         <div class="link">
             <a href="{% pageurl blog %}">Continue reading</a>
