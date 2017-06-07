@@ -445,9 +445,9 @@ var scrollVis = function () {
 
 
         // Set domain for birth graph
-        var birthCountExtent = d3.extent(birthsData, function(d) {
-            return d.births;
-        });
+        // var birthCountExtent = d3.extent(birthsData, function(d) {
+        //     return d.births;
+        // });
 
         // birthsLineY.domain([birthCountExtent[0] - birthCountExtent[0] * .025, birthCountExtent[1] + birthCountExtent[1] * .025]);
 
@@ -612,7 +612,7 @@ var scrollVis = function () {
             target.append('g')
                 .append("g")
                 .attr("class", annotationClass)
-                .style("display", "none")
+                .style("visibility", "hidden")
                 .call(callable);
         }
 
@@ -760,7 +760,8 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "netMigrationLegend")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         var netMigrationLegendOrdinal = d3.legendColor()
             .shapeWidth(15)
@@ -805,7 +806,8 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "birthsLegend")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         var naturalIncreaseOrdinalLegend = d3.legendColor()
             .shapeWidth(15)
@@ -826,7 +828,8 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "regionalMigrationLegend")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         var migrationLegendOrdinal = d3.legendColor()
             .shapeWidth(15)
@@ -849,12 +852,14 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "stateMigrationLegend1")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         svg.append("g")
             .attr("class", "stateMigrationLegend2")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         var stateMigrationLegendOrdinal1 = d3.legendColor()
             .shapeWidth(15)
@@ -879,7 +884,8 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "migrationByAgeLegend")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         g.selectAll('.migration-by-age-bar')
             .data(migrationAgeData.filter(function(d) { return d.type != 'net' }))
@@ -935,7 +941,8 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "agiFlowsLegend")
             .attr("transform", "translate(" + legendHorz + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
         g.selectAll('.agi-flow-bar')
             .data(agiFlowsData.filter(function(d) { return d.type != 'Net Returns' }))
@@ -1001,7 +1008,8 @@ var scrollVis = function () {
         svg.append("g")
             .attr("class", "drsLegend")
             .attr("transform", "translate(" + 50 + "," + legendVert + ")")
-            .style("display", "none");
+            .style("visibility", "hidden");
+            // .style("display", "none");
 
 
         var drsLegendOrdinal = d3.legendColor()
@@ -1175,7 +1183,7 @@ var scrollVis = function () {
         d3.select("#population_x_axis").style("opacity", 1);
         d3.select("#population_y_axis").style("opacity", 1);
         d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 1);
-        d3.select(".annotation-population").style("display", "block");
+        d3.select(".annotation-population").style("visibility", "visible");
         d3.select("#population-title").style("display", "block");
         d3.select("#population-source").style("display", "block");
     }
@@ -1194,9 +1202,9 @@ var scrollVis = function () {
         d3.select("#deaths-line").style("stroke-width", 5).style("opacity", 1);
         d3.select("#prerecession-shading").style("opacity", 0.4);
         d3.select("#postrecession-shading").style("opacity", 0.4);
-        d3.select(".annotation-recession").style("display", "block");
+        d3.select(".annotation-recession").style("visibility", "visible");
         d3.select("#births-title").style("display", "block");
-        d3.selectAll(".birthsLegend").style("display", "block");
+        d3.selectAll(".birthsLegend").style("visibility", "visible");
         d3.select("#births-source").style("display", "block");
     }
 
@@ -1210,10 +1218,10 @@ var scrollVis = function () {
             d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 0);
             d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 0);
             d3.select("#net-migration-title").style("display", "block");
-            d3.selectAll(".migration-recession-annotation").style("display", "block");
+            d3.selectAll(".migration-recession-annotation").style("visibility", "visible");
             d3.select("#migration-prerecession-shading").style("opacity", 0.4);
             d3.select("#migration-postrecession-shading").style("opacity", 0.4);
-            d3.selectAll(".netMigrationLegend").style("display", "block");
+            d3.selectAll(".netMigrationLegend").style("visibility", "visible");
             d3.select("#migration-source").style("display", "block");
         } catch (err) {
         }
@@ -1230,10 +1238,10 @@ var scrollVis = function () {
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#international-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
-        d3.selectAll(".migration-recession-annotation").style("display", "block");
+        d3.selectAll(".migration-recession-annotation").style("visibility", "visible");
         d3.select("#migration-prerecession-shading").style("opacity", 0.4);
         d3.select("#migration-postrecession-shading").style("opacity", 0.4);
-        d3.selectAll(".netMigrationLegend").style("display", "block");
+        d3.selectAll(".netMigrationLegend").style("visibility", "visible");
         d3.select("#migration-source").style("display", "block");
     }
 
@@ -1246,7 +1254,7 @@ var scrollVis = function () {
         d3.select("#international-line").transition(t).style("stroke-width", 2).style("opacity", .25);
         d3.select("#net-line").transition(t).style("stroke-width", 5).style("opacity", 1);
         d3.select("#net-migration-title").style("display", "block");
-        d3.select(".net-migration-annotation").style("display", "block");
+        d3.select(".net-migration-annotation").style("visibility", "visible");
         d3.select("#migration-source").style("display", "block");
     }
 
@@ -1258,7 +1266,7 @@ var scrollVis = function () {
         d3.select("#regional-net-ne").transition(t).style("opacity", 0);
         d3.select("#regional-net-neigh").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "block");
-        d3.selectAll(".regionalMigrationLegend").style("display", "block");
+        d3.selectAll(".regionalMigrationLegend").style("visibility", "visible");
         d3.select("#regional-source").style("display", "block");
     }
 
@@ -1270,7 +1278,7 @@ var scrollVis = function () {
         d3.select("#regional-net-ne").transition(t).style("stroke-width", 5).style("opacity", .5);
         d3.select("#regional-net-neigh").transition(t).style("stroke-width", 5).style("opacity", .5);
         d3.select("#regional-net-migration-title").style("display", "block");
-        d3.selectAll(".regionalMigrationLegend").style("display", "block");
+        d3.selectAll(".regionalMigrationLegend").style("visibility", "visible");
         d3.select("#regional-source").style("display", "block");
     }
 
@@ -1284,8 +1292,8 @@ var scrollVis = function () {
         d3.select("#regional-state-ny").transition(t).style("opacity", 0);
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "block");
-        d3.selectAll(".stateMigrationLegend1").style("display", "block");
-        d3.selectAll(".stateMigrationLegend2").style("display", "none");
+        d3.selectAll(".stateMigrationLegend1").style("visibility", "visible");
+        d3.selectAll(".stateMigrationLegend2").style("visibility", "hidden");
         d3.select("#regional-state-source").style("display", "block");
     }
 
@@ -1300,8 +1308,8 @@ var scrollVis = function () {
             d3.select("#regional-state-ny").transition(t).style("stroke-width", 5).style("opacity", 1);
             d3.select("#regional-state-nj").transition(t).style("stroke-width", 5).style("opacity", 1);
             d3.select("#regional-net-migration-title").style("display", "block");
-            d3.selectAll(".stateMigrationLegend1").style("display", "none");
-            d3.selectAll(".stateMigrationLegend2").style("display", "block");
+            d3.selectAll(".stateMigrationLegend1").style("visibility", "hidden");
+            d3.selectAll(".stateMigrationLegend2").style("visibility", "visible");
             d3.select("#regional-state-source").style("display", "block");
         }
         catch(err) {
@@ -1356,7 +1364,7 @@ var scrollVis = function () {
         d3.select("#drs500k").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select("#drs1m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
-        d3.select(".drsLegend").transition(t).style("display", "block");
+        d3.select(".drsLegend").transition(t).style("visibility", "visible");
         d3.select("#drs-title").style("display", "block");
         d3.select("#migration-by-drs-source").style("display", "block");
     }
@@ -1372,7 +1380,7 @@ var scrollVis = function () {
         d3.select("#drs500k").transition(t).style("opacity", 1).style("stroke-width", 5);
         d3.select("#drs1m").transition(t).style("opacity", 1).style("stroke-width", 5);
         d3.select("#drs5m").transition(t).style("opacity", 1).style("stroke-width", 5);
-        d3.select(".drsLegend").transition(t).style("display", "block");
+        d3.select(".drsLegend").transition(t).style("visibility", "visible");
         d3.select("#drs-title").style("display", "block");
         d3.select("#migration-by-drs-source").style("display", "block");
     }
@@ -1384,7 +1392,7 @@ var scrollVis = function () {
         d3.selectAll(".migration-by-age-bar").transition(t).style("opacity", 1);
         d3.selectAll('.migration-by-age-net-circle').transition(t).style('opacity', 1);
         d3.select('#migration-by-age-title').style('display', 'block');
-        d3.select(".migrationByAgeLegend").transition(t).style("display", "block");
+        d3.select(".migrationByAgeLegend").transition(t).style("visibility", "visible");
         d3.select("#migration-by-age-source").style("display", "block");
 
     }
@@ -1396,7 +1404,7 @@ var scrollVis = function () {
         d3.selectAll(".agi-flow-bar").transition(t).style("opacity", 1);
         d3.selectAll('.agi-flow-circle').transition(t).style('opacity', 1);
         d3.select('#agi-flows-title').style('display', 'block');
-        d3.select(".agiFlowsLegend").transition(t).style("display", "block");
+        d3.select(".agiFlowsLegend").transition(t).style("visibility", "visible");
         d3.select("#migration-by-agi-source").style("display", "block");
     }
 
@@ -1425,7 +1433,8 @@ var scrollVis = function () {
         hidersToCall.forEach(function(h) {
             h.hider();
         });
-    }
+    };
+
     function hideCanvaOne() {
         d3.select("#canva_one").style("opacity", 0);
     }
@@ -1434,7 +1443,7 @@ var scrollVis = function () {
         d3.select("#population_x_axis").style("opacity", 0);
         d3.select("#population_y_axis").style("opacity", 0);
         d3.select("#ct-population-line").style("stroke-width", 5).style("opacity", 0);
-        d3.select(".annotation-population").style("display", "none");
+        d3.select(".annotation-population").style("visibility", "hidden");
         d3.select("#population-title").style("display", "none");
         d3.select("#population-source").style("display", "none");
     }
@@ -1452,9 +1461,9 @@ var scrollVis = function () {
         d3.select("#deaths-line").style("stroke-width", 5).style("opacity", 0);
         d3.select("#prerecession-shading").style("opacity", 0);
         d3.select("#postrecession-shading").style("opacity", 0);
-        d3.select(".annotation-recession").style("display", "none");
+        d3.select(".annotation-recession").style("visibility", "hidden");
         d3.select("#births-title").style("display", "none");
-        d3.selectAll(".birthsLegend").style("display", "none");
+        d3.selectAll(".birthsLegend").style("visibility", "hidden");
         d3.select("#births-source").style("display", "none");
     }
 
@@ -1468,8 +1477,8 @@ var scrollVis = function () {
         d3.select("#net-migration-title").style("display", "none");
         d3.select("#migration-prerecession-shading").style("opacity", 0);
         d3.select("#migration-postrecession-shading").style("opacity", 0);
-        d3.selectAll(".migration-recession-annotation").style("display", "none");
-        d3.selectAll(".netMigrationLegend").style("display", "none");
+        d3.selectAll(".migration-recession-annotation").style("visibility", "hidden");
+        d3.selectAll(".netMigrationLegend").style("visibility", "hidden");
         d3.select("#migration-source").style("display", "none");
     }
 
@@ -1499,7 +1508,7 @@ var scrollVis = function () {
         d3.select("#regional-net-ne").style("opacity", 0);
         d3.select("#regional-net-neigh").style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "none");
-        d3.selectAll(".regionalMigrationLegend").style("display", "none");
+        d3.selectAll(".regionalMigrationLegend").style("visibility", "hidden");
         d3.select("#regional-source").style("display", "none");
     }
 
@@ -1512,8 +1521,8 @@ var scrollVis = function () {
         d3.select("#regional-state-nj").transition(t).style("opacity", 0);
         d3.select("#regional-state-ri").transition(t).style("opacity", 0);
         d3.select("#regional-net-migration-title").style("display", "none");
-        d3.selectAll(".stateMigrationLegend1").style("display", "none");
-        d3.selectAll(".stateMigrationLegend2").style("display", "none");
+        d3.selectAll(".stateMigrationLegend1").style("visibility", "hidden");
+        d3.selectAll(".stateMigrationLegend2").style("visibility", "hidden");
         d3.select("#regional-state-source").style("display", "none");
     }
 
@@ -1527,7 +1536,7 @@ var scrollVis = function () {
         d3.select("#drs500k").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select("#drs1m").transition(t).style("opacity", 0).style("stroke-width", 1);
         d3.select("#drs5m").transition(t).style("opacity", 0).style("stroke-width", 1);
-        d3.select(".drsLegend").transition(t).style("display", "none");
+        d3.select(".drsLegend").style("visibility", "hidden");
         d3.select("#drs-title").style("display", "none");
         d3.select("#migration-by-drs-source").style("display", "none");
     }
@@ -1538,7 +1547,7 @@ var scrollVis = function () {
         d3.select('#migration_age_y_axis').style('opacity', 0);
         d3.selectAll('.migration-by-age-net-circle').style('opacity', 0);
         d3.select('#migration-by-age-title').style('display', 'none');
-        d3.select(".migrationByAgeLegend").transition(t).style("display", "none");
+        d3.select(".migrationByAgeLegend").style("visibility", "hidden");
         d3.select("#migration-by-age-source").style("display", "none");
     }
 
@@ -1548,7 +1557,7 @@ var scrollVis = function () {
         d3.selectAll(".agi-flow-bar").style("opacity", 0);
         d3.selectAll('.agi-flow-circle').style('opacity', 0);
         d3.select('#agi-flows-title').style('display', 'none');
-        d3.select(".agiFlowsLegend").transition(t).style("display", "none");
+        d3.select(".agiFlowsLegend").style("visibility", "hidden");
         d3.select("#migration-by-agi-source").style("display", "none");
     }
 

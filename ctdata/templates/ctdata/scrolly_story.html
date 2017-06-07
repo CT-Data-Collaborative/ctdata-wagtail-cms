@@ -168,7 +168,8 @@
     <script src="{% static 'ctdata/js/scroller.js' %}"></script>
     <script src="{% static 'ctdata/js/scrolly_graphics.js' %}"></script>
     <script>
-        display({{ content.rawdata|safe}});
+        var rawData = {{ content.rawdata|safe }};
+        display(rawData);
     </script>
 {% endblock %}
 {% block external_js %}
