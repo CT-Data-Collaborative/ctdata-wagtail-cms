@@ -73,7 +73,7 @@ tests/.hitch
 
 .idea
 *.env
-backup/
+backups/
 env.example
 
 .cache/

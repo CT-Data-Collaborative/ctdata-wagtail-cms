@@ -59,3 +59,11 @@ Moved to `Live reloading and SASS compilation`_.
 
 Deployment
 ----------
+
+
+Database Restore
+----------------
+
+docker-compose run postgres bash
+export PGPASSWORD=$POSTGRES_PASSWORD
+psql -h postgres --username=username <- this should be the username from your .env file
