@@ -49,7 +49,7 @@ celery==3.1.23
 # Your custom requirements go here
 # Wagtail
 
-wagtail==1.10
+wagtail==1.11
 django-compressor>=1.4
 django-fontawesome==0.3.1
 

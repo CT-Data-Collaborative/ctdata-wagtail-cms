@@ -286,3 +286,5 @@ ADMIN_URL = r'^admin/'
 
 # Your common stuff: Below this line define 3rd party library settings
 WAGTAIL_SITE_NAME = 'CTData CMS'
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 7864320

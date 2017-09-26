@@ -1,4 +1,8 @@
-from datetime import date
+import requests
+import urllib
+import pytz
+
+from datetime import date, datetime
 
 from django.db import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -17,16 +21,13 @@ from wagtail.wagtailadmin.edit_handlers import FieldPanel, FieldRowPanel, MultiF
     InlinePanel, PageChooserPanel, StreamFieldPanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-from wagtail.wagtailsnippets.models import register_snippet
+
+from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 from wagtail.wagtailforms.models import AbstractEmailForm, AbstractFormField
 from wagtail.wagtailsearch import index
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
-
-from wagtail.wagtailcore.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, IntegerBlock
-from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
@@ -36,19 +37,10 @@ from ctdata.utils import export_event, is_tag_full
 from ctdata.scrolly_content import get_content
 from fontawesome.fields import IconField
 from eventbrite import Eventbrite
-import datetime
-import requests
-import urllib
-import pytz
 
-CHART_TYPE_CHOICES = (
-    ('hbar', "Horizontal Bar"),
-    ('vbar', "Vertical Bar"),
-    ('line', "Line"),
-    ('scatter', "Scatter"),
-    ('table', "Table")
-)
+from .blocks import CTDataStreamBlock, PullQuoteBlock, ImageFormatChoiceBlock, HTMLAlignmentChoiceBlock, ChartTypeChoiceBlock, ImageBlock, ImageChooserBlock, AlignedHTMLBlock, SidebarPullQuote, SidebarNote, PymIFrameBlock, IFrameBlock, ExternalIFrame, CharBlock, TwitterBlock, ReactWidgetBlock
 
+from .snippets import ReactWidget
 
 EVENT_AUDIENCE_CHOICES = (
     ('public', "Public"),
@@ -59,118 +51,6 @@ PROJECT_CATEGORY_CHOICES = (
     ('story', 'Story'),
     ('portal', 'Portal'),
 )
-
-
-
-################################################################################################
-########
-########
-########            Streamfield Structure Blocks
-########
-########
-################################################################################################
-
-class PullQuoteBlock(StructBlock):
-    quote = TextBlock("quote title")
-    attribution = CharBlock(required=False)
-
-    class Meta:
-        icon = "openquote"
-
-
-class ImageFormatChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(
-        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),
-    ))
-
-
-class HTMLAlignmentChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(
-        ('normal', 'Normal'), ('full', 'Full width'),
-    ))
-
-
-class ChartTypeChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=CHART_TYPE_CHOICES)
-
-
-class ImageBlock(StructBlock):
-    image = ImageChooserBlock()
-    caption = RichTextBlock()
-    alignment = ImageFormatChoiceBlock()
-
-
-class AlignedHTMLBlock(StructBlock):
-    html = RawHTMLBlock()
-    alignment = HTMLAlignmentChoiceBlock()
-
-    class Meta:
-        icon = "code"
-
-class SidebarPullQuote(StructBlock):
-    quote = TextBlock("quote title")
-    attribution = CharBlock(required=False)
-
-    class Meta:
-        icon = "openquote"
-
-
-class SidebarNote(StructBlock):
-    note = TextBlock("note title")
-
-
-class PymIFrameBlock(StructBlock):
-    title = CharBlock()
-    bucket_name = CharBlock()
-    notes = CharBlock(required=False)
-    source = CharBlock(required=False)
-
-class IFrameBlock(StructBlock):
-    title = CharBlock()
-    bucket_name = CharBlock()
-    notes = CharBlock(required=False)
-    source = CharBlock(required=False)
-
-class ChartBlock(StructBlock):
-    title = CharBlock()
-    source = CharBlock()
-    gdoc_link = models.URLField("Link to Google Spreadsheet", blank=False)
-    chart_type = ChartTypeChoiceBlock()
-
-
-class TwitterBlock(StructBlock):
-    twitter_box_username = CharBlock(required=True)
-    twitter_box_widget_id = CharBlock(required=True)
-    twitter_box_tweet_limit = IntegerBlock(required=True)
-
-    class Meta:
-        icon = "cog"
-        label = "Twitter Widget"
-        template = "ctdata/blocks/twitter.html"
-
-
-################################################################################################
-########
-########
-########            CTData Streamfield Block
-########
-########
-################################################################################################
-
-class CTDataStreamBlock(StreamBlock):
-    h2 = CharBlock(icon="title", classname="title")
-    h3 = CharBlock(icon="title", classname="title")
-    h4 = CharBlock(icon="title", classname="title")
-    intro = RichTextBlock(icon="pilcrow")
-    paragraph = RichTextBlock(icon="pilcrow")
-    aligned_image = ImageBlock(label="Aligned image", icon="image")
-    pullquote = PullQuoteBlock()
-    aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
-    document = DocumentChooserBlock(icon="doc-full-inverse")
-    pym_iframe = PymIFrameBlock(icon="code", label='Pym IFrame')
-    iframe = IFrameBlock(icon="code", label='Regular IFrame')
-    sidebar_pullquote = SidebarPullQuote()
-    sidebar_note = SidebarNote()
 
 
 # A couple of abstract classes that contain commonly used fields
@@ -683,6 +563,14 @@ class BlogPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    react_widget = models.ForeignKey(
+        'ReactWidget',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     parent_page_types = ['ctdata.BlogIndexPage']
 
     search_fields = Page.search_fields + [
@@ -704,7 +592,7 @@ BlogPage.content_panels = [
     FieldPanel('date'),
     StreamFieldPanel('body'),
     InlinePanel('carousel_items', label="Carousel items"),
-    InlinePanel('related_links', label="Related links"),
+    InlinePanel('related_links', label="Related links")
 ]
 
 BlogPage.promote_panels = Page.promote_panels + [
@@ -1612,7 +1500,7 @@ class DataAcademyAbstractEvent(Page):
 
     @property
     def start(self):
-        return datetime.datetime.combine(self.date_from, self.time_from)
+        return datetime.combine(self.date_from, self.time_from)
 
     @property
     def start_str(self):
@@ -1630,7 +1518,7 @@ class DataAcademyAbstractEvent(Page):
 
     @property
     def end(self):
-        return datetime.datetime.combine(self.date_to, self.time_to)
+        return datetime.combine(self.date_to, self.time_to)
 
     @property
     def end_str(self):
@@ -1773,5 +1661,4 @@ class LinkResource(DataAcademyResource):
 LinkResource.content_panels = DataAcademyResource.content_panels + [
     InlinePanel('related_links', label="Links")
 ]
-
 

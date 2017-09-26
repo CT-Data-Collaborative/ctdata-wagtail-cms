@@ -56,10 +56,25 @@
                 <iframe width="100%" style="width: 100%; height: 550px; overflow: hidden;" src="http://ctdata-graphics.s3-website-us-west-2.amazonaws.com/{{ child.value.bucket_name }}/index.html" frameborder="0"></iframe>
                 <hr>
             </div>
+        {% elif child.block_type  == 'external_iframe' %}
+            <div class="iframe-viz" id="{{ child.value.title }}">
+                <hr>
+                <h5>{{ child.value.title }}</h5>
+                <iframe width="100%" style="width: 100%; height: 550px; overflow: hidden;" src="{{ child.value.embed_link }}" frameborder="0"></iframe>
+                <hr>
+            </div>
         {% elif child.block_type  == 'sidebar_pullquote' %}
             <p data-pullquote="{{ child.value.quote }}"></p>
         {% elif child.block_type  == 'sidebar_note' %}
             <p data-sidebar="{{ child.value.note }}"></p>
+        {% elif child.block_type == 'react_widget' %}
+            <div id="{{ child.value.dom_node }}"></div>
+            {% block extra_css %}
+                <link href="{{ child.value.css_url }}" rel="stylesheet">
+            {% endblock %}
+            {% block extra_js %}
+                <script src="{{ child.value.jsbundle_url }}"></script>
+            {% endblock %}
         {% else %}
             {{ child }}
         {% endif %}
