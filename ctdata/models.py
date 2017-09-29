@@ -1397,7 +1397,7 @@ class DataAcademyResourceIndex(RoutablePageMixin, Page):
 
     @property
     def resources(self):
-        return DataAcademyResource.objects.live().descendant_of(self)
+        return DataAcademyResource.objects.live().descendant_of(self).order_by('title')
 
     @property
     def tags(self):

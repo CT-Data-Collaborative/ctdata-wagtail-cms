@@ -10,8 +10,7 @@ services:
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
       - postgres_backup_dev:/backups
-    environment:
-      - POSTGRES_USER=ctdata_wagtail
+    env_file: dev.env
 
   django:
     build:
@@ -20,9 +19,8 @@ services:
     command: /start-dev.sh
     depends_on:
       - postgres
-    environment:
-      - POSTGRES_USER=ctdata_wagtail
-      - USE_DOCKER=yes
+    env_file: dev.env
+
     volumes:
       - .:/app
     ports:
@@ -30,20 +28,3 @@ services:
     links:
       - postgres
 
-#
-#
-#  pycharm:
-#    build:
-#      context: .
-#      dockerfile: ./compose/django/Dockerfile-dev
-#    depends_on:
-#      - postgres
-#    environment:
-#      - POSTGRES_USER=ctdata_wagtail
-#    volumes:
-#      - .:/app
-#    links:
-#      - postgres
-#
-#
-#
